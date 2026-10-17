@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Shift — Onzima Dawa Staff</title>
+<style>
+:root{--plum-950:#23092e;--plum-900:#33123f;--plum-700:#4d1e5e;--plum-500:#7c3e94;--gold:#f2a900;--gold-deep:#b97a00;--cream:#faf3e6;--paper:#fffdf6;--ink:#2c1a2e;--muted:#857183;--leaf:#2e7d4f;--blood:#b3261e;--serif:Georgia,'Palatino Linotype',serif;--sans:-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:16px;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.wrap{max-width:640px;margin:0 auto;padding:14px 14px 20px}
+/* header */
+.hd{background:linear-gradient(135deg,var(--plum-950),var(--plum-700));color:#fff;border-radius:18px;padding:15px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:10px;z-index:10;box-shadow:0 4px 14px rgba(35,9,46,.3)}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--gold);color:#3a1149;font-family:var(--serif);font-weight:bold;font-size:19px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hd b{font-family:var(--serif);font-size:18px;display:block}
+.hd small{color:var(--gold);font-size:12px}
+.hd .date{margin-left:auto;font-size:12px;color:#d9c6e2;text-align:right}
+/* cards */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.card{background:var(--paper);border:1px solid #ecdfc8;border-radius:16px;padding:13px;min-height:88px}
+.card h3{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:800}
+.card .v{font-family:var(--serif);font-size:23px;color:var(--plum-900);margin-top:3px}
+.card small{font-size:12px;color:var(--muted)}
+.card.gold{border-top:4px solid var(--gold)}.card.alert{border-top:4px solid var(--blood)}
+.bigbtn{display:block;width:100%;background:var(--gold);color:#3a1149;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:800;margin:6px 0;cursor:pointer}
+.bigbtn:active{transform:scale(.98)}
+.panel{background:var(--paper);border:1px solid #ecdfc8;border-radius:16px;padding:15px;margin-bottom:12px}
+.panel h2{font-family:var(--serif);font-size:19px;color:var(--plum-900);margin-bottom:10px}
+section.tab{display:none}section.tab.active{display:block}
+input,select{padding:13px;font-size:16px;border:1.5px solid #d9c8a6;border-radius:12px;width:100%;background:#fffdf8;font-family:var(--sans);margin-bottom:10px}
+input:focus{outline:2px solid var(--gold)}
+.btn{background:var(--plum-700);color:#fff;border:0;padding:12px 16px;border-radius:12px;font-weight:800;font-size:15px;min-height:46px;cursor:pointer}
+.btn.gold{background:var(--gold);color:#3a1149}.btn.wa{background:var(--leaf)}.btn.ghost{background:transparent;color:var(--plum-700);border:1.5px solid var(--plum-500)}
+.btn:active{transform:scale(.97)}
+/* product tap cards */
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prod{background:#fffdf8;border:2px solid #e7d6ae;border-radius:14px;padding:12px;min-height:96px;text-align:left;cursor:pointer;font-family:var(--sans)}
+.prod:active{border-color:var(--gold);background:#fdf3d3}
+.prod b{font-size:14.5px;display:block;line-height:1.25}
+.prod span{font-size:13px;color:var(--plum-700);font-weight:800}
+.prod small{display:block;color:var(--muted);font-size:12px}
+/* basket rows */
+.brow{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee0c8}
+.brow .nm{flex:1;font-weight:700}
+.stepper{display:flex;align-items:center;gap:2px}
+.stepper button{width:44px;height:44px;font-size:20px;border-radius:12px;border:1.5px solid var(--plum-500);background:#fff;color:var(--plum-700);font-weight:800}
+.stepper span{min-width:34px;text-align:center;font-weight:800;font-size:17px}
+/* lists */
+.row{padding:11px 2px;border-bottom:1px solid #eee0c8;font-size:15px}
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:800}
+.b-low{background:#fbd9d5;color:#8f1d12}.b-ok{background:#cde9d6;color:#155c33}
+.b-expired{background:#fbd9d5;color:#8f1d12}.b-critical{background:#fbe3b8;color:#8a4a00}.b-warning{background:#f9dcc3;color:#8f3c10}
+.alert{padding:11px 13px;border-radius:12px;margin-bottom:10px;font-size:14.5px}
+.alert.red{background:#fdf0ee;border:1px solid #f2b8ae}.alert.amber{background:#fdf6e3;border:1px solid #ecd27a}.alert.green{background:#edf7f0;border:1px solid #a9d8bc}
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--plum-950);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:20;box-shadow:0 -3px 14px rgba(0,0,0,.25)}
+.nav button{flex:1;background:transparent;border:0;color:#c9b3d4;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;min-height:56px;border-radius:12px;cursor:pointer}
+.nav button.active{color:var(--gold);background:rgba(242,169,0,.14)}
+.nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#receiptArea{display:none}
+.receipt{width:280px;margin:auto;font-family:'Courier New',monospace;font-size:12px;color:#000;background:#fff;padding:10px}
+.receipt h3,.receipt p{text-align:center;margin:2px 0}
+.receipt td{padding:2px}
+@media print{body *{visibility:hidden}#receiptArea,#receiptArea *{visibility:visible}#receiptArea{display:block;position:absolute;left:0;top:0;width:100%}}
+@media(min-width:700px){.prods{grid-template-columns:1fr 1fr 1fr}.cards{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hd"><div class="avatar" id="avatar">?</div>
+<div><b id="whoName">…</b><small id="whoRole">Staff</small></div>
+<div class="date" id="clock"></div></div>
+
+<section id="t-home" class="tab active">
+<div class="cards">
+<div class="card gold"><h3>My sales today</h3><div class="v" id="myTotal">0</div><small id="myCount">0 sales · UGX</small></div>
+<div class="card"><h3>Shop total today</h3><div class="v" id="shopTotal">0</div><small id="shopCount">0 sales</small></div>
+<div class="card alert" id="lowCard"><h3>Low stock</h3><div class="v" id="lowN">0</div><small>items at reorder</small></div>
+<div class="card"><h3>Refills due</h3><div class="v" id="refN">0</div><small>chronic patients</small></div>
+</div>
+<button class="bigbtn" onclick="go('sell')">+ New Sale</button>
+<div class="panel"><h2>My latest sales</h2><div id="myRows"></div></div>
+</section>
+
+<section id="t-sell" class="tab">
+<div class="panel"><input id="q" placeholder="Search medicine…" oninput="renderProds()"></div>
+<div class="prods" id="prodGrid"></div>
+<div class="panel" style="margin-top:12px"><h2>Basket <span id="bSum"></span></h2>
+<div id="bRows"><div class="row">Empty — tap medicines above</div></div>
+<input id="bCustomer" placeholder="Customer name (needed for CREDIT)">
+<input id="bPhone" placeholder="Customer phone">
+<select id="bMethod"><option value="CASH">CASH</option><option value="MTN_MOMO">MTN MoMo</option><option value="AIRTEL_MOMO">Airtel MoMo</option><option value="CREDIT">CREDIT (owe)</option></select>
+<button class="bigbtn" onclick="checkout()">Complete Sale</button>
+<div id="saleMsg"></div></div>
+<div id="receiptArea"><div class="receipt" id="receiptBox"></div></div>
+</section>
+
+<section id="t-stock" class="tab">
+<div class="panel"><input id="q2" placeholder="Search stock…" oninput="renderStock()"></div>
+<div class="panel"><div id="stockList"></div></div>
+</section>
+
+<section id="t-care" class="tab">
+<div class="panel"><h2>Refills due — tap to remind</h2><div id="careList"></div></div>
+</section>
+
+<section id="t-me" class="tab">
+<div class="panel"><h2>My profile</h2>
+<input id="pfName" placeholder="Display name"><input id="pfPhone" placeholder="Phone">
+<button class="btn" onclick="saveProfile()">Save Profile</button> <span id="pfMsg"></span></div>
+<div class="panel"><h2>Full system</h2><button class="btn ghost" onclick="location.href='/'">Open Dukani Dashboard</button></div>
+<div class="panel"><button class="btn" style="width:100%;background:var(--blood)" onclick="logout()">Sign Out</button></div>
+</section>
+</div>
+
+<nav class="nav">
+<button class="active" data-t="home" onclick="go('home',this)"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="4.5" rx="2"/><rect x="13.5" y="10.5" width="7" height="10" rx="2"/><rect x="3.5" y="13" width="7" height="7.5" rx="2"/></svg>Home</button>
+<button data-t="sell" onclick="go('sell',this)"><svg viewBox="0 0 24 24"><path d="M4 10h16l-1.4 8.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M8.5 10L12 4.5 15.5 10"/><path d="M10 14.5h4"/></svg>Sell</button>
+<button data-t="stock" onclick="go('stock',this)"><svg viewBox="0 0 24 24"><path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5L12 12l8.5-4.5"/><path d="M12 12v9"/></svg>Stock</button>
+<button data-t="care" onclick="go('care',this)"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-9.3-9.2C1.5 7.6 3.6 4.5 6.8 4.5c2 0 3.7 1.2 5.2 3.3 1.5-2.1 3.2-3.3 5.2-3.3 3.2 0 5.3 3.1 4.1 6.3C19.5 15.4 12 20 12 20z"/></svg>Care</button>
+<button data-t="me" onclick="go('me',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Me</button>
+</nav>
+<script>
+let ME={},PRODS=[],BASKET=[];
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+function go(t,btn){document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');else document.querySelector(`.nav button[data-t="${t}"]`).classList.add('active');document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));$('t-'+t).classList.add('active');window.scrollTo(0,0)}
+async function api(u,m,b){const r=await fetch(u,{method:m||'GET',headers:b?{'Content-Type':'application/json'}:{},body:b?JSON.stringify(b):undefined});if(r.status===401){location.href='/login';throw 0}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Error');return j}
+function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+async function boot(){ME=await api('/api/me');$('whoName').textContent=ME.display_name||ME.username;$('whoRole').textContent=ME.role==='admin'?'Shop Owner':'Sales Agent';$('avatar').textContent=initials(ME.display_name||ME.username);$('pfName').value=ME.display_name||'';$('pfPhone').value=ME.phone||'';setInterval(()=>{$('clock').textContent=new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})},1000);loadAll()}
+function ugDigits(p){let d=String(p||'').replace(/\D/g,'');if(/^0\d{9}$/.test(d))d='256'+d.slice(1);return d}
+async function loadAll(){PRODS=await api('/api/products');renderProds();renderStock();
+const d=await api('/api/dashboard');$('shopTotal').textContent=d.sales_today.total.toLocaleString();$('shopCount').textContent=d.sales_today.count+' sales';$('lowN').textContent=d.low_stock_count;$('refN').textContent=d.refill.due_count;
+const my=await api('/api/my-sales');$('myTotal').textContent=my.total.toLocaleString();$('myCount').textContent=my.count+' sales · UGX';$('myRows').innerHTML=my.rows.slice(0,8).map(s=>`<div class="row">${s.product_name} ×${s.qty} — <b>${s.total.toLocaleString()}</b> <small>(${s.payment_method})${s.customer_name?' · '+s.customer_name+(s.customer_phone?' '+s.customer_phone:''):''}</small></div>`).join('')||'<div class="row">No sales yet today — tap + New Sale!</div>';
+const rem=await api('/api/reminders');$('careList').innerHTML=rem.due.length?rem.due.map(p=>{const dg=ugDigits(p.phone);return `<div class="alert ${p.state==='OVERDUE'?'red':'amber'}"><b>${p.name}</b> · ${p.drug_name||''}<br><a href="tel:+${dg}" style="font-weight:800">${p.phone}</a> · Due ${p.next_due} (${p.days_left}d)<br><br><a class="btn wa" style="text-decoration:none;display:inline-block" href="${p.whatsapp_link}">WhatsApp Remind</a> <button class="btn" onclick="refilled(${p.id})">Refilled ✓</button></div>`}).join(''):'<div class="alert green">Nobody due. All caught up!</div>'}
+function renderProds(){const q=($('q').value||'').toLowerCase();$('prodGrid').innerHTML=PRODS.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<button class="prod" onclick="addB(${p.id})"><b>${p.name}</b><span>UGX ${p.price_sell.toLocaleString()}</span><small>${p.stock_on_hand} ${p.unit} left${p.low_stock?' · LOW':''}</small></button>`).join('')||'<div class="row">No matches</div>'}
+function renderStock(){const q=($('q2').value||'').toLowerCase();$('stockList').innerHTML=PRODS.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<div class="row"><b>${p.name}</b> — ${p.stock_on_hand} ${p.unit} <span class="badge ${p.low_stock?'b-low':'b-ok'}">${p.low_stock?'LOW':'OK'}</span><br><small>UGX ${p.price_sell.toLocaleString()} · reorder at ${p.reorder_level}</small></div>`).join('')}
+function addB(id){const e=BASKET.find(x=>x.product_id===id);if(e)e.qty++;else BASKET.push({product_id:id,qty:1});renderB()}
+function chQty(i,d){BASKET[i].qty+=d;if(BASKET[i].qty<=0)BASKET.splice(i,1);renderB()}
+function prodOf(id){return PRODS.find(p=>String(p.id)===String(id))}
+function renderB(){const tot=BASKET.reduce((s,b)=>s+prodOf(b.product_id).price_sell*b.qty,0);$('bSum').textContent=BASKET.length?`· UGX ${tot.toLocaleString()}`:'';$('bRows').innerHTML=BASKET.length?BASKET.map((b,i)=>{const p=prodOf(b.product_id);return `<div class="brow"><div class="nm">${p.name}<br><small>${(p.price_sell*b.qty).toLocaleString()} UGX</small></div><div class="stepper"><button onclick="chQty(${i},-1)">−</button><span>${b.qty}</span><button onclick="chQty(${i},1)">+</button></div></div>`}).join(''):'<div class="row">Empty — tap medicines above</div>'}
+async function checkout(){if(!BASKET.length){$('saleMsg').textContent='Basket is empty';return}try{const r=await api('/api/sales/cart','POST',{items:BASKET,payment_method:$('bMethod').value,customer_name:$('bCustomer').value,customer_phone:$('bPhone').value,served_by:ME.display_name||ME.username});BASKET=[];renderB();$('bCustomer').value='';$('bPhone').value='';$('saleMsg').innerHTML=`✓ Sale done — UGX ${r.total.toLocaleString()} <button class="btn gold" onclick="printRef('${r.receipt_ref}')">Receipt</button>`;loadAll()}catch(e){$('saleMsg').textContent='❌ '+e.message}}
+async function printRef(ref){const r=await api('/api/receipts/'+ref);$('receiptBox').innerHTML=`<h3>${r.shop_name}</h3><p>${r.shop_branch}</p><p>${r.receipt_no} · ${r.sale_date}</p>${r.customer_name?'<p>'+r.customer_name+(r.customer_phone?' · '+r.customer_phone:'')+'</p>':''}<hr>`+r.lines.map(l=>`<div>${l.product_name} x${l.qty} — ${l.total.toLocaleString()}</div>`).join('')+`<hr><p><b>Total UGX ${r.total.toLocaleString()}</b> (${r.payment_method})</p><p>By ${r.served_by||'-'}</p>`;window.print()}
+async function refilled(id){await api('/api/patients/'+id,'POST',{});loadAll()}
+async function saveProfile(){try{ME=Object.assign(ME,await api('/api/me','PUT',{display_name:$('pfName').value,phone:$('pfPhone').value}));$('whoName').textContent=ME.display_name;$('avatar').textContent=initials(ME.display_name);$('pfMsg').textContent='Saved ✓'}catch(e){$('pfMsg').textContent='❌ '+e.message}}
+async function logout(){await fetch('/api/logout',{method:'POST'});location.href='/login'}
+boot();
+</script>
+</body>
+</html>

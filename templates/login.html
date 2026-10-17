@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Onzima Dawa Apothecary</title>
+<style>
+:root {
+  --plum-950: #23092e;
+  --plum-900: #33123f;
+  --plum-700: #4d1e5e;
+  --plum-500: #7c3e94;
+  --gold: #f2a900;
+  --gold-deep: #b97a00;
+  --cream: #faf3e6;
+  --paper: #fffdf6;
+  --ink: #2c1a2e;
+  --muted: #857183;
+  --success: #2e7d4f;
+  --danger: #b3261e;
+  --serif: Georgia, 'Palatino Linotype', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: radial-gradient(900px 500px at 15% 10%, #5b256e 0%, transparent 60%),
+              radial-gradient(800px 500px at 90% 90%, #6b4a00 0%, transparent 55%),
+              var(--plum-950);
+}
+.wrap {
+  width: 900px;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 35px 90px rgba(0,0,0,0.55);
+  background: var(--paper);
+}
+.brand {
+  background: linear-gradient(160deg, var(--plum-900), #1c071f);
+  color: #f3e6f7;
+  padding: 38px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.brand .mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(242,169,0,0.35);
+}
+.brand .mark svg {
+  width: 36px;
+  height: 36px;
+  stroke: #3a1149;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.brand h1 {
+  font-family: var(--serif);
+  font-size: 32px;
+  color: #fff;
+  line-height: 1.15;
+}
+.brand h1 em {
+  color: var(--gold);
+  font-style: normal;
+}
+.brand p.sub {
+  font-size: 13.5px;
+  margin-top: 12px;
+  line-height: 1.6;
+  color: #d9c6e2;
+}
+.brand ul {
+  list-style: none;
+  margin-top: 20px;
+  font-size: 13px;
+  display: grid;
+  gap: 10px;
+}
+.brand ul li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.06);
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.brand ul b { color: var(--gold); }
+.brand .version-tag {
+  font-size: 11.5px;
+  color: #a48eaf;
+  margin-top: 24px;
+}
+
+.form-area {
+  background: var(--paper);
+  padding: 38px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.form-area h2 {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--plum-900);
+}
+.form-area p.desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 4px 0 16px;
+}
+
+.cur-user-banner {
+  display: none;
+  background: #fef3d6;
+  border: 1px solid #ebd090;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  justify-content: space-between;
+  align-items: center;
+  color: #492c00;
+}
+.cur-user-banner a {
+  color: var(--plum-700);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.personas-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.personas {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 210px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.persona {
+  border: 2px solid #e7d6ae;
+  border-radius: 14px;
+  padding: 9px 12px;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #fffdf8;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.persona:hover {
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+.persona.sel {
+  border-color: var(--plum-700);
+  background: #fdf3d3;
+  box-shadow: 0 0 0 3px rgba(242,169,0,0.25);
+}
+.persona .avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--plum-700);
+  color: #fff;
+  font-family: var(--serif);
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.persona.sel .avatar {
+  background: var(--gold);
+  color: #3a1149;
+}
+.persona .info {
+  flex: 1;
+  min-width: 0;
+}
+.persona b {
+  font-size: 13.5px;
+  display: block;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.persona small {
+  color: var(--muted);
+  font-size: 11.5px;
+  display: block;
+}
+.persona .quick-btn {
+  background: var(--plum-700);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.persona .quick-btn:hover {
+  background: var(--gold);
+  color: #23092e;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: block;
+  margin-top: 4px;
+}
+.input-wrap {
+  position: relative;
+  margin: 5px 0 12px;
+}
+input {
+  padding: 11px 14px;
+  border: 1.5px solid #d9c8a6;
+  border-radius: 12px;
+  font-size: 15px;
+  width: 100%;
+  background: #fffdf8;
+  font-family: var(--sans);
+  color: var(--ink);
+  transition: border-color 0.15s, outline 0.15s;
+}
+input:focus {
+  outline: 2px solid var(--gold);
+  border-color: var(--gold);
+}
+.toggle-pwd {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.toggle-pwd:hover {
+  color: var(--plum-700);
+  background: rgba(0,0,0,0.05);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 14px;
+}
+.chip {
+  background: #f7eddc;
+  border: 1px solid #e2cfb0;
+  color: var(--plum-900);
+  border-radius: 16px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip:hover {
+  background: var(--gold);
+  border-color: var(--gold-deep);
+  color: #23092e;
+}
+
+button.go {
+  background: var(--plum-700);
+  color: #fff;
+  border: 0;
+  padding: 13px;
+  border-radius: 12px;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(77,30,94,0.25);
+}
+button.go:hover { background: var(--plum-900); }
+button.go:active { transform: scale(0.99); }
+button.go:disabled { background: var(--muted); cursor: not-allowed; }
+
+#err {
+  margin-top: 10px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--danger);
+  min-height: 20px;
+  line-height: 1.4;
+}
+#err.show {
+  padding: 8px 12px;
+  background: #fdf0ee;
+  border: 1px solid #f2b8ae;
+}
+
+.foot {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.foot code {
+  background: #f0e6d6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--plum-900);
+  font-weight: 700;
+}
+
+@media(max-width: 740px) {
+  .wrap { grid-template-columns: 1fr; }
+  .brand { padding: 26px; }
+  .form-area { padding: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div>
+      <div class="mark">
+        <svg viewBox="0 0 24 24"><path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z"/><path d="M13.5 3.5l5.5 5.5"/><path d="M7 21h10"/></svg>
+      </div>
+      <h1>Onzima <em>Dawa</em></h1>
+      <p class="sub">Kireka Apothecary & Retail System — Expiry Watchdog, MoMo & Cash Reconciliation, and Jinja Tender Copilot.</p>
+      <ul>
+        <li><b>Owner (admin)</b> Financials, staff oversight, backups</li>
+        <li><b>Sales Agent</b> Fast POS sales, refill care, credit logs</li>
+      </ul>
+    </div>
+    <div class="version-tag">Kireka & Jinja Retail System · v2.4 Active</div>
+  </div>
+
+  <div class="form-area">
+    <h2>Staff Sign In</h2>
+    <p class="desc">Select your profile for 1-click access, or type your credentials.</p>
+    
+    <div id="curBanner" class="cur-user-banner"></div>
+
+    <div class="personas-label">
+      <span>Profiles / Quick Login</span>
+      <span style="font-weight: normal; color: var(--muted)">Click card to auto-fill</span>
+    </div>
+
+    <div class="personas" id="personaList">
+      <!-- Fallback static personas if API delayed -->
+      <div class="persona sel" id="p_admin" onclick="selectUser('admin', 'admin123')">
+        <div class="avatar">CO</div>
+        <div class="info">
+          <b>Charles Onzima</b>
+          <small>Shop Owner · admin</small>
+        </div>
+        <button type="button" class="quick-btn" onclick="quickLogin('admin','admin123',event)">⚡ Sign In</button>
+      </div>
+      <div class="persona" id="p_andama" onclick="selectUser('andama', 'admin123')">
+        <div class="avatar">AM</div>
+        <div class="info">
+          <b>Andama Moses</b>
+          <small>Shop Owner · andama</small>
+        </div>
+        <button type="button" class="quick-btn" onclick="quickLogin('andama','admin123',event)">⚡ Sign In</button>
+      </div>
+      <div class="persona" id="p_grace" onclick="selectUser('grace', 'grace123')">
+        <div class="avatar">SA</div>
+        <div class="info">
+          <b>Sarah Achen</b>
+          <small>Sales Agent · grace</small>
+        </div>
+        <button type="button" class="quick-btn" onclick="quickLogin('grace','grace123',event)">⚡ Sign In</button>
+      </div>
+    </div>
+
+    <form id="loginForm" onsubmit="go(event)">
+      <label for="uName">Username or Full Name</label>
+      <div class="input-wrap">
+        <input id="uName" value="admin" placeholder="e.g. admin, andama, or grace" oninput="onUserInput(this.value)" autocomplete="username" required>
+      </div>
+
+      <label for="uPass">Password</label>
+      <div class="input-wrap">
+        <input id="uPass" type="password" value="admin123" placeholder="••••••••" autocomplete="current-password" required>
+        <button type="button" class="toggle-pwd" id="toggleBtn" onclick="togglePassword()">Show</button>
+      </div>
+
+      <div class="chips">
+        <span class="chip" onclick="fillCreds('admin', 'admin123')">🔑 admin / admin123</span>
+        <span class="chip" onclick="fillCreds('andama', 'admin123')">🔑 andama / admin123</span>
+        <span class="chip" onclick="fillCreds('grace', 'grace123')">🔑 grace / grace123</span>
+      </div>
+
+      <button type="submit" class="go" id="submitBtn">Sign In →</button>
+    </form>
+
+    <div id="err"></div>
+
+    <div class="foot">
+      Default passwords: <code>admin123</code> (Admin) · <code>grace123</code> (Agent)
+    </div>
+  </div>
+</div>
+
+<script>
+const ROLE_NAMES = { admin: 'Shop Owner', attendant: 'Sales Agent' };
+const DEFAULT_PASSWORDS = {
+  admin: 'admin123',
+  andama: 'admin123',
+  grace: 'grace123'
+};
+
+function initials(n) {
+  return (n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function getDefaultPassword(username, role) {
+  const u = (username || '').toLowerCase();
+  if (DEFAULT_PASSWORDS[u]) return DEFAULT_PASSWORDS[u];
+  return role === 'admin' ? 'admin123' : 'grace123';
+}
+
+function selectUser(username, defaultPw) {
+  document.getElementById('uName').value = username;
+  document.querySelectorAll('.persona').forEach(p => p.classList.remove('sel'));
+  const card = document.getElementById('p_' + username);
+  if (card) card.classList.add('sel');
+
+  // Populate default password
+  const passEl = document.getElementById('uPass');
+  passEl.value = defaultPw || getDefaultPassword(username);
+  clearError();
+}
+
+function fillCreds(u, p) {
+  selectUser(u, p);
+  document.getElementById('uPass').focus();
+}
+
+function onUserInput(val) {
+  const clean = val.trim().toLowerCase();
+  document.querySelectorAll('.persona').forEach(p => p.classList.remove('sel'));
+  const card = document.getElementById('p_' + clean);
+  if (card) {
+    card.classList.add('sel');
+    const passEl = document.getElementById('uPass');
+    if (!passEl.value) {
+      passEl.value = getDefaultPassword(clean);
+    }
+  }
+}
+
+function togglePassword() {
+  const p = document.getElementById('uPass');
+  const btn = document.getElementById('toggleBtn');
+  if (p.type === 'password') {
+    p.type = 'text';
+    btn.textContent = 'Hide';
+  } else {
+    p.type = 'password';
+    btn.textContent = 'Show';
+  }
+}
+
+function clearError() {
+  const errEl = document.getElementById('err');
+  errEl.textContent = '';
+  errEl.className = '';
+}
+
+function showError(msg) {
+  const errEl = document.getElementById('err');
+  errEl.textContent = msg;
+  errEl.className = 'show';
+}
+
+async function quickLogin(username, password, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  document.getElementById('uName').value = username;
+  document.getElementById('uPass').value = password;
+  await go();
+}
+
+async function renderPersonas() {
+  try {
+    const res = await fetch('/api/personas');
+    if (!res.ok) return;
+    const list = await res.json();
+    if (!list || !list.length) return;
+
+    const container = document.getElementById('personaList');
+    const currentSelected = document.getElementById('uName').value.trim().toLowerCase();
+
+    container.innerHTML = list.map((p, idx) => {
+      const u = p.username.toLowerCase();
+      const isSel = currentSelected ? currentSelected === u : idx === 0;
+      const defPw = getDefaultPassword(u, p.role);
+      return `
+        <div class="persona ${isSel ? 'sel' : ''}" id="p_${p.username}" onclick="selectUser('${p.username}', '${defPw}')">
+          <div class="avatar">${initials(p.display_name || p.username)}</div>
+          <div class="info">
+            <b>${p.display_name || p.username}</b>
+            <small>${ROLE_NAMES[p.role] || p.role} · ${p.username}</small>
+          </div>
+          <button type="button" class="quick-btn" onclick="quickLogin('${p.username}', '${defPw}', event)">⚡ Sign In</button>
+        </div>
+      `;
+    }).join('');
+
+    // Ensure initial password is set if input is empty
+    const passEl = document.getElementById('uPass');
+    if (!passEl.value && list.length > 0) {
+      passEl.value = getDefaultPassword(list[0].username, list[0].role);
+    }
+  } catch (e) {
+    console.warn('Could not load persona list', e);
+  }
+}
+
+async function checkCurrentSession() {
+  try {
+    const me = await fetch('/api/me').then(r => r.json());
+    if (me && me.username) {
+      const banner = document.getElementById('curBanner');
+      banner.style.display = 'flex';
+      banner.innerHTML = `
+        <span>Signed in as <b>${me.display_name || me.username}</b> (${ROLE_NAMES[me.role] || me.role})</span>
+        <a href="/">Open App &rarr;</a>
+      `;
+    }
+  } catch(e) {}
+}
+
+async function go(event) {
+  if (event) event.preventDefault();
+
+  const username = document.getElementById('uName').value.trim();
+  const password = document.getElementById('uPass').value;
+  const btn = document.getElementById('submitBtn');
+
+  clearError();
+
+  if (!username) {
+    showError('Please enter a username or select a profile.');
+    document.getElementById('uName').focus();
+    return;
+  }
+  if (!password) {
+    showError('Please enter a password.');
+    document.getElementById('uPass').focus();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing In...';
+
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) {
+      // Check for redirect param ?next=
+      const params = new URLSearchParams(window.location.search);
+      const nextUrl = params.get('next') || '/';
+      location.href = nextUrl;
+    } else {
+      showError(j.error || 'Invalid username or password.');
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
+      document.getElementById('uPass').focus();
+    }
+  } catch (e) {
+    showError('Network error — please verify the server is running at http://127.0.0.1:5000');
+    btn.disabled = false;
+    btn.textContent = 'Sign In →';
+  }
+}
+
+renderPersonas();
+checkCurrentSession();
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tender Copilot — Communion Engineering, Jinja</title>
+<style>
+:root{--plum-950:#23092e;--plum-900:#33123f;--plum-700:#4d1e5e;--plum-500:#7c3e94;--gold:#f2a900;--gold-deep:#b97a00;--gold-100:#fdf0cd;--cream:#faf3e6;--paper:#fffdf6;--ink:#2c1a2e;--muted:#857183;--serif:Georgia,'Palatino Linotype',serif;--sans:-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans)}
+header{background:linear-gradient(120deg,var(--plum-950),var(--plum-700));color:#fff;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+header .b{display:flex;gap:12px;align-items:center}
+header .mark{width:44px;height:44px;border-radius:13px;background:var(--gold);display:flex;align-items:center;justify-content:center}
+header .mark svg{width:26px;height:26px;stroke:#3a1149;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+header b{font-family:var(--serif);font-size:20px}header small{color:var(--gold);letter-spacing:2px;font-size:11px;text-transform:uppercase}
+header a{color:var(--gold);font-weight:700;text-decoration:none}
+main{padding:18px;max-width:1080px;margin:auto}
+.panel{background:var(--paper);border-radius:16px;padding:18px;margin-bottom:16px;border:1px solid #ecdfc8;border-top:4px solid var(--plum-500);box-shadow:0 2px 8px rgba(51,18,63,.08)}
+.panel h3{font-family:var(--serif);font-size:19px;color:var(--plum-900);margin-bottom:8px}
+.panel p.hint{font-size:13px;color:var(--muted)}
+.btn{background:var(--plum-700);color:#fff;border:0;padding:9px 16px;border-radius:11px;cursor:pointer;font-weight:700;font-size:13.5px}
+.btn.ghost{background:transparent;color:var(--plum-700);border:1.5px solid var(--plum-500)}
+input,textarea{padding:9px 11px;border:1.5px solid #d9c8a6;border-radius:10px;font-size:14px;width:100%;background:#fffdf8;font-family:var(--sans)}
+input:focus,textarea:focus{outline:2px solid var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}th,td{padding:9px 8px;border-bottom:1px solid #eee0c8;text-align:left}
+th{color:var(--plum-700);font-size:12px;text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid var(--gold)}
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:800}
+.found{background:#cde9d6;color:#155c33}.missing{background:#fbd9d5;color:#8f1d12}
+pre{white-space:pre-wrap;background:var(--plum-950);color:#f3e8f7;padding:14px;border-radius:12px;font-size:13px;max-height:500px;overflow:auto}
+.alert{padding:10px 12px;border-radius:10px;margin:6px 0;font-size:14px}
+.HIGH{background:#fdf0ee;border:1px solid #f2b8ae}.MEDIUM{background:#fdf6e3;border:1px solid #ecd27a}.INFO{background:var(--plum-100,#f1e5f6);border:1px solid #d3bce0}
+</style>
+</head>
+<body>
+<header><div class="b"><div class="mark"><svg viewBox="0 0 24 24"><path d="M10 4.5A6.5 6.5 0 0 1 16.7 9l1.8.6v3h-13v-3l1.8-.6z"/><path d="M3.5 15.5h17v2.5h-17z"/><path d="M10 4.5V2.8"/></svg></div>
+<div><b>Tender Copilot</b><br><small>Communion Engineering · Jinja</small></div></div>
+<div><a href="/">← Onzima Dawa</a></div></header>
+<main>
+<div class="panel"><h3>1 · Ingest Tender Document <span style="font-size:12px;color:var(--muted)">(0:00–0:30)</span></h3>
+<p class="hint">Upload a searchable tender PDF, or paste the tender text (scanned PDFs need OCR first).</p><br>
+<form class="grid" onsubmit="analyzePDF(event)">
+<input type="file" id="tFile" accept=".pdf,.txt">
+<button class="btn">Analyze PDF</button></form><br>
+<textarea id="tText" rows="5" placeholder="...or paste tender text here"></textarea><br><br>
+<div><button class="btn ghost" onclick="analyzeText()">Analyze Pasted Text</button> <span id="tMsg"></span></div></div>
+<div class="panel"><h3>2 · PPDA Compliance Matrix <span id="tScore"></span></h3><div id="tMatrix"></div><h3 style="margin-top:12px">Flagged Risks</h3><div id="tRisks"></div></div>
+<div class="panel"><h3>3 · Technical Methodology Draft <span style="font-size:12px;color:var(--muted)">(1:15–1:45)</span></h3>
+<form class="grid" onsubmit="genMethod(event)">
+<input id="mProj" placeholder="Project name" value="Periodic Maintenance of Jinja access road">
+<input id="mClient" placeholder="Client" value="UNRA">
+<input id="mLoc" placeholder="Location" value="Jinja">
+<input id="mWeeks" placeholder="Duration weeks" value="12">
+<input id="mScope" placeholder="Scope" value="grading, gravelling, drainage and culvert works">
+<input id="mEquip" placeholder="Equipment" value="grader, roller, tipper trucks, survey set">
+<input id="mTeam" placeholder="Team" value="Site Agent, Foreman, Surveyor, HSE Officer">
+<button class="btn">Draft Methodology</button></form><br>
+<pre id="mOut">Methodology draft will appear here…</pre><br>
+<button class="btn ghost" onclick="window.print()">Print / Save PDF</button></div>
+<div class="panel"><h3>Past Analyses</h3><div id="tHist"></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+async function api(u,m,b,isForm){const o={method:m||'GET'};if(isForm)o.body=b;else if(b){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(b)}const r=await fetch(u,o);if(r.status===401){$('tMsg').innerHTML='Please <a href="/login">log in</a> first (staff account).';throw new Error('login required')}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Error');return j}
+function render(d){$('tScore').textContent='— '+d.score+'% ('+d.found+'/'+d.total+')';
+$('tMatrix').innerHTML='<table><tr><th>Requirement</th><th>Status</th><th>Evidence</th></tr>'+d.matrix.map(m=>`<tr><td>${m.label}</td><td><span class="badge ${m.status==='FOUND'?'found':'missing'}">${m.status}</span></td><td style="font-size:12px">${m.snippet||'—'}</td></tr>`).join('')+'</table>';
+$('tRisks').innerHTML=d.risks.map(r=>`<div class="alert ${r.level}"><b>${r.level}</b> — ${r.risk}</div>`).join('');loadHist()}
+async function analyzePDF(e){e.preventDefault();const f=$('tFile').files[0];if(!f){$('tMsg').textContent='Choose a file first';return}const fd=new FormData();fd.append('file',f);$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',fd,true));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
+async function analyzeText(){const t=$('tText').value;if(!t.trim()){$('tMsg').textContent='Paste text first';return}$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',{text:t}));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
+async function genMethod(e){e.preventDefault();const d=await api('/api/tender/methodology','POST',{project_name:$('mProj').value,client:$('mClient').value,location:$('mLoc').value,duration_weeks:$('mWeeks').value,scope_summary:$('mScope').value,equipment:$('mEquip').value,team:$('mTeam').value});$('mOut').textContent=d.methodology}
+async function loadHist(){try{const h=await api('/api/tender/list');$('tHist').innerHTML=h.map(x=>`#${x.id} ${x.filename} — ${x.score}% (${x.uploaded_at})`).join('<br>')||'none yet'}catch(e){$('tHist').textContent='Log in via the Dawa page to view history.'}}
+loadHist();
+</script>
+</body>
+</html>
