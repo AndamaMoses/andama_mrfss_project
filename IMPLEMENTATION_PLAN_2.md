@@ -122,9 +122,11 @@ and display order.
 | `pro` | `core` + `patients`, `finance` |
 | `growth` | `pro` + `alerts` |
 | `tender` | `tender` |
+| `legacy` | all gated apps: `pos`, `inventory`, `patients`, `finance`, `alerts`, `tender` (grandfathered only; not sold) |
 
 `alerts` requires `pro`. `tender` is standalone and may be combined with any
-pharmacy bundle by activating both.
+pharmacy bundle by activating both. `legacy` exists only to keep the existing
+Onzima installation on every feature it had before packaging.
 
 ### 4.3 Entitlement data model
 
@@ -169,11 +171,12 @@ Notes:
 
 - `run.py` calls `ensure_entitlements(app.config["DEFAULT_BUNDLE"])` after
   `init_db()`.
-- `DEFAULT_BUNDLE` defaults to `pro` so the existing Onzima installation keeps
-  every current feature. New installations set `DRUGSHOP_BUNDLE=core` at deploy
-  time.
+- `DEFAULT_BUNDLE` defaults to `legacy` (Pro + Alerts + Tender) so the existing
+  Onzima installation keeps every current feature. New installations set
+  `DRUGSHOP_BUNDLE=core` at deploy time. `legacy` is not a sold bundle.
 - Seeding happens only when `app_entitlements` is empty. It writes one `seed`
-  event per app.
+  event per app. An installation already seeded as Pro can be grandfathered
+  with `flask --app run plan add alerts` and `flask --app run plan add tender`.
 - If the table is empty at request time (e.g. a deployment script forgot to
   seed), `is_entitled()` returns `True` for all apps and logs a warning. This is
   the fail-open safety net.
@@ -668,7 +671,8 @@ Revisit true modular runtime only when at least three of these are true:
 |---|---|---|---|
 | 0 — Baseline | DONE | 154 tests, ruff clean, smoke 9/9 | Commit `3b085a9`; tag `pre-packaging`; branch `feature/packaging`; DB backup `instance/backups/drugshop-pre-packaging-20261021-161243.db` (SHA256 verified) |
 | 1 — Registry, schema, seed, CLI | DONE | 181 tests, ruff clean, smoke 9/9 | `drugshop/apps/` (registry, service, CLI), migration `002_app_entitlements.sql`, Pro seeded on boot, CLI dry-run on a copy of the live DB with business counts unchanged. Route gating intentionally starts in Phase 2. |
-| 2 — Enforcement and API | DONE | 200 tests, ruff clean, smoke 9/9 | `drugshop/apps/guards.py` (endpoint map + `before_request` gate), `drugshop/apps/routes.py` (`GET /api/apps`), full route-coverage test, admin-denied/empty-table/page-redirect checks. Tender and Alerts tests now explicitly grant those standalone/add-on apps. Default Pro does **not** include Growth or Tender; grant them with `plan add` if grandfathered. |
+| 2 — Enforcement and API | DONE | 200 tests, ruff clean, smoke 9/9 | `drugshop/apps/guards.py` (endpoint map + `before_request` gate), `drugshop/apps/routes.py` (`GET /api/apps`), full route-coverage test, admin-denied/empty-table/page-redirect checks. Tender and Alerts tests now explicitly grant those standalone/add-on apps. |
+| 2a — Onzima grandfathering | DONE | 203 tests, ruff clean, smoke 9/9 | Added non-sellable `legacy` bundle (Pro + Alerts + Tender); `DEFAULT_BUNDLE` now seeds `legacy`. Existing already-seeded Pro installs can add the two apps with `plan add`. New deployments set `DRUGSHOP_BUNDLE=core`. |
 
 ---
 

@@ -137,6 +137,22 @@ def test_ensure_entitlements_falls_back_to_pro(app_under_test):
     assert service.current_plan()["bundle"] == "pro"
 
 
+def test_ensure_entitlements_seeds_the_legacy_bundle(app_under_test):
+    execute("DELETE FROM app_entitlements")
+    result = service.ensure_entitlements("legacy")
+
+    assert result["seeded"] is True
+    assert result["bundle"] == "legacy"
+    assert result["label"] == "Legacy (grandfathered)"
+    assert set(service.entitled_app_ids()) == set(registry.gated_app_ids())
+
+    plan = service.current_plan()
+    assert plan["bundle"] == "legacy"
+    assert plan["label"] == "Legacy (grandfathered)"
+    assert service.is_entitled("alerts")
+    assert service.is_entitled("tender")
+
+
 def test_tender_bundle_is_standalone(app_under_test):
     service.set_bundle("tender")
 

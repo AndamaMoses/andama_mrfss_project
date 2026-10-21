@@ -68,7 +68,7 @@ def register_cli(app):
     @click.option("--actor", default="", help="who made the change")
     @click.option("--notes", default="", help="free-text note stored with the event")
     def plan_set(bundle, expires, actor, notes):
-        """Set the plan to BUNDLE (core | pro | growth | tender)."""
+        """Set the plan to BUNDLE (core | pro | growth | tender | legacy)."""
         try:
             result = service.set_bundle(
                 bundle, expires_at=expires, actor=actor, notes=notes

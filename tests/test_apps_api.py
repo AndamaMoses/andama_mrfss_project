@@ -88,6 +88,18 @@ def test_apps_api_for_tender_standalone(admin_client):
     assert apps["dashboard"]["entitled"] is True
 
 
+def test_apps_api_for_legacy_grandfathered_install(admin_client):
+    service.set_bundle("legacy")
+    data = _payload(admin_client)
+    apps = _by_id(data)
+
+    assert data["plan"]["bundle"] == "legacy"
+    assert data["plan"]["label"] == "Legacy (grandfathered)"
+    for app_id in ("pos", "inventory", "patients", "finance", "alerts", "tender"):
+        assert apps[app_id]["entitled"] is True
+    assert apps["dashboard"]["entitled"] is True
+
+
 def test_apps_api_support_and_expiry(app_under_test, admin_client):
     app_under_test.config["SUPPORT_WHATSAPP"] = "+256700000000"
     service.set_bundle("pro", expires_at="2027-10-21")

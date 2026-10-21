@@ -123,6 +123,14 @@ BUNDLES = {
         "apps": ["tender"],
         "order": 40,
     },
+    # Not sold: the existing Onzima installation keeps every app it had before
+    # packaging. New deployments set DRUGSHOP_BUNDLE=core and buy upwards.
+    "legacy": {
+        "id": "legacy",
+        "label": "Legacy (grandfathered)",
+        "apps": ["pos", "inventory", "patients", "finance", "alerts", "tender"],
+        "order": 50,
+    },
 }
 
 # Phase 2 gate inputs. Blueprint -> app for the default case; endpoint
@@ -183,12 +191,13 @@ def requires_of(app_id):
 def detect_bundle(active_ids):
     """Best-known bundle label for an active app set.
 
-    Returns the largest bundle fully contained in ``active_ids`` (growth wins
-    over pro over core), ``"tender"`` for a Tender-only installation,
-    ``"custom"`` for a partial mix, and ``"none"`` for an empty set.
+    Returns the largest bundle fully contained in ``active_ids`` (legacy wins
+    for the grandfathered all-apps set, then growth over pro over core),
+    ``"tender"`` for a Tender-only installation, ``"custom"`` for a partial
+    mix, and ``"none"`` for an empty set.
     """
     active = set(active_ids)
-    for bundle_id in ("growth", "pro", "core", "tender"):
+    for bundle_id in ("legacy", "growth", "pro", "core", "tender"):
         if set(bundle_apps(bundle_id)) <= active:
             return bundle_id
     return "custom" if active else "none"

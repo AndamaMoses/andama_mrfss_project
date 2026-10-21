@@ -35,6 +35,10 @@ def test_always_on_apps_are_not_sold_in_bundles():
             assert registry.APPS[app_id]["always_on"] is False
 
 
+def test_legacy_bundle_contains_every_current_gated_app():
+    assert set(registry.bundle_apps("legacy")) == set(registry.gated_app_ids())
+
+
 def test_app_order_is_stable_and_unique():
     ids = registry.app_ids()
     assert len(ids) == len(set(ids))
@@ -48,6 +52,7 @@ def test_detect_bundle():
     assert registry.detect_bundle(set(registry.bundle_apps("core"))) == "core"
     assert registry.detect_bundle(set(registry.bundle_apps("pro"))) == "pro"
     assert registry.detect_bundle(set(registry.bundle_apps("growth"))) == "growth"
+    assert registry.detect_bundle(set(registry.gated_app_ids())) == "legacy"
     assert registry.detect_bundle({"pos"}) == "custom"
     assert registry.detect_bundle({"tender", "pos", "inventory"}) == "core"
 
