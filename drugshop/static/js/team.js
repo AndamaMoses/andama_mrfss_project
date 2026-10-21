@@ -18,6 +18,7 @@ async function loadTeam() {
 }
 
 async function loadActivity() {
+  if (typeof isAppEntitled === 'function' && !isAppEntitled('finance')) return;
   try {
     const a = await api('/api/staff-activity?date=' + $('salesDate').value);
     $('shiftBox').innerHTML = a.sales_by_staff.length ? '<table><thead><tr><th>Staff</th><th>Sales</th><th>Revenue UGX</th></tr></thead><tbody>' + a.sales_by_staff.map(s => `<tr><td>${s.staff}</td><td>${s.sales}</td><td>${Math.round(s.revenue).toLocaleString()}</td></tr>`).join('') + '</tbody></table>' : '<div class="alert green">No sales recorded yet today.</div>';

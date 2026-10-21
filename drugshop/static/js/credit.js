@@ -1,5 +1,6 @@
 /* Credit ledger. */
 async function loadCredit() {
+  if (typeof isAppEntitled === 'function' && !isAppEntitled('finance')) return;
   try {
     const c = await api('/api/credit');
     $('creditSummary').innerHTML = `<div class="alert ${c.count ? 'red' : 'green'}">${c.count} unpaid credit sale(s) — total owed <b>UGX ${c.total_owed.toLocaleString()}</b></div>`;

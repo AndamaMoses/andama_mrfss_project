@@ -1,8 +1,12 @@
 /* Shared UI state: persona, navigation, sidebar. */
 var ME = { role: '', username: '', display_name: '' };
-var TITLES = { dash: 'Dukani <em>Dashboard</em>', pos: 'Sell / <em>POS</em>', stock: 'Stock &amp; <em>Expiry</em>', inv: 'Supplier <em>Invoices</em>', rec: 'Daily <em>Reconciliation</em>', pat: 'Refill <em>Care</em>', alerts: 'Stock <em>Alerts</em>', fin: 'Credit &amp; <em>Expenses</em>', drugs: '&#128138; Drug <em>Catalogue</em>', manage: 'Owner <em>Manage Data</em>' };
+var TITLES = { apps: 'Apps &amp; <em>Add-ons</em>', dash: 'Dukani <em>Dashboard</em>', pos: 'Sell / <em>POS</em>', stock: 'Stock &amp; <em>Expiry</em>', inv: 'Supplier <em>Invoices</em>', rec: 'Daily <em>Reconciliation</em>', pat: 'Refill <em>Care</em>', alerts: 'Stock <em>Alerts</em>', fin: 'Credit &amp; <em>Expenses</em>', drugs: '&#128138; Drug <em>Catalogue</em>', manage: 'Owner <em>Manage Data</em>' };
 
 function switchTab(tabId) {
+  if (typeof canOpenTab === 'function' && !canOpenTab(tabId)) {
+    if (typeof openUpgradeForTab === 'function') openUpgradeForTab(tabId);
+    return false;
+  }
   document.querySelectorAll('.snav button').forEach(x => {
     x.classList.toggle('active', x.dataset.tab === tabId);
   });
@@ -15,6 +19,7 @@ function switchTab(tabId) {
   $('pageTitle').innerHTML = TITLES[tabId] || '';
   toggleMobileSidebar(false);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  return true;
 }
 
 function toggleMobileSidebar(force) {

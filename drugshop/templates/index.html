@@ -909,6 +909,9 @@
     }
 
     .panel>h2 .ic {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
       stroke: var(--gold-deep)
     }
 
@@ -1401,6 +1404,458 @@
         min-width: 480px
       }
     }
+
+    /* ---------- App launcher + entitlement UI ---------- */
+    .app-hidden {
+      display: none !important
+    }
+
+    .apps-hero {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      background: linear-gradient(135deg, var(--plum-950), var(--plum-700) 68%, #7a4210);
+      color: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(45, 14, 55, .22)
+    }
+
+    .apps-hero::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      right: -70px;
+      top: -110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(242, 169, 0, .3), transparent 68%);
+      pointer-events: none
+    }
+
+    .apps-hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 590px
+    }
+
+    .apps-eyebrow {
+      display: inline-block;
+      color: var(--gold);
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 7px
+    }
+
+    .apps-hero h2 {
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1.12;
+      color: #fff
+    }
+
+    .apps-hero h2 em {
+      color: var(--gold);
+      font-style: italic
+    }
+
+    .apps-hero p {
+      color: rgba(255, 255, 255, .74);
+      font-size: 13.5px;
+      line-height: 1.55;
+      margin-top: 7px
+    }
+
+    .apps-plan {
+      position: relative;
+      z-index: 1;
+      min-width: 205px;
+      text-align: right;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(242, 169, 0, .38);
+      border-radius: 14px;
+      padding: 12px 15px;
+      backdrop-filter: blur(4px)
+    }
+
+    .apps-plan>span {
+      display: block;
+      color: rgba(255, 255, 255, .55);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase
+    }
+
+    .apps-plan strong {
+      display: block;
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.25;
+      margin: 2px 0 5px
+    }
+
+    .apps-plan small {
+      color: rgba(255, 255, 255, .66);
+      font-size: 11.5px;
+      line-height: 1.7
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .app-card {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      width: 100%;
+      min-height: 104px;
+      padding: 16px;
+      text-align: left;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid #ecdfc8;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease
+    }
+
+    .app-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+      box-shadow: 0 8px 20px rgba(51, 18, 63, .13)
+    }
+
+    .app-card:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px
+    }
+
+    .app-card .app-ic {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--plum-100);
+      color: var(--plum-700);
+      border: 1px solid rgba(124, 62, 148, .12)
+    }
+
+    .app-card .app-ic svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .app-card .app-body {
+      flex: 1;
+      min-width: 0;
+      padding-right: 17px
+    }
+
+    .app-card .app-body b {
+      display: block;
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.25;
+      color: var(--plum-900)
+    }
+
+    .app-card .app-body small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45
+    }
+
+    .app-badge {
+      display: inline-block;
+      margin-top: 9px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--gold-100);
+      color: var(--gold-deep);
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .65px;
+      text-transform: uppercase
+    }
+
+    .app-card.locked {
+      background: #fbf7ee;
+      border-style: dashed;
+      box-shadow: none
+    }
+
+    .app-card.locked .app-body b {
+      color: var(--muted)
+    }
+
+    .app-card.locked .app-ic {
+      background: #f1ece1;
+      color: #9b8b74
+    }
+
+    .app-lock {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      background: var(--plum-900);
+      box-shadow: 0 2px 7px rgba(45, 14, 55, .25)
+    }
+
+    .app-lock svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .apps-empty {
+      grid-column: 1 / -1;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--paper);
+      border: 1px dashed #d9c8a6;
+      border-radius: 16px
+    }
+
+    .apps-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      margin: 0 2px 14px
+    }
+
+    .plan-status {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: #cde9d6;
+      color: #155c33;
+      font-family: var(--sans);
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      vertical-align: middle
+    }
+
+    .plan-status.inactive {
+      background: #fbd9d5;
+      color: #8f1d12
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 4px 0 14px
+    }
+
+    .plan-item {
+      background: var(--cream);
+      border: 1px solid #eadcc3;
+      border-radius: 12px;
+      padding: 11px 13px
+    }
+
+    .plan-item span,
+    .plan-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .9px;
+      text-transform: uppercase
+    }
+
+    .plan-item strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--plum-900);
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.3
+    }
+
+    .plan-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px
+    }
+
+    .plan-chip {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--plum-100);
+      color: var(--plum-700);
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .muted-chip {
+      background: #f3efe6;
+      color: var(--muted)
+    }
+
+    .plan-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.55
+    }
+
+    .plan-link {
+      color: var(--plum-700);
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px
+    }
+
+    .plan-link:hover {
+      color: var(--plum-900)
+    }
+
+    #upgradeModal .box {
+      width: 440px;
+      max-width: calc(100vw - 32px);
+      border-top: 5px solid var(--gold)
+    }
+
+    .upgrade-lock {
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--plum-900);
+      color: var(--gold);
+      margin-bottom: 13px;
+      box-shadow: 0 5px 14px rgba(45, 14, 55, .25)
+    }
+
+    .upgrade-lock svg {
+      width: 25px;
+      height: 25px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .upgrade-eyebrow {
+      display: block;
+      color: var(--gold-deep);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      margin-bottom: 5px
+    }
+
+    .upgrade-copy {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 7px 0 11px
+    }
+
+    .upgrade-bundle {
+      padding: 9px 12px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      background: var(--gold-100);
+      color: var(--gold-deep);
+      font-size: 12.5px;
+      font-weight: 700;
+      line-height: 1.45
+    }
+
+    .upgrade-bundle:empty {
+      display: none
+    }
+
+    #upgradeModal .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    #upgradeModal .btn[hidden] {
+      display: none !important
+    }
+
+    @media(max-width:900px) {
+      .apps-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px
+      }
+
+      .apps-plan {
+        width: 100%;
+        min-width: 0;
+        text-align: left
+      }
+
+      .apps-grid {
+        grid-template-columns: repeat(auto-fill, minmax(225px, 1fr))
+      }
+    }
+
+    @media(max-width:480px) {
+      .apps-hero h2 {
+        font-size: 25px
+      }
+
+      .apps-grid {
+        grid-template-columns: 1fr
+      }
+
+      .app-card {
+        min-height: 96px;
+        padding: 14px
+      }
+    }
   </style>
 </head>
 
@@ -1416,6 +1871,17 @@
       <rect x="13.5" y="3.5" width="7" height="4.5" rx="2" />
       <rect x="13.5" y="10.5" width="7" height="10" rx="2" />
       <rect x="3.5" y="13" width="7" height="7.5" rx="2" />
+    </symbol>
+    <symbol id="i-apps" viewBox="0 0 24 24">
+      <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="4.5" y="10" width="15" height="10.5" rx="2.5" />
+      <path d="M8 10V7.2a4 4 0 0 1 8 0V10" />
+      <circle cx="12" cy="15.2" r="1.2" />
     </symbol>
     <symbol id="i-pos" viewBox="0 0 24 24">
       <path d="M4 10h16l-1.4 8.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z" />
@@ -1538,6 +2004,13 @@
       </div>
 
       <nav class="snav" id="sidebarNav">
+        <button data-tab="apps" data-title="Apps &amp; Add-ons" onclick="switchTab('apps')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-apps" />
+            </svg></span>
+          <span class="lbl">Apps &amp; Add-ons</span>
+        </button>
+
         <div class="snav-section-title"><span>OPERATIONS</span></div>
 
         <button class="active" data-tab="dash" data-title="Dukani Dashboard" onclick="switchTab('dash')">
@@ -1547,14 +2020,14 @@
           <span class="lbl">Dukani Dashboard</span>
         </button>
 
-        <button data-tab="pos" data-title="Sell / POS" onclick="switchTab('pos')">
+        <button data-tab="pos" data-app="pos" data-title="Sell / POS" onclick="switchTab('pos')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-pos" />
             </svg></span>
           <span class="lbl">Sell / POS</span>
         </button>
 
-        <button data-tab="stock" data-title="Stock & Expiry" onclick="switchTab('stock')">
+        <button data-tab="stock" data-app="inventory" data-title="Stock & Expiry" onclick="switchTab('stock')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-stock" />
             </svg></span>
@@ -1562,23 +2035,23 @@
           <span class="nav-badge alert" id="badgeStockExpiry" style="display:none">0</span>
         </button>
 
-        <div class="snav-section-title"><span>FINANCE & CARE</span></div>
+        <div class="snav-section-title" data-section-apps="finance,patients"><span>FINANCE & CARE</span></div>
 
-        <button data-tab="inv" data-title="Invoices" onclick="switchTab('inv')">
+        <button data-tab="inv" data-app="inventory" data-title="Invoices" onclick="switchTab('inv')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-cam" />
             </svg></span>
           <span class="lbl">Invoices</span>
         </button>
 
-        <button data-tab="rec" data-title="Reconciliation" onclick="switchTab('rec')">
+        <button data-tab="rec" data-app="finance" data-title="Reconciliation" onclick="switchTab('rec')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-scale" />
             </svg></span>
           <span class="lbl">Reconciliation</span>
         </button>
 
-        <button data-tab="pat" data-title="Refill Care" onclick="switchTab('pat')">
+        <button data-tab="pat" data-app="patients" data-title="Refill Care" onclick="switchTab('pat')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-heart" />
             </svg></span>
@@ -1586,7 +2059,7 @@
           <span class="nav-badge gold" id="badgeRefillCare" style="display:none">0</span>
         </button>
 
-        <button data-tab="fin" data-title="Credit & Expenses" onclick="switchTab('fin')">
+        <button data-tab="fin" data-app="finance" data-title="Credit & Expenses" onclick="switchTab('fin')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-coins" />
             </svg></span>
@@ -1594,9 +2067,9 @@
           <span class="nav-badge warn" id="badgeCreditOwed" style="display:none">!</span>
         </button>
 
-        <div class="snav-section-title" data-admin><span>INVENTORY & DATA</span></div>
+        <div class="snav-section-title" data-admin data-section-apps="inventory,alerts"><span>INVENTORY & DATA</span></div>
 
-        <button data-tab="alerts" data-title="Stock Alerts" onclick="switchTab('alerts')">
+        <button data-tab="alerts" data-app="alerts" data-title="Stock Alerts" onclick="switchTab('alerts')">
           <span class="ic-wrap"><svg class="ic">
               <use href="#i-bell" />
             </svg></span>
@@ -1604,7 +2077,7 @@
           <span class="nav-badge alert" id="badgeStockAlerts" style="display:none">0</span>
         </button>
 
-        <button data-tab="drugs" data-admin data-title="Drug Catalogue" onclick="switchTab('drugs')">
+        <button data-tab="drugs" data-admin data-app="inventory" data-title="Drug Catalogue" onclick="switchTab('drugs')">
           <span class="ic-wrap drug-ic-wrap"><svg class="ic">
               <use href="#i-pill" />
             </svg></span>
@@ -1618,9 +2091,9 @@
           <span class="lbl">Manage Data</span>
         </button>
 
-        <div class="snav-section-title"><span>PORTALS</span></div>
+        <div class="snav-section-title" data-section-apps="tender"><span>PORTALS</span></div>
 
-        <a class="tender" href="/tender" data-title="Tender Copilot">
+        <a class="tender" href="/tender" data-app="tender" data-title="Tender Copilot">
           <span class="ic-wrap tender-ic"><svg class="ic">
               <use href="#i-hat" />
             </svg></span>
@@ -1667,6 +2140,26 @@
         <span class="clock" id="clock"></span>
       </div>
       <main>
+        <section id="tab-apps" class="tab">
+          <div class="apps-hero">
+            <div class="apps-hero-copy">
+              <span class="apps-eyebrow">Your workspace</span>
+              <h2>Apps &amp; <em>add-ons</em></h2>
+              <p>Open what is included in your plan. Locked apps can be added by your account manager — nothing on
+                this screen changes your plan.</p>
+            </div>
+            <div class="apps-plan" aria-label="Current plan">
+              <span>Current plan</span>
+              <strong id="launcherPlanName">…</strong>
+              <small><span id="launcherPlanMeta">Loading apps…</span> · <span id="launcherPlanStatus"
+                  class="plan-status">active</span></small>
+            </div>
+          </div>
+          <div class="apps-grid" id="appsGrid" aria-live="polite"></div>
+          <p class="apps-note">Locked apps are not available on this installation yet. Ask your account manager to
+            activate them; your existing data stays in place when a plan changes.</p>
+        </section>
+
         <section id="tab-dash" class="tab active">
           <div class="cards" id="kpis"></div>
           <div class="panel">
@@ -1675,7 +2168,7 @@
               </svg>Expiry Watchdog</h2>
             <div id="watch"></div>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="patients">
             <h2><svg class="ic">
                 <use href="#i-heart" />
               </svg>Refills Due — Day-25 Rule</h2>
@@ -1695,7 +2188,7 @@
                 <option value="CASH">CASH</option>
                 <option value="MTN_MOMO">MTN MoMo</option>
                 <option value="AIRTEL_MOMO">Airtel MoMo</option>
-                <option value="CREDIT">CREDIT</option>
+                <option value="CREDIT" data-app="finance">CREDIT</option>
               </select>
               <input id="sBy" placeholder="Served by">
               <input id="sCust" placeholder="Customer name">
@@ -1731,7 +2224,7 @@
                 <option value="CASH">CASH</option>
                 <option value="MTN_MOMO">MTN MoMo</option>
                 <option value="AIRTEL_MOMO">Airtel MoMo</option>
-                <option value="CREDIT">CREDIT</option>
+                <option value="CREDIT" data-app="finance">CREDIT</option>
               </select>
               <input id="bBy" placeholder="Served by" style="max-width:160px">
               <button class="btn gold" onclick="completeBasket()">Complete Sale + Print</button>
@@ -1915,21 +2408,6 @@
         </section>
 
         <section id="tab-alerts" class="tab">
-          <div class="panel" data-admin>
-            <h2><svg class="ic">
-                <use href="#i-shield" />
-              </svg>Alert Settings</h2>
-            <form class="grid" onsubmit="saveSettings(event)">
-              <input id="setShop" placeholder="Shop name">
-              <input id="setPhone" placeholder="Shop phone">
-              <input id="setMgr" placeholder="Manager phone for SMS (e.g. 077...)">
-              <input id="setFooter" placeholder="Receipt footer">
-              <button class="btn">Save Settings</button>
-            </form>
-            <p style="font-size:12px;color:var(--muted);margin-top:6px">Real SMS via Africa's Talking: set
-              <code>AT_USERNAME</code> + <code>AT_API_KEY</code> env vars on the server. Without them, messages are
-              logged as SIMULATED and you can send via phone SMS/WhatsApp buttons.</p>
-          </div>
           <div class="panel">
             <h2><svg class="ic">
                 <use href="#i-bell" />
@@ -1949,57 +2427,6 @@
                 </tr>
               </thead>
               <tbody id="smsRows"></tbody>
-            </table>
-          </div>
-          <div class="panel" data-admin>
-            <h2><svg class="ic">
-                <use href="#i-print" />
-              </svg>Backup & Export</h2>
-            <div class="flex">
-              <button class="btn" onclick="location.href='/api/backup'">Download Backup (.db)</button>
-              <button class="btn ghost" onclick="location.href='/api/export/sales'">Sales CSV</button>
-              <button class="btn ghost" onclick="location.href='/api/export/stock'">Stock CSV</button>
-              <button class="btn ghost" onclick="location.href='/api/export/patients'">Patients CSV</button>
-            </div>
-          </div>
-          <div class="panel" data-admin>
-            <h2><svg class="ic">
-                <use href="#i-user" />
-              </svg>Team — Staff Accounts</h2>
-            <form class="grid" onsubmit="addUser(event)"><input id="nuName" placeholder="Username"><input id="nuPass"
-                placeholder="Password"><input id="nuDisp" placeholder="Display name"><select id="nuRole">
-                <option value="attendant">Sales Agent</option>
-                <option value="admin">Shop Owner</option>
-              </select><button class="btn gold">Add Staff</button></form>
-            <p id="userMsg"></p><br>
-            <table>
-              <thead>
-                <tr>
-                  <th>Staff</th>
-                  <th>Username</th>
-                  <th>Persona</th>
-                  <th>Phone</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="teamRows"></tbody>
-            </table>
-          </div>
-          <div class="panel" data-admin>
-            <h2><svg class="ic">
-                <use href="#i-dash" />
-              </svg>Login & Shift Activity <button class="btn ghost" onclick="loadActivity()">Refresh</button></h2>
-            <div id="shiftBox"></div>
-            <h3 style="margin:10px 0 6px;font-family:var(--serif);color:var(--plum-900)">Recent Sign-ins</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Staff</th>
-                  <th>Time</th>
-                  <th>From</th>
-                </tr>
-              </thead>
-              <tbody id="loginRows"></tbody>
             </table>
           </div>
         </section>
@@ -2382,14 +2809,28 @@
         </section>
 
         <section id="tab-manage" class="tab" data-admin>
-          <div class="panel">
+          <div class="panel" id="planCard">
+            <h2><svg class="ic">
+                <use href="#i-apps" />
+              </svg>Plan &amp; Apps <span class="plan-status" id="planStatus">active</span></h2>
+            <div class="plan-grid">
+              <div class="plan-item"><span>Current plan</span><strong id="planName">…</strong></div>
+              <div class="plan-item"><span>Expires</span><strong id="planExpiry">No expiry set</strong></div>
+            </div>
+            <span class="plan-label">Included apps</span>
+            <div class="plan-chips" id="planApps"></div>
+            <p class="plan-note">This panel is read-only. Plan changes are made by your account manager.
+              <a id="planSupport" class="plan-link" target="_blank" rel="noopener" hidden>Ask about upgrades</a>
+            </p>
+          </div>
+          <div class="panel" data-app="inventory">
             <h2><svg class="ic">
                 <use href="#i-shield" />
               </svg>Owner Controls — Add, Edit & Delete</h2>
             <p style="font-size:13px;color:var(--muted)">Deletes are guarded: items linked to sales or stock cannot be
               removed until those records are voided. Voiding a sale puts the stock back on the shelf.</p>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="inventory">
             <h2>Products</h2>
             <table>
               <thead>
@@ -2403,7 +2844,7 @@
               <tbody id="mgProdRows"></tbody>
             </table>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="inventory">
             <h2>Stock Batches</h2>
             <table>
               <thead>
@@ -2418,7 +2859,7 @@
               <tbody id="mgBatchRows"></tbody>
             </table>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="pos">
             <h2>Sales — Void a Sale <input type="date" id="mgDate" onchange="loadManage()" style="width:auto"></h2>
             <table>
               <thead>
@@ -2435,7 +2876,7 @@
               <tbody id="mgSaleRows"></tbody>
             </table>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="patients">
             <h2>Patients</h2>
             <table>
               <thead>
@@ -2449,7 +2890,7 @@
               <tbody id="mgPatRows"></tbody>
             </table>
           </div>
-          <div class="panel">
+          <div class="panel" data-app="inventory">
             <h2>Supplier Invoices</h2>
             <table>
               <thead>
@@ -2462,6 +2903,74 @@
                 </tr>
               </thead>
               <tbody id="mgInvRows"></tbody>
+            </table>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-shield" />
+              </svg>Shop Settings</h2>
+            <form class="grid" onsubmit="saveSettings(event)">
+              <input id="setShop" placeholder="Shop name">
+              <input id="setPhone" placeholder="Shop phone">
+              <input id="setMgr" placeholder="Manager phone for SMS (e.g. 077...)">
+              <input id="setFooter" placeholder="Receipt footer">
+              <button class="btn">Save Settings</button>
+            </form>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px">Real SMS via Africa's Talking: set
+              <code>AT_USERNAME</code> + <code>AT_API_KEY</code> env vars on the server. Without them, messages are
+              logged as SIMULATED and you can send via phone SMS/WhatsApp buttons.</p>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-print" />
+              </svg>Backup & Export</h2>
+            <div class="flex">
+              <button class="btn" onclick="location.href='/api/backup'">Download Backup (.db)</button>
+              <button class="btn ghost" data-app="pos" onclick="location.href='/api/export/sales'">Sales CSV</button>
+              <button class="btn ghost" data-app="inventory"
+                onclick="location.href='/api/export/stock'">Stock CSV</button>
+              <button class="btn ghost" data-app="patients"
+                onclick="location.href='/api/export/patients'">Patients CSV</button>
+            </div>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-user" />
+              </svg>Team — Staff Accounts</h2>
+            <form class="grid" onsubmit="addUser(event)"><input id="nuName" placeholder="Username"><input id="nuPass"
+                placeholder="Password"><input id="nuDisp" placeholder="Display name"><select id="nuRole">
+                <option value="attendant">Sales Agent</option>
+                <option value="admin">Shop Owner</option>
+              </select><button class="btn gold">Add Staff</button></form>
+            <p id="userMsg"></p><br>
+            <table>
+              <thead>
+                <tr>
+                  <th>Staff</th>
+                  <th>Username</th>
+                  <th>Persona</th>
+                  <th>Phone</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="teamRows"></tbody>
+            </table>
+          </div>
+          <div class="panel" data-admin data-app="finance">
+            <h2><svg class="ic">
+                <use href="#i-dash" />
+              </svg>Login & Shift Activity <button class="btn ghost" onclick="loadActivity()">Refresh</button></h2>
+            <div id="shiftBox"></div>
+            <h3 style="margin:10px 0 6px;font-family:var(--serif);color:var(--plum-900)">Recent Sign-ins</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Staff</th>
+                  <th>Time</th>
+                  <th>From</th>
+                </tr>
+              </thead>
+              <tbody id="loginRows"></tbody>
             </table>
           </div>
         </section>
@@ -2480,6 +2989,23 @@
     </div>
   </div>
 
+  <div class="modal" id="upgradeModal" role="dialog" aria-modal="true" aria-hidden="true"
+    aria-labelledby="upgradeTitle" aria-describedby="upgradeCopy">
+    <div class="box upgrade-box">
+      <div class="upgrade-lock" aria-hidden="true"><svg><use href="#i-lock" /></svg></div>
+      <span class="upgrade-eyebrow">Not in your plan</span>
+      <h2 id="upgradeTitle">Unlock <span id="upgradeAppName">this app</span></h2>
+      <p class="upgrade-copy" id="upgradeCopy">This app is not included in your current plan. Ask your account manager
+        to add it.</p>
+      <div class="upgrade-bundle" id="upgradeBundle"></div>
+      <p class="upgrade-copy" style="font-size:12.5px">Current plan: <b id="upgradePlan">…</b></p>
+      <p class="upgrade-copy" id="upgradeNoSupport" style="font-size:12.5px">Ask your account manager to change your
+        plan — no payment details are collected here.</p>
+      <div class="flex"><a class="btn gold" id="upgradeWhatsApp" target="_blank" rel="noopener" hidden>Chat on
+          WhatsApp</a><button class="btn ghost" id="upgradeClose" onclick="closeUpgrade()">Not now</button></div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Thumb Navigation -->
   <nav class="mobile-bottom-nav" id="mobileBottomNav">
     <button type="button" class="active" data-bottom-tab="dash" onclick="switchTab('dash')">
@@ -2488,19 +3014,19 @@
       </svg>
       <span>Home</span>
     </button>
-    <button type="button" data-bottom-tab="pos" onclick="switchTab('pos')">
+    <button type="button" data-bottom-tab="pos" data-app="pos" onclick="switchTab('pos')">
       <svg class="ic">
         <use href="#i-pos" />
       </svg>
       <span>Sell</span>
     </button>
-    <button type="button" data-bottom-tab="stock" onclick="switchTab('stock')">
+    <button type="button" data-bottom-tab="stock" data-app="inventory" onclick="switchTab('stock')">
       <svg class="ic">
         <use href="#i-stock" />
       </svg>
       <span>Stock</span>
     </button>
-    <button type="button" data-bottom-tab="pat" onclick="switchTab('pat')">
+    <button type="button" data-bottom-tab="pat" data-app="patients" onclick="switchTab('pat')">
       <svg class="ic">
         <use href="#i-heart" />
       </svg>
@@ -2528,6 +3054,7 @@
   <script src="/static/js/settings.js"></script>
   <script src="/static/js/alerts.js"></script>
   <script src="/static/js/manage.js"></script>
+  <script src="/static/js/core/apps.js"></script>
   <script src="/static/js/boot.js"></script>
 </body>
 

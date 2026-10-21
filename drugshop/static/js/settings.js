@@ -17,5 +17,6 @@ async function saveSettings(e) {
 
 async function seedDemo() {
   await api('/api/seed', 'POST');
-  loadAll();
+  if (typeof loadEntitledData === 'function') loadEntitledData();
+  else loadAll();
 }

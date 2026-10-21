@@ -454,10 +454,16 @@ always-on routes unaffected; `/api/apps` matches the registry.
 **Changed files**
 
 - `drugshop/templates/index.html` (launcher section, `data-app` attributes,
-  plan panel, styles, script include)
+  plan panel, styles, script include; admin settings/team/backup moved into
+  Manage Data so they remain reachable without the Alerts add-on)
 - `drugshop/static/js/core/ui.js` (tab guard, titles)
 - `drugshop/static/js/boot.js` (load `/api/apps`, gated loaders)
 - `drugshop/static/js/core/api.js` (entitlement 403 handling)
+- `drugshop/static/js/dashboard.js` (hide Refills Due and Credit Owed KPIs)
+- `drugshop/static/js/manage.js` (load only entitled Manage Data panels)
+- `drugshop/static/js/credit.js`, `team.js`, `settings.js` (guard secondary
+  loader calls so another tab cannot trigger a predictable 403)
+- `tests/test_pages.py` (apps module and launcher/plan markup checks)
 
 **Tasks**
 
@@ -673,6 +679,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 1 — Registry, schema, seed, CLI | DONE | 181 tests, ruff clean, smoke 9/9 | `drugshop/apps/` (registry, service, CLI), migration `002_app_entitlements.sql`, Pro seeded on boot, CLI dry-run on a copy of the live DB with business counts unchanged. Route gating intentionally starts in Phase 2. |
 | 2 — Enforcement and API | DONE | 200 tests, ruff clean, smoke 9/9 | `drugshop/apps/guards.py` (endpoint map + `before_request` gate), `drugshop/apps/routes.py` (`GET /api/apps`), full route-coverage test, admin-denied/empty-table/page-redirect checks. Tender and Alerts tests now explicitly grant those standalone/add-on apps. |
 | 2a — Onzima grandfathering | DONE | 203 tests, ruff clean, smoke 9/9 | Added non-sellable `legacy` bundle (Pro + Alerts + Tender); `DEFAULT_BUNDLE` now seeds `legacy`. Existing already-seeded Pro installs can add the two apps with `plan add`. New deployments set `DRUGSHOP_BUNDLE=core`. |
+| 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 
 ---
 
@@ -717,7 +724,7 @@ scripts/smoke.ps1                      # packaging checks
 | `GET /tender` on Core | redirect to upgrade |
 | `GET /tender` on Tender | 200 |
 | `POST /api/login` with wrong password | 401 |
-| Launcher HTML contains `appGrid` | yes |
+| Launcher HTML contains `appsGrid` | yes |
 | Plan panel shows bundle | yes |
 
 ## Appendix C — Grandfathering note

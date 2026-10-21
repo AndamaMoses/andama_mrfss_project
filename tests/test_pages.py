@@ -4,7 +4,7 @@ MODULES = (
     "core/api.js", "core/format.js", "core/ui.js",
     "dashboard.js", "pos.js", "stock.js", "patients.js", "finance.js",
     "credit.js", "customers.js", "team.js", "settings.js", "alerts.js",
-    "manage.js", "boot.js",
+    "manage.js", "core/apps.js", "boot.js",
 )
 
 
@@ -26,3 +26,29 @@ def test_frontend_modules_are_served(client):
         assert "javascript" in r.mimetype, module
         assert f'src="/static/js/{module}"' in html, module
     assert html.count("<script") == len(MODULES)
+
+
+def test_launcher_markup_and_hooks_are_present(client):
+    html = client.get("/").get_data(as_text=True)
+    for marker in (
+        'id="tab-apps"',
+        'id="appsGrid"',
+        'id="upgradeModal"',
+        'id="planCard"',
+        'data-app="patients"',
+        'data-section-apps="finance,patients"',
+        'id="i-apps"',
+        'id="i-lock"',
+    ):
+        assert marker in html, marker
+
+    js = client.get("/static/js/core/apps.js").get_data(as_text=True)
+    for hook in (
+        "function applyApps",
+        "function renderLauncher",
+        "function openUpgrade",
+        "function closeUpgrade",
+        "function handleUpgradeParam",
+        "function canOpenTab",
+    ):
+        assert hook in js, hook

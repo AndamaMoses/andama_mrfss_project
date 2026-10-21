@@ -14,6 +14,12 @@ async function api(u, m, b) {
     throw new Error('Please log in');
   }
   const j = await r.json().catch(() => ({}));
+  if (r.status === 403 && j.error === 'app not entitled') {
+    if (typeof openUpgrade === 'function') openUpgrade(j.app);
+    const err = new Error(j.message || 'This app is not included in your plan');
+    err.appNotEntitled = true;
+    throw err;
+  }
   if (!r.ok) throw new Error(j.error || 'Error');
   return j;
 }
