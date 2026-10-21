@@ -102,6 +102,11 @@ Check "GET /api/dashboard (logged in)" {
     (Invoke-WebRequest "$Base/api/dashboard" -UseBasicParsing -TimeoutSec 5 -WebSession $session).StatusCode -eq 200
 }
 
+Check "GET /api/backup (logged in)" {
+    $r = Invoke-WebRequest "$Base/api/backup" -UseBasicParsing -TimeoutSec 5 -WebSession $session
+    ($r.StatusCode -eq 200) -and ($r.Headers["Content-Disposition"] -match "attachment")
+}
+
 Check "GET /api/apps (logged in)" {
     $r = Invoke-WebRequest "$Base/api/apps" -UseBasicParsing -TimeoutSec 5 -WebSession $session
     $script:apps = $r.Content | ConvertFrom-Json

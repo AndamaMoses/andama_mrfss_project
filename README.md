@@ -86,6 +86,10 @@ separate-domain mapping, shared sign-in settings, and demo-hygiene rules.
   activation, smoke checks, and handover.
 - [Rollback runbook](docs/rollback-runbook.md) — access, code, and database
   rollback, plus the restore rehearsal.
+- [Pilot runbook](docs/pilot-runbook.md) — Onzima Legacy deployment, Core
+  staging rehearsal, owner walkthrough, and daily observation.
+- [Pilot tracker](docs/pilot-tracker.md) — baseline, daily metrics, support
+  tickets, and exit decision.
 
 The Phase 5 packaging dry run copies the real database, applies the additive
 migration, seeds a bundle, checks access, downgrades to Core, re-upgrades, and
@@ -113,8 +117,16 @@ $env:SMOKE_PASSWORD = "the-admin-password"
 powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Plan core -Username admin
 ```
 
-The smoke script checks `/api/apps`, plan-aware POS/Patients access, and the
-Tender redirect. Use `-Plan core|pro|growth|tender|legacy|unseeded` to assert a
-plan, or omit `-Plan` to detect it. `SMOKE_PASSWORD` keeps the password out of
-shell history; fresh installs fall back to `admin123`. Pass `-Username` if the
-admin username is not `admin`.
+The smoke script checks `/api/apps`, plan-aware POS/Patients access, the Tender
+redirect, and the always-on backup endpoint. Use
+`-Plan core|pro|growth|tender|legacy|unseeded` to assert a plan, or omit `-Plan`
+to detect it. `SMOKE_PASSWORD` keeps the password out of shell history; fresh
+installs fall back to `admin123`. Pass `-Username` if the admin username is not
+`admin`.
+
+During the pilot, collect activation, login, and 403-denial metrics without
+changing the database:
+
+```powershell
+python scripts\pilot_metrics.py --log instance\pilot\server.log
+```

@@ -113,10 +113,10 @@ def test_tender_page_renders_when_entitled(app_under_test, client):
     assert b"<html" in response.data.lower() or b"<!doctype" in response.data.lower()
 
 
-def test_denial_is_logged_at_info(app_under_test, admin_client, caplog):
+def test_denial_is_logged_at_warning(app_under_test, admin_client, caplog):
     service.set_bundle("core")
 
-    with caplog.at_level(logging.INFO, logger="drugshop"):
+    with caplog.at_level(logging.WARNING, logger="drugshop"):
         assert admin_client.get("/api/patients").status_code == 403
 
     assert any("app access denied" in r.getMessage() for r in caplog.records)

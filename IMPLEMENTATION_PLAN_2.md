@@ -2,7 +2,7 @@
 
 **Project:** andama_mrfss_project (Onzima Charles Drug Shop + Tender Copilot)
 **Date:** 2026-10-21
-**Status:** Draft for approval — no code changes made yet
+**Status:** Phases 0–5 complete; Phase 6 pilot ready (two-week observation pending)
 **Companion document:** `modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
 ---
@@ -508,11 +508,16 @@ standalone with the same auth.
 
 ### Phase 6 — Pilot (0.5–1 day + two weeks observation)
 
-1. Deploy to Onzima with Pro (grandfathered).
+1. Deploy to Onzima with **Legacy** (grandfathered: Pro + Alerts + Tender).
 2. Verify all current features and the plan panel.
 3. Create a staging/demo Core installation and rehearse a downgrade/upgrade.
 4. Run a 15-minute owner walkthrough; capture questions.
-5. Track activation time, 403s, support tickets, and one upgrade conversation.
+5. Track activation time, 403 denials, support tickets, and one upgrade
+   conversation. Entitlement denials are logged at warning level and summarized
+   by `scripts/pilot_metrics.py`.
+
+The executable checklist is [`docs/pilot-runbook.md`](docs/pilot-runbook.md);
+results go in [`docs/pilot-tracker.md`](docs/pilot-tracker.md).
 
 **Acceptance:** two weeks with no regressions; one upgrade demo completed.
 
@@ -529,9 +534,9 @@ standalone with the same auth.
 | API | `/api/apps` shape and flags for Core, Pro, Growth, Tender |
 | Migration | Fresh DB, legacy DB, idempotent re-run |
 | CLI | Set/add/remove, expiry, actor, invalid input, audit events |
-| Regression | All 154 existing tests with Pro seeded |
+| Regression | All existing tests with Pro seeded (212 at Phase 5) |
 | Manual UI | Pro, Core, Growth, Tender; desktop/tablet/phone; keyboard |
-| Smoke | Login, `/api/apps`, Core denial, Pro access, backup, pages |
+| Smoke | Login, `/api/apps`, Core denial, Pro access, Tender redirect, pages |
 
 Commands:
 
@@ -691,6 +696,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 | 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
 | 5 — Hardening, docs, dry run | DONE | 212 tests, ruff clean, smoke green for Core, Pro, and Tender; dry-run `PASS` for legacy and pro | Live DB is the legacy root `drugshop.db` (110,592 bytes, SHA256 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`), byte-identical to the verified `instance/backups/drugshop-pre-packaging-20261021-161243.db`; backup `PRAGMA integrity_check = ok`. Added `scripts/dry_run_packaging.py` and `docs/onboarding-runbook.md` / `docs/rollback-runbook.md`; extended `scripts/smoke.ps1` with plan-aware `/api/apps`, POS/Patients, Tender redirect, and `-Username` / `SMOKE_PASSWORD`. Dry run applied `002_app_entitlements.sql`, preserved all 15 business table row counts, passed Legacy/Pro -> Core -> re-upgrade access matrix, restored the verified backup, and confirmed the live DB hash unchanged. `index.html` is 86,250 bytes / 3,061 lines; no redesign. |
+| 6 — Pilot | IN PROGRESS | 212 tests, ruff clean; pilot pack and read-only metrics collector ready | Corrected Phase 6 from Pro to **Legacy** for Onzima. Added `docs/pilot-runbook.md`, `docs/pilot-tracker.md`, and `scripts/pilot_metrics.py` (activation, logins, business counts, and 403 denials without writing the DB). Changed entitlement denials from INFO to WARNING so default logs capture them; added `/api/backup` to smoke. Live deployment, owner walkthrough, upgrade demo, and the 14-day observation remain pending. |
 
 ---
 
@@ -716,6 +722,8 @@ drugshop/schema.sql                    # new tables
 docs/tender-standalone.md              # separate-domain mapping, demo hygiene
 docs/onboarding-runbook.md             # backup, activation, smoke, handover
 docs/rollback-runbook.md               # access/code/data rollback
+docs/pilot-runbook.md                  # Onzima deployment + 14-day observation
+docs/pilot-tracker.md                  # pilot baseline, metrics, exit decision
 run.py                                 # ensure_entitlements
 config.py                              # DEFAULT_BUNDLE, SUPPORT_WHATSAPP
 tests/conftest.py                      # seed Pro
@@ -725,6 +733,7 @@ tests/test_app_gate.py                 # enforcement
 tests/test_apps_api.py                 # payload
 scripts/smoke.ps1                      # plan-aware packaging checks
 scripts/dry_run_packaging.py           # migration/plan/restore rehearsal
+scripts/pilot_metrics.py               # read-only pilot metrics + 403 scan
 ```
 
 ## Appendix B — Smoke checklist additions
@@ -770,3 +779,5 @@ schema. The global runner stays.
 | Support hours per customer per month | ≤ 2 |
 | Upgrade demo → paid conversion | ≥ 1 in the first quarter |
 | Time to quote a bundle | < 5 minutes |
+
+Record the actuals in [`docs/pilot-tracker.md`](docs/pilot-tracker.md).

@@ -96,8 +96,11 @@ def register_gate(app):
         if app_id in _request_entitlements():
             return None
 
-        current_app.logger.info(
-            "app access denied endpoint=%s app=%s", endpoint, app_id
+        current_app.logger.warning(
+            "app access denied endpoint=%s app=%s path=%s",
+            endpoint,
+            app_id,
+            request.path,
         )
         payload = _denial_payload(app_id)
         if request.path.startswith("/api/"):
