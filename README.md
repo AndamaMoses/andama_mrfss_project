@@ -80,6 +80,25 @@ sold and hosted as a standalone workspace; see
 [`docs/tender-standalone.md`](docs/tender-standalone.md) for the optional
 separate-domain mapping, shared sign-in settings, and demo-hygiene rules.
 
+## Packaging runbooks
+
+- [Onboarding runbook](docs/onboarding-runbook.md) — backup, first boot, plan
+  activation, smoke checks, and handover.
+- [Rollback runbook](docs/rollback-runbook.md) — access, code, and database
+  rollback, plus the restore rehearsal.
+
+The Phase 5 packaging dry run copies the real database, applies the additive
+migration, seeds a bundle, checks access, downgrades to Core, re-upgrades, and
+rehearses a restore. It never writes to the source database or backup:
+
+```powershell
+python scripts\dry_run_packaging.py --bundle legacy `
+    --restore-backup "instance\backups\drugshop-pre-packaging-20261021-161243.db"
+```
+
+Use `--bundle pro` for the Pro acceptance path. The script prints a `PASS` line
+and leaves a temporary directory behind only when `--keep` is passed.
+
 ## Tests and lint
 
 ```powershell
@@ -90,5 +109,12 @@ python -m ruff check .
 With the app running, execute the HTTP smoke checks:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
+$env:SMOKE_PASSWORD = "the-admin-password"
+powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Plan core -Username admin
 ```
+
+The smoke script checks `/api/apps`, plan-aware POS/Patients access, and the
+Tender redirect. Use `-Plan core|pro|growth|tender|legacy|unseeded` to assert a
+plan, or omit `-Plan` to detect it. `SMOKE_PASSWORD` keeps the password out of
+shell history; fresh installs fall back to `admin123`. Pass `-Username` if the
+admin username is not `admin`.

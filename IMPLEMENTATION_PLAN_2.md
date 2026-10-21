@@ -495,11 +495,12 @@ standalone with the same auth.
 1. Full suite and `ruff`.
 2. Extend `scripts/smoke.ps1`: `/api/apps`, Core denial, Pro access, Tender
    redirect.
-3. Write onboarding/rollback runbooks (Section 11) into the repo or appendix.
+3. Write onboarding/rollback runbooks (Sections 8–9) into the repo or appendix.
 4. Dry run on a **copy** of the real database:
-   - migrate, seed Pro, compare row counts;
+   - migrate, seed the target bundle (Pro for acceptance; Legacy for Onzima),
+     compare row counts;
    - downgrade to Core, verify data still present;
-   - re-upgrade to Pro, verify access returns;
+   - re-upgrade, verify access returns;
    - restore from backup as a rehearsal.
 5. Check `index.html` size and avoid a redesign; keep the diff focused.
 
@@ -547,7 +548,8 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 1. Announce nothing until this has run quietly for two weeks.
 2. Back up the database and verify the backup opens.
 3. Deploy code; `init_db()` runs the additive migration.
-4. `ensure_entitlements("pro")` seeds Onzima; verify `/api/apps`.
+4. `ensure_entitlements("legacy")` seeds Onzima with every app (Pro + Alerts +
+   Tender); verify `/api/apps`.
 5. Run smoke and the manual Pro checklist.
 6. Show the owner the Plan & Apps panel; explain nothing has been taken away.
 7. Two weeks later, demo a Core staging install; use it in new-customer sales.
@@ -558,7 +560,8 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 - Code: checkout `pre-packaging` and restart. The migration is additive, so old
   code ignores the new tables.
 - Data: restore the verified backup if any migration issue appears.
-- Access: `flask --app run plan set pro` restores all apps instantly.
+- Access: `flask --app run plan set legacy` restores Onzima's apps instantly;
+  use `plan set pro` for a Pro customer.
 - No destructive statements in `002_app_entitlements.sql`.
 
 ---
@@ -566,7 +569,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 ## 9. Onboarding runbook (per customer)
 
 1. Confirm payment and chosen bundle; record expiry date.
-2. Back up the existing database.
+2. Back up the existing database **and uploads**.
 3. Deploy the current release; confirm `python run.py` boots.
 4. Set the initial bundle: `DRUGSHOP_BUNDLE=core` for new installs, or
    `flask --app run plan set <bundle>`.
@@ -577,6 +580,9 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 9. Record activation time and support contact in the customer sheet.
 10. Schedule a 30-day check-in and a renewal reminder 14 days before expiry.
 
+The executable version is [`docs/onboarding-runbook.md`](docs/onboarding-runbook.md).
+Rollback steps are in [`docs/rollback-runbook.md`](docs/rollback-runbook.md).
+
 ---
 
 ## 10. Risk register
@@ -584,7 +590,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | Starting on an uncommitted tree | High | Lost work, messy diff | Phase 0 commits/tags first |
-| Existing customer loses access | Medium | Trust damage | Seed Pro, fail-open empty table, dry run, CLI restore |
+| Existing customer loses access | Medium | Trust damage | Seed Legacy for Onzima, fail-open empty table, dry run, CLI restore |
 | Hidden UI but open API | Medium | Revenue leak, data exposure | Central endpoint map + coverage test |
 | Frontend calls unentitled endpoints | High | Console noise, broken panels | Grouped loaders + 403 handling |
 | New route accidentally free | Medium | Revenue leak | Route-coverage test fails CI |
@@ -617,23 +623,24 @@ infrastructure cost. Optional icon design: UGX 300k–800k if not done in-house.
 
 ## 12. Definition of done
 
-- [ ] Current modularization work committed and tagged `pre-packaging`.
-- [ ] `002_app_entitlements.sql` applied; fresh and legacy DBs verified.
-- [ ] Onzima seeded as Pro; every current feature still works.
-- [ ] `GET /api/apps` returns the correct plan and app flags.
-- [ ] Every non-static endpoint is mapped or explicitly always-on.
-- [ ] Core blocks Patients/Finance/Alerts at the API and in the UI.
-- [ ] Admin is not exempt from entitlement checks.
-- [ ] Launcher renders in brand colors, responsive, keyboard accessible.
-- [ ] No 403s during a normal Pro session; no 500s on downgrade.
-- [ ] Plan panel is read-only and shows bundle, apps, expiry, support link.
-- [ ] Tender hidden and blocked when unentitled; works standalone when entitled.
-- [ ] CLI set/add/remove tested; audit events written.
-- [ ] `pytest -q` green (154 existing + new tests).
-- [ ] `ruff check .` clean.
-- [ ] Smoke script includes packaging checks and passes.
-- [ ] Onboarding and rollback runbooks exist.
-- [ ] Dry run on a copy of the real DB completed and backup restored.
+- [x] Current modularization work committed and tagged `pre-packaging`.
+- [x] `002_app_entitlements.sql` applied; fresh and legacy DBs verified.
+- [x] Onzima Legacy plan (Pro + Alerts + Tender) rehearsed on a DB copy; every
+  current feature still works. Live seed happens on the deployment boot.
+- [x] `GET /api/apps` returns the correct plan and app flags.
+- [x] Every non-static endpoint is mapped or explicitly always-on.
+- [x] Core blocks Patients/Finance/Alerts at the API and in the UI.
+- [x] Admin is not exempt from entitlement checks.
+- [x] Launcher renders in brand colors, responsive, keyboard accessible.
+- [x] No 403s during a normal Pro session; no 500s on downgrade.
+- [x] Plan panel is read-only and shows bundle, apps, expiry, support link.
+- [x] Tender hidden and blocked when unentitled; works standalone when entitled.
+- [x] CLI set/add/remove tested; audit events written.
+- [x] `pytest -q` green (212 tests after packaging).
+- [x] `ruff check .` clean.
+- [x] Smoke script includes packaging checks and passes.
+- [x] Onboarding and rollback runbooks exist.
+- [x] Dry run on a copy of the real DB completed and backup restored.
 - [ ] Two-week pilot with Onzima shows no regressions.
 
 ---
@@ -683,6 +690,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 2a — Onzima grandfathering | DONE | 203 tests, ruff clean, smoke 9/9 | Added non-sellable `legacy` bundle (Pro + Alerts + Tender); `DEFAULT_BUNDLE` now seeds `legacy`. Existing already-seeded Pro installs can add the two apps with `plan add`. New deployments set `DRUGSHOP_BUNDLE=core`. |
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 | 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
+| 5 — Hardening, docs, dry run | DONE | 212 tests, ruff clean, smoke green for Core, Pro, and Tender; dry-run `PASS` for legacy and pro | Live DB is the legacy root `drugshop.db` (110,592 bytes, SHA256 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`), byte-identical to the verified `instance/backups/drugshop-pre-packaging-20261021-161243.db`; backup `PRAGMA integrity_check = ok`. Added `scripts/dry_run_packaging.py` and `docs/onboarding-runbook.md` / `docs/rollback-runbook.md`; extended `scripts/smoke.ps1` with plan-aware `/api/apps`, POS/Patients, Tender redirect, and `-Username` / `SMOKE_PASSWORD`. Dry run applied `002_app_entitlements.sql`, preserved all 15 business table row counts, passed Legacy/Pro -> Core -> re-upgrade access matrix, restored the verified backup, and confirmed the live DB hash unchanged. `index.html` is 86,250 bytes / 3,061 lines; no redesign. |
 
 ---
 
@@ -706,6 +714,8 @@ drugshop/static/js/core/api.js         # 403 handling
 drugshop/__init__.py                   # register blueprint, gate, CLI
 drugshop/schema.sql                    # new tables
 docs/tender-standalone.md              # separate-domain mapping, demo hygiene
+docs/onboarding-runbook.md             # backup, activation, smoke, handover
+docs/rollback-runbook.md               # access/code/data rollback
 run.py                                 # ensure_entitlements
 config.py                              # DEFAULT_BUNDLE, SUPPORT_WHATSAPP
 tests/conftest.py                      # seed Pro
@@ -713,7 +723,8 @@ tests/test_apps.py                     # registry
 tests/test_entitlements.py             # service + CLI
 tests/test_app_gate.py                 # enforcement
 tests/test_apps_api.py                 # payload
-scripts/smoke.ps1                      # packaging checks
+scripts/smoke.ps1                      # plan-aware packaging checks
+scripts/dry_run_packaging.py           # migration/plan/restore rehearsal
 ```
 
 ## Appendix B — Smoke checklist additions
@@ -734,8 +745,9 @@ scripts/smoke.ps1                      # packaging checks
 ## Appendix C — Grandfathering note
 
 Onzima Charles Drug Shop is the reference installation. It must be seeded as
-**Pro** on the first boot after deployment, with a note in
-`entitlement_events`: `bootstrap: existing customer, 12-month grandfather`.
+**Legacy** (Pro + Alerts + Tender) on the first boot after deployment, so no
+current feature disappears. The non-sellable bundle is recorded in
+`entitlement_events` with the default-bundle bootstrap event.
 Do not announce bundles to Onzima until the pilot has run for two weeks. If a
 renewal discussion happens sooner, the answer is: "Your current features are
 unchanged."
