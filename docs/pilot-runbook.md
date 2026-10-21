@@ -29,8 +29,13 @@ Create a fresh pre-pilot backup and verify it:
 
 ```powershell
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$dbPath = (python -c "import config; print(config.DevConfig.DATABASE)").Trim()
-$uploadPath = (python -c "import config; print(config.DevConfig.UPLOAD_DIR)").Trim()
+$dbPath = if ($env:DRUGSHOP_DB) { $env:DRUGSHOP_DB }
+          elseif (Test-Path -LiteralPath "instance\drugshop.db") { "instance\drugshop.db" }
+          else { "drugshop.db" }
+$uploadPath = if ($env:DRUGSHOP_UPLOADS) { $env:DRUGSHOP_UPLOADS }
+              elseif ((Test-Path -LiteralPath "uploads") -and
+                      (Get-ChildItem -LiteralPath "uploads" -Force | Select-Object -First 1)) { "uploads" }
+              else { "instance\uploads" }
 New-Item -ItemType Directory -Force instance\backups,instance\pilot | Out-Null
 Copy-Item -LiteralPath $dbPath "instance\backups\drugshop-pre-pilot-$stamp.db"
 if (Test-Path -LiteralPath $uploadPath) {
@@ -39,6 +44,9 @@ if (Test-Path -LiteralPath $uploadPath) {
 Get-FileHash -Algorithm SHA256 "instance\backups\drugshop-pre-pilot-$stamp.db"
 python -c "import sqlite3,sys; d=sqlite3.connect(sys.argv[1]); print(d.execute('PRAGMA integrity_check').fetchone()[0]); d.close()" "instance\backups\drugshop-pre-pilot-$stamp.db"
 ```
+
+> Windows PowerShell 5.1 can mis-decode non-ASCII paths printed by Python.
+> Use the repository-relative defaults above, or type the printed path manually.
 
 Save the baseline metrics before the migration:
 
@@ -101,8 +109,9 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Base http://127.0.0.
 Then rehearse the plan changes **against the staging database only**:
 
 ```powershell
-$env:DRUGSHOP_DB = "C:\path\to\instance\staging-core\drugshop.db"
-$env:DRUGSHOP_UPLOADS = "C:\path\to\instance\staging-core\uploads"
+$stage = Join-Path (Get-Location) "instance\staging-core"
+$env:DRUGSHOP_DB = "$stage\drugshop.db"
+$env:DRUGSHOP_UPLOADS = "$stage\uploads"
 flask --app run plan set pro --actor "Andama" --notes "pilot staging upgrade rehearsal"
 powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Base http://127.0.0.1:5001 -Plan pro
 flask --app run plan set core --actor "Andama" --notes "pilot staging downgrade rehearsal"

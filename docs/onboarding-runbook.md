@@ -34,9 +34,15 @@ Stop the app first. SQLite copies are only safe when no process is writing.
 
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"
+python -c "import config; print(config.DevConfig.DATABASE); print(config.DevConfig.UPLOAD_DIR)"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$dbPath = (python -c "import config; print(config.DevConfig.DATABASE)").Trim()
-$uploadPath = (python -c "import config; print(config.DevConfig.UPLOAD_DIR)").Trim()
+$dbPath = if ($env:DRUGSHOP_DB) { $env:DRUGSHOP_DB }
+          elseif (Test-Path -LiteralPath "instance\drugshop.db") { "instance\drugshop.db" }
+          else { "drugshop.db" }
+$uploadPath = if ($env:DRUGSHOP_UPLOADS) { $env:DRUGSHOP_UPLOADS }
+              elseif ((Test-Path -LiteralPath "uploads") -and
+                      (Get-ChildItem -LiteralPath "uploads" -Force | Select-Object -First 1)) { "uploads" }
+              else { "instance\uploads" }
 New-Item -ItemType Directory -Force instance\backups | Out-Null
 Copy-Item -LiteralPath $dbPath "instance\backups\drugshop-pre-onboarding-$stamp.db"
 if (Test-Path -LiteralPath $uploadPath) {
@@ -44,6 +50,11 @@ if (Test-Path -LiteralPath $uploadPath) {
 }
 Get-FileHash -Algorithm SHA256 "instance\backups\drugshop-pre-onboarding-$stamp.db"
 ```
+
+> Windows PowerShell 5.1 can mis-decode non-ASCII paths printed by Python.
+> The snippet above uses the repository-relative defaults instead of piping a
+> Python-printed emoji path into `Copy-Item`. If the printed path differs, type
+> it manually or use `-LiteralPath` with the exact path.
 
 Verify the database copy before continuing:
 

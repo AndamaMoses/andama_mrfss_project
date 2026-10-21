@@ -2,7 +2,8 @@
 
 **Project:** andama_mrfss_project (Onzima Charles Drug Shop + Tender Copilot)
 **Date:** 2026-10-21
-**Status:** Phases 0–5 complete; Phase 6 pilot ready (two-week observation pending)
+**Status:** Phases 0–5 complete; Phase 6 pilot in progress (started 2026-10-21,
+ends 2026-11-04)
 **Companion document:** `modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
 ---
@@ -555,7 +556,7 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 3. Deploy code; `init_db()` runs the additive migration.
 4. `ensure_entitlements("legacy")` seeds Onzima with every app (Pro + Alerts +
    Tender); verify `/api/apps`.
-5. Run smoke and the manual Pro checklist.
+5. Run smoke and the manual Legacy checklist.
 6. Show the owner the Plan & Apps panel; explain nothing has been taken away.
 7. Two weeks later, demo a Core staging install; use it in new-customer sales.
 8. Sell the first Growth add-on or Tender engagement.
@@ -696,7 +697,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 | 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
 | 5 — Hardening, docs, dry run | DONE | 212 tests, ruff clean, smoke green for Core, Pro, and Tender; dry-run `PASS` for legacy and pro | Live DB is the legacy root `drugshop.db` (110,592 bytes, SHA256 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`), byte-identical to the verified `instance/backups/drugshop-pre-packaging-20261021-161243.db`; backup `PRAGMA integrity_check = ok`. Added `scripts/dry_run_packaging.py` and `docs/onboarding-runbook.md` / `docs/rollback-runbook.md`; extended `scripts/smoke.ps1` with plan-aware `/api/apps`, POS/Patients, Tender redirect, and `-Username` / `SMOKE_PASSWORD`. Dry run applied `002_app_entitlements.sql`, preserved all 15 business table row counts, passed Legacy/Pro -> Core -> re-upgrade access matrix, restored the verified backup, and confirmed the live DB hash unchanged. `index.html` is 86,250 bytes / 3,061 lines; no redesign. |
-| 6 — Pilot | IN PROGRESS | 212 tests, ruff clean; pilot pack and read-only metrics collector ready | Corrected Phase 6 from Pro to **Legacy** for Onzima. Added `docs/pilot-runbook.md`, `docs/pilot-tracker.md`, and `scripts/pilot_metrics.py` (activation, logins, business counts, and 403 denials without writing the DB). Changed entitlement denials from INFO to WARNING so default logs capture them; added `/api/backup` to smoke. Live deployment, owner walkthrough, upgrade demo, and the 14-day observation remain pending. |
+| 6 — Pilot | IN PROGRESS (Day 0 done; ends 2026-11-04) | 212 tests, ruff clean; live Legacy smoke 15/15; staging Core/Pro/Core smoke 15/15; business row counts unchanged | Corrected Phase 6 from Pro to **Legacy**. Deployed live at 2026-10-21 19:24:13 after a verified pre-pilot backup (`instance/backups/drugshop-pre-pilot-20261021-192335.db`, SHA256 `E2AEED56...A14542C`): migration `002` applied, six Legacy entitlements, users/products/sales/patients counts unchanged. Changed entitlement denials from INFO to WARNING so default logs capture them; `scripts/pilot_metrics.py` reports activation, logins, counts, and 403s without writing the DB. Added `/api/backup` to smoke. Created `instance/staging-core` and rehearsed Core -> Pro -> Core with smoke green and zero row loss. Owner walkthrough, upgrade demo, and the 14-day observation remain pending. |
 
 ---
 

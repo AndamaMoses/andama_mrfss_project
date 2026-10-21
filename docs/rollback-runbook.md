@@ -95,16 +95,30 @@ take a fresh copy of the current database first.
 
 ```powershell
 $env:PYTHONIOENCODING = "utf-8"
+python -c "import config; print(config.DevConfig.DATABASE); print(config.DevConfig.UPLOAD_DIR)"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$dbPath = (python -c "import config; print(config.DevConfig.DATABASE)").Trim()
-$uploadPath = (python -c "import config; print(config.DevConfig.UPLOAD_DIR)").Trim()
+$dbPath = if ($env:DRUGSHOP_DB) { $env:DRUGSHOP_DB }
+          elseif (Test-Path -LiteralPath "instance\drugshop.db") { "instance\drugshop.db" }
+          else { "drugshop.db" }
+$uploadPath = if ($env:DRUGSHOP_UPLOADS) { $env:DRUGSHOP_UPLOADS }
+              elseif ((Test-Path -LiteralPath "uploads") -and
+                      (Get-ChildItem -LiteralPath "uploads" -Force | Select-Object -First 1)) { "uploads" }
+              else { "instance\uploads" }
 Copy-Item -LiteralPath $dbPath "instance\backups\drugshop-before-rollback-$stamp.db"
-Copy-Item -LiteralPath $dbPath "instance\backups\<verified-backup>.db" -Force
+if (Test-Path -LiteralPath $uploadPath) {
+    Copy-Item -LiteralPath $uploadPath "instance\backups\uploads-before-rollback-$stamp" -Recurse -Force
+    Remove-Item -LiteralPath $uploadPath -Recurse -Force
+}
+Copy-Item -LiteralPath "instance\backups\<verified-backup>.db" $dbPath -Force
 if (Test-Path -LiteralPath "instance\backups\uploads-<verified-backup>") {
     Copy-Item -LiteralPath "instance\backups\uploads-<verified-backup>" $uploadPath -Recurse -Force
 }
 python -c "import sqlite3,sys; d=sqlite3.connect(sys.argv[1]); print(d.execute('PRAGMA integrity_check').fetchone()[0]); d.close()" $dbPath
 ```
+
+> Windows PowerShell 5.1 can mis-decode non-ASCII paths printed by Python.
+> The snippet uses the repository-relative defaults; if `config.py` prints a
+> different path, use that exact path manually.
 
 The integrity result must be `ok`. Compare the restored file hash with the
 backup hash:

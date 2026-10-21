@@ -7,16 +7,16 @@ customer folder; do not put passwords in it.
 
 | Field | Value |
 |---|---|
-| Status | Ready to start |
+| Status | In progress — Day 0 complete; 14-day observation running |
 | Start date | 2026-10-21 |
 | End date | 2026-11-04 |
-| Release | `phase-5-hardening` / commit `1f436bc` |
+| Release | `phase-6-pilot-start` (code commit `66f6ca7`) |
 | Plan | Legacy (Pro + Alerts + Tender), grandfathered |
 | Owner | Charles Onzima |
 | Operator | Andama |
 | Live database | `drugshop.db` at the project root |
-| Pre-pilot backup | `instance/backups/drugshop-pre-pilot-<stamp>.db` |
-| Backup SHA256 | _fill in after backup_ |
+| Pre-pilot backup | `instance/backups/drugshop-pre-pilot-20261021-192335.db` |
+| Backup SHA256 | `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C` |
 | Server log | `instance/pilot/server.log` |
 | Support WhatsApp | _fill in from config_ |
 
@@ -37,28 +37,32 @@ Measured with `python scripts\pilot_metrics.py --json` before the migration:
 Plan at baseline: `unseeded` (migration `001` only). No `app_entitlements`
 table yet.
 
+After deployment: migration `002` applied, six Legacy entitlement rows, all
+business counts unchanged, live DB SHA256
+`3B2564F1A065FC090552C28AA7F206EFD5A443A792F0FF9E635521BB1CF6569B`.
+
 ## Day 0 deployment
 
 | Check | Result | Time / note |
 |---|---|---|
-| Pre-pilot backup integrity `ok` | pending | |
-| Uploads copied | pending | |
-| Server booted | pending | |
-| `plan show` = Legacy | pending | |
-| Smoke `-Plan legacy` all green | pending | |
-| `/api/apps` reports Legacy + 6 gate apps | pending | |
-| Launcher shows all apps | pending | |
-| Business row counts unchanged | pending | |
-| Activation event recorded | pending | |
-| Core staging install created | pending | |
-| Core smoke green | pending | |
-| Staging downgrade/upgrade rehearsal | pending | |
+| Pre-pilot backup integrity `ok` | PASS | `drugshop-pre-pilot-20261021-192335.db`, SHA256 matches source |
+| Uploads copied | PASS | `instance/backups/uploads-pre-pilot-20261021-192335` |
+| Server booted | PASS | `instance/pilot/server.log`; port 5000 |
+| `plan show` = Legacy | PASS | six apps; no expiry |
+| Smoke `-Plan legacy` all green | PASS | 15/15 checks, including backup and Tender |
+| `/api/apps` reports Legacy + 6 gate apps | PASS | detected plan `legacy` |
+| Launcher shows all apps | PASS | `/` and `/staff` render 200 |
+| Business row counts unchanged | PASS | users 3, products 8, batches 7, sales 5, patients 3, tender_docs 2 |
+| Activation event recorded | PASS | `2026-10-21 19:24:13` |
+| Core staging install created | PASS | `instance/staging-core`, port 5001 |
+| Core smoke green | PASS | 15/15 |
+| Staging downgrade/upgrade rehearsal | PASS | Core -> Pro -> Core; smoke green each time; row counts unchanged |
 
 ## Daily log
 
 | Date | Logins | 403 denials | Support tickets | Owner feedback / notes | Action |
 |---|---:|---:|---:|---|---|
-| 2026-10-21 |  |  |  | Day 0 deployment | |
+| 2026-10-21 | 59 | 0 | 0 | Day 0: Legacy seeded 19:24:13; live smoke 15/15; staging Core/Pro/Core smoke green; business rows unchanged | Monitor |
 | 2026-10-22 |  |  |  |  | |
 | 2026-10-23 |  |  |  |  | |
 | 2026-10-24 |  |  |  |  | |
@@ -118,13 +122,13 @@ Use the staging Core install; never change Onzima's live plan during the pilot.
 
 | Metric | Target | Actual | Pass |
 |---|---|---:|---|
-| Activation time per customer | < 15 minutes |  |  |
-| Unentitled 403s during normal Legacy use | 0 |  |  |
-| Downgrade/upgrade data loss | 0 rows |  |  |
-| Support hours for the pilot | ≤ 2 hours |  |  |
-| Upgrade demo completed | ≥ 1 |  |  |
-| Time to quote a bundle | < 5 minutes |  |  |
-| Two weeks without regressions | yes |  |  |
+| Activation time per customer | < 15 minutes | ~1 minute (backup 19:23:35 to smoke complete 19:24:37) | PASS (Day 0) |
+| Unentitled 403s during normal Legacy use | 0 | 0 so far | PASS (Day 0) |
+| Downgrade/upgrade data loss | 0 rows | 0 on staging Core/Pro/Core | PASS (rehearsal) |
+| Support hours for the pilot | ≤ 2 hours | 0 so far | pending |
+| Upgrade demo completed | ≥ 1 | 0 | pending |
+| Time to quote a bundle | < 5 minutes | not measured | pending |
+| Two weeks without regressions | yes | day 0 of 14 | pending |
 
 ## Exit decision
 
