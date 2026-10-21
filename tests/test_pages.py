@@ -1,3 +1,5 @@
+from drugshop.apps import service
+
 MODULES = (
     "core/api.js", "core/format.js", "core/ui.js",
     "dashboard.js", "pos.js", "stock.js", "patients.js", "finance.js",
@@ -7,6 +9,9 @@ MODULES = (
 
 
 def test_all_pages_render(client):
+    # Tender is a standalone app; enable it so this stays a render test rather
+    # than an entitlement test (the redirect is covered in test_app_gate.py).
+    service.add_app("tender")
     for page in ("/", "/login", "/staff", "/tender"):
         r = client.get(page)
         assert r.status_code == 200, page

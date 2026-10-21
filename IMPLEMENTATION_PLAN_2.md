@@ -668,6 +668,7 @@ Revisit true modular runtime only when at least three of these are true:
 |---|---|---|---|
 | 0 — Baseline | DONE | 154 tests, ruff clean, smoke 9/9 | Commit `3b085a9`; tag `pre-packaging`; branch `feature/packaging`; DB backup `instance/backups/drugshop-pre-packaging-20261021-161243.db` (SHA256 verified) |
 | 1 — Registry, schema, seed, CLI | DONE | 181 tests, ruff clean, smoke 9/9 | `drugshop/apps/` (registry, service, CLI), migration `002_app_entitlements.sql`, Pro seeded on boot, CLI dry-run on a copy of the live DB with business counts unchanged. Route gating intentionally starts in Phase 2. |
+| 2 — Enforcement and API | DONE | 200 tests, ruff clean, smoke 9/9 | `drugshop/apps/guards.py` (endpoint map + `before_request` gate), `drugshop/apps/routes.py` (`GET /api/apps`), full route-coverage test, admin-denied/empty-table/page-redirect checks. Tender and Alerts tests now explicitly grant those standalone/add-on apps. Default Pro does **not** include Growth or Tender; grant them with `plan add` if grandfathered. |
 
 ---
 

@@ -1,3 +1,14 @@
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def growth_enabled(app_under_test):
+    """Alerts are the Growth add-on; enable them for this reporting module."""
+    from drugshop.apps import service
+
+    service.add_app("alerts")
+
+
 def seed(client):
     assert client.post("/api/seed").status_code == 200
 

@@ -1,6 +1,8 @@
 import io
 import os
 
+import pytest
+
 from drugshop.db import upload_dir
 from drugshop.tender.service import analyze_tender_text, extract_pdf_text
 
@@ -14,6 +16,14 @@ TENDER_TEXT = (
     "A site visit is mandatory. Performance security of 10%. "
     "Deadline for submission: 15 November 2026 at 11:00am."
 )
+
+
+@pytest.fixture(autouse=True)
+def tender_enabled(app_under_test):
+    """Tender is standalone, so these tests explicitly grant it first."""
+    from drugshop.apps import service
+
+    service.add_app("tender")
 
 
 def test_tender_requires_login(client):

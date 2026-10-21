@@ -35,7 +35,9 @@ def create_app(config=None):
         raise RuntimeError("SECRET_KEY must be set when using ProdConfig")
     from drugshop import db as dbm
     from drugshop.admin.routes import bp as admin_bp
+    from drugshop.apps import guards as app_guards
     from drugshop.apps.cli import register_cli
+    from drugshop.apps.routes import bp as apps_bp
     from drugshop.auth import guards
     from drugshop.auth.routes import bp as auth_bp
     from drugshop.credit.routes import bp as credit_bp
@@ -63,5 +65,10 @@ def create_app(config=None):
     app.register_blueprint(reporting_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(tender_bp)
+    app.register_blueprint(apps_bp)
+    # Registered last: the entitlement gate builds its endpoint map from the
+    # complete URL map. The auth gate above stays first, so anonymous API
+    # requests still receive 401 before entitlement checks.
+    app_guards.register_gate(app)
     register_cli(app)
     return app
