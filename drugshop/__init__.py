@@ -35,6 +35,7 @@ def create_app(config=None):
         raise RuntimeError("SECRET_KEY must be set when using ProdConfig")
     from drugshop import db as dbm
     from drugshop.admin.routes import bp as admin_bp
+    from drugshop.apps.cli import register_cli
     from drugshop.auth import guards
     from drugshop.auth.routes import bp as auth_bp
     from drugshop.credit.routes import bp as credit_bp
@@ -62,4 +63,5 @@ def create_app(config=None):
     app.register_blueprint(reporting_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(tender_bp)
+    register_cli(app)
     return app

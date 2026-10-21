@@ -82,9 +82,11 @@ def test_init_db_creates_fresh_schema_and_records_migrations(tmp_path):
     assert {
         "products", "batches", "sales", "sale_batches", "patients", "settings",
         "users", "login_events", "customers", "credit_payments", "expenses",
+        "app_entitlements", "entitlement_events",
     } <= tables
     assert {"receipt_ref", "customer_name", "created_at", "customer_phone"} <= scols
     assert "001_sale_batches.sql" in versions
+    assert "002_app_entitlements.sql" in versions
 
 
 def test_init_db_upgrades_legacy_schema(tmp_path):
@@ -132,6 +134,8 @@ def test_init_db_upgrades_legacy_schema(tmp_path):
     assert {"receipt_ref", "customer_name", "created_at", "customer_phone"} <= scols
     assert {"display_name", "phone"} <= ucols
     assert {"products", "batches", "patients", "settings", "expenses", "sale_batches"} <= tables
+    assert {"app_entitlements", "entitlement_events"} <= tables
     assert sale == (200.0, "R-000001")
     assert display_name == "Charles Onzima"
     assert "001_sale_batches.sql" in versions
+    assert "002_app_entitlements.sql" in versions

@@ -662,6 +662,15 @@ Revisit true modular runtime only when at least three of these are true:
 
 ---
 
+## 15. Execution log
+
+| Phase | Status | Verification | Notes |
+|---|---|---|---|
+| 0 — Baseline | DONE | 154 tests, ruff clean, smoke 9/9 | Commit `3b085a9`; tag `pre-packaging`; branch `feature/packaging`; DB backup `instance/backups/drugshop-pre-packaging-20261021-161243.db` (SHA256 verified) |
+| 1 — Registry, schema, seed, CLI | DONE | 181 tests, ruff clean, smoke 9/9 | `drugshop/apps/` (registry, service, CLI), migration `002_app_entitlements.sql`, Pro seeded on boot, CLI dry-run on a copy of the live DB with business counts unchanged. Route gating intentionally starts in Phase 2. |
+
+---
+
 ## Appendix A — File map
 
 ```text

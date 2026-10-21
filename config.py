@@ -40,6 +40,11 @@ class BaseConfig:
     TESTING = False
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
+    # Packaging (Phase 1): bundle to seed when the installation has no plan
+    # yet. "pro" grandfathers the existing shop; new deployments set
+    # DRUGSHOP_BUNDLE=core. SUPPORT_WHATSAPP is shown on upgrade prompts.
+    DEFAULT_BUNDLE = os.environ.get("DRUGSHOP_BUNDLE", "pro")
+    SUPPORT_WHATSAPP = os.environ.get("SUPPORT_WHATSAPP", "")
 
 
 class DevConfig(BaseConfig):

@@ -19,6 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 def app_under_test(tmp_path):
     from drugshop import create_app
     from drugshop import db as dbm
+    from drugshop.apps import service as apps_service
     from drugshop.auth import service as auth_service
 
     db_file = str(tmp_path / "test.db")
@@ -33,6 +34,7 @@ def app_under_test(tmp_path):
     dbm.init_app(TestPaths)
     dbm.init_db()
     auth_service.ensure_admin()
+    apps_service.ensure_entitlements("pro")
     app.config.update(TESTING=True, SECRET_KEY="test-secret")
     return app
 
