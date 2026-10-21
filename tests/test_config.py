@@ -74,6 +74,27 @@ def test_env_overrides_win(tmp_path):
     assert debug == "False"
 
 
+def test_session_cookie_domain_is_env_optional():
+    env = os.environ.copy()
+    env.pop("SESSION_COOKIE_DOMAIN", None)
+    env["PYTHONIOENCODING"] = "utf-8"
+    result = subprocess.run(
+        [sys.executable, "-c",
+         ("import os, importlib, config;"
+          "print(config.BaseConfig.SESSION_COOKIE_DOMAIN);"
+          "os.environ['SESSION_COOKIE_DOMAIN']='.example.com';"
+          "importlib.reload(config);"
+          "print(config.BaseConfig.SESSION_COOKIE_DOMAIN)")],
+        cwd=str(PROJECT_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    assert result.stdout.splitlines() == ["None", ".example.com"]
+
+
 def _prod_config_check(env_overrides):
     env = os.environ.copy()
     for key in _ENV_KEYS:

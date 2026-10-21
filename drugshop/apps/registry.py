@@ -133,6 +133,12 @@ BUNDLES = {
     },
 }
 
+# Apps that make an installation an operational pharmacy workspace. Tender
+# Copilot uses this boundary to decide whether the pharmacy brand/link belongs
+# on its page, and the launcher uses it to keep the two products from being
+# cross-sold inside each other's demos.
+PHARMACY_APP_IDS = ("pos", "inventory", "patients", "finance", "alerts")
+
 # Phase 2 gate inputs. Blueprint -> app for the default case; endpoint
 # overrides win over the blueprint default; ALWAYS_ON_BLUEPRINTS are never
 # gated. Kept here so the whole ownership map is visible in one place.

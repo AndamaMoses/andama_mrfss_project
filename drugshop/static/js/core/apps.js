@@ -14,6 +14,8 @@ var BUNDLE_NAMES = {
   legacy: 'Legacy',
 };
 
+var PHARMACY_APP_IDS = ['pos', 'inventory', 'patients', 'finance', 'alerts'];
+
 function escHtml(value) {
   return String(value == null ? '' : value)
     .replace(/&/g, '&amp;')
@@ -29,6 +31,29 @@ function bundleLabel(bundleId) {
 
 function appById(appId) {
   return APP_BY_ID[appId] || null;
+}
+
+/* Tender Copilot is sold separately. Keep it out of pharmacy launchers, and
+   keep the pharmacy suite out of Tender-only launchers, so neither demo shows
+   the other product as a locked cross-sell tile. */
+function launcherApps(data) {
+  var apps = (data && data.apps) || [];
+  var hasPharmacy = apps.some(function (app) {
+    return app.entitled && PHARMACY_APP_IDS.indexOf(app.id) !== -1;
+  });
+  var hasTender = apps.some(function (app) {
+    return app.entitled && app.id === 'tender';
+  });
+
+  if (hasTender && !hasPharmacy) {
+    return apps.filter(function (app) {
+      return app.always_on || app.id === 'tender';
+    });
+  }
+  if (!hasTender) {
+    return apps.filter(function (app) { return app.id !== 'tender'; });
+  }
+  return apps;
 }
 
 function isAppEntitled(appId) {
@@ -118,7 +143,7 @@ function renderLauncher(data) {
   var grid = $('appsGrid');
   if (!grid) return;
 
-  var apps = (data && data.apps) || [];
+  var apps = launcherApps(data);
   var plan = (data && data.plan) || {};
   var included = apps.filter(function (app) { return !app.always_on && app.entitled; }).length;
   var total = apps.filter(function (app) { return !app.always_on; }).length;

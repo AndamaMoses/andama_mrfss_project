@@ -54,6 +54,21 @@ def entitled_app_ids():
     return _active_ids(rows)
 
 
+def entitled_app_ids_or_all():
+    """Fail-open app ids for page rendering before the migration has run.
+
+    The request gate already fails open on a missing schema; pages that need
+    plan metadata to choose a brand follow the same rule instead of returning
+    a 500 on a fresh, not-yet-initialized deployment.
+    """
+    try:
+        return entitled_app_ids()
+    except sqlite3.OperationalError as exc:
+        if "no such table" not in str(exc).lower():
+            raise
+        return set(APPS)
+
+
 def is_entitled(app_id):
     app = APPS.get(app_id)
     if app and app["always_on"]:

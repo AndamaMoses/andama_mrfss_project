@@ -40,6 +40,10 @@ class BaseConfig:
     TESTING = False
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
+    # Optional: set to ".example.com" when Tender Copilot is served from a
+    # subdomain of the pharmacy install so one sign-in works on both hosts.
+    # Leave unset for the default single-origin deployment.
+    SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN") or None
     # Packaging (Phase 1): bundle to seed when the installation has no plan
     # yet. "legacy" grandfathers the existing Onzima shop (Pro + Alerts +
     # Tender); new deployments set DRUGSHOP_BUNDLE=core. SUPPORT_WHATSAPP is

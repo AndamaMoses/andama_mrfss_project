@@ -75,7 +75,10 @@ python run.py
 ```
 
 Open `http://127.0.0.1:5000` for the drug shop and
-`http://127.0.0.1:5000/tender` for Tender Copilot.
+`http://127.0.0.1:5000/tender` for Tender Copilot. Tender Copilot can also be
+sold and hosted as a standalone workspace; see
+[`docs/tender-standalone.md`](docs/tender-standalone.md) for the optional
+separate-domain mapping, shared sign-in settings, and demo-hygiene rules.
 
 ## Tests and lint
 

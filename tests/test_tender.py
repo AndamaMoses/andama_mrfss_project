@@ -3,6 +3,7 @@ import os
 
 import pytest
 
+from drugshop.apps import service
 from drugshop.db import upload_dir
 from drugshop.tender.service import analyze_tender_text, extract_pdf_text
 
@@ -157,3 +158,59 @@ def test_tender_methodology_draft(admin_client):
     assert "TECHNICAL METHODOLOGY" in text
     assert "Jinja Roads" in text
     assert "Communion Engineering Services Ltd" in text
+
+
+# ---------- Phase 4: standalone branding and entitlement matrix ----------
+def test_tender_only_page_uses_standalone_brand(app_under_test, client):
+    service.set_bundle("tender")
+
+    html = client.get("/tender").get_data(as_text=True)
+    assert "Tender Copilot" in html
+    assert "Standalone Tender Copilot workspace" in html
+    assert "Onzima Dawa" not in html
+    assert "← Onzima Dawa" not in html
+    assert "/login?next=/tender" in html
+    assert "Sign in" in html
+
+
+def test_combined_page_keeps_pharmacy_backlink(app_under_test, client):
+    # The autouse fixture seeds Pro and then adds Tender: a combined install.
+    service.add_app("tender")
+
+    html = client.get("/tender").get_data(as_text=True)
+    assert "← Onzima Dawa" in html
+    assert "shares the same staff sign-in as Onzima Dawa" in html
+
+
+def test_tender_only_keeps_pharmacy_endpoints_blocked(app_under_test, admin_client):
+    service.set_bundle("tender")
+
+    assert admin_client.get("/api/products").status_code == 403
+    response = admin_client.post("/api/tender/analyze", json={"text": TENDER_TEXT})
+    assert response.status_code == 201
+
+
+def test_combined_entitlements_allow_pharmacy_and_tender(app_under_test, admin_client):
+    # Autouse fixture = Pro + Tender, the supported combined configuration.
+    assert admin_client.get("/api/products").status_code == 200
+    response = admin_client.post("/api/tender/analyze", json={"text": TENDER_TEXT})
+    assert response.status_code == 201
+
+
+def test_tender_only_login_page_uses_tender_brand(app_under_test, client):
+    service.set_bundle("tender")
+
+    html = client.get("/login").get_data(as_text=True)
+    visible = html.split("<script>", 1)[0]
+    assert "Tender Copilot" in visible
+    assert "PPDA" in visible
+    assert "Onzima Dawa" not in visible
+
+
+def test_pharmacy_login_page_does_not_cross_sell_tender(app_under_test, client):
+    service.set_bundle("core")
+
+    html = client.get("/login").get_data(as_text=True)
+    visible = html.split("<script>", 1)[0]
+    assert "Onzima Dawa" in visible
+    assert "Tender Copilot" not in visible

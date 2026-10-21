@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In — Onzima Dawa Apothecary</title>
+<title>{% if tender_only %}Sign In — Tender Copilot{% else %}Sign In — Onzima Dawa Apothecary{% endif %}</title>
 <style>
 :root {
   --plum-950: #23092e;
@@ -369,16 +369,25 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
   <div class="brand">
     <div>
       <div class="mark">
+        {% if tender_only %}
+        <svg viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M2.5 15h19v3h-19z"/><path d="M12 5v4"/></svg>
+        {% else %}
         <svg viewBox="0 0 24 24"><path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z"/><path d="M13.5 3.5l5.5 5.5"/><path d="M7 21h10"/></svg>
+        {% endif %}
       </div>
-      <h1>Onzima <em>Dawa</em></h1>
-      <p class="sub">Kireka Apothecary & Retail System — Expiry Watchdog, MoMo & Cash Reconciliation, and Jinja Tender Copilot.</p>
+      <h1>{% if tender_only %}Tender <em>Copilot</em>{% else %}Onzima <em>Dawa</em>{% endif %}</h1>
+      <p class="sub">{% if tender_only %}Standalone PPDA &amp; UNRA tender analysis for engineering consultancies — same secure staff sign-in.{% else %}Kireka Apothecary &amp; Retail System — Expiry Watchdog, MoMo &amp; Cash Reconciliation, and patient refill care.{% endif %}</p>
       <ul>
+        {% if tender_only %}
+        <li><b>Consultant</b> Analysis, compliance matrix, risk flags</li>
+        <li><b>Engineer</b> Technical methodology drafting</li>
+        {% else %}
         <li><b>Owner (admin)</b> Financials, staff oversight, backups</li>
         <li><b>Sales Agent</b> Fast POS sales, refill care, credit logs</li>
+        {% endif %}
       </ul>
     </div>
-    <div class="version-tag">Kireka & Jinja Retail System · v2.4 Active</div>
+    <div class="version-tag">{% if tender_only %}Communion Engineering · Jinja · Tender Copilot{% else %}Kireka &amp; Jinja Retail System · v2.4 Active{% endif %}</div>
   </div>
 
   <div class="form-area">
@@ -393,6 +402,7 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
     </div>
 
     <div class="personas" id="personaList">
+      {% if not tender_only %}
       <!-- Fallback static personas if API delayed -->
       <div class="persona sel" id="p_admin" onclick="selectUser('admin')">
         <div class="avatar">CO</div>
@@ -415,6 +425,7 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
           <small>Sales Agent &middot; grace</small>
         </div>
       </div>
+      {% endif %}
     </div>
 
     <form id="loginForm" onsubmit="go(event)">
@@ -435,13 +446,17 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
     <div id="err"></div>
 
     <div class="foot">
-      Ask the shop owner if you need login details.
+      {% if tender_only %}Ask your account manager if you need login details.{% else %}Ask the shop owner if you need login details.{% endif %}
     </div>
   </div>
 </div>
 
 <script>
-const ROLE_NAMES = { admin: 'Shop Owner', attendant: 'Sales Agent' };
+const TENDER_ONLY = {{ tender_only | tojson }};
+const HOME_URL = {{ ('/tender' if tender_only else '/') | tojson }};
+const ROLE_NAMES = TENDER_ONLY
+  ? { admin: 'Account Owner', attendant: 'Team Member' }
+  : { admin: 'Shop Owner', attendant: 'Sales Agent' };
 
 function initials(n) {
   return (n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -526,7 +541,7 @@ async function checkCurrentSession() {
       banner.style.display = 'flex';
       banner.innerHTML = `
         <span>Signed in as <b>${me.display_name || me.username}</b> (${ROLE_NAMES[me.role] || me.role})</span>
-        <a href="/">Open App &rarr;</a>
+        <a href="${HOME_URL}">Open ${TENDER_ONLY ? 'Tender Copilot' : 'App'} &rarr;</a>
       `;
     }
   } catch(e) {}
@@ -565,7 +580,7 @@ async function go(event) {
     if (r.ok) {
       // Check for redirect param ?next=
       const params = new URLSearchParams(window.location.search);
-      const nextUrl = params.get('next') || '/';
+      const nextUrl = params.get('next') || HOME_URL;
       location.href = nextUrl;
     } else {
       showError(j.error || 'Invalid username or password.');

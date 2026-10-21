@@ -7,8 +7,11 @@ import json
 import os
 from datetime import datetime
 
-from flask import Blueprint, current_app, jsonify, request, send_from_directory
+from flask import Blueprint, jsonify, render_template, request
 
+from drugshop.apps import registry
+from drugshop.apps.service import entitled_app_ids_or_all
+from drugshop.auth.guards import current_user
 from drugshop.core.utils import safe_upload_name
 from drugshop.db import execute, q_all, q_one, upload_dir
 from drugshop.tender.service import (
@@ -23,7 +26,23 @@ bp = Blueprint("tender", __name__)
 # ---------- tender copilot ----------
 @bp.route("/tender")
 def tender_page():
-    return send_from_directory(current_app.template_folder, "tender.html")
+    """Render the Tender Copilot workspace with plan-aware branding.
+
+    A Tender-only installation must not leak the pharmacy brand or its upsell
+    paths, while a combined installation keeps a single route back to the
+    suite. ``entitled_app_ids_or_all`` fails open until the entitlement
+    migration has run, matching the request gate.
+    """
+    active = entitled_app_ids_or_all()
+    pharmacy_active = bool(active & set(registry.PHARMACY_APP_IDS))
+    user = current_user()
+    return render_template(
+        "tender.html",
+        standalone="tender" in active and not pharmacy_active,
+        show_pharmacy_link=pharmacy_active,
+        signed_in=bool(user),
+        user_name=(user or {}).get("display_name") or (user or {}).get("username") or "",
+    )
 
 
 @bp.route("/api/tender/analyze", methods=["POST"])

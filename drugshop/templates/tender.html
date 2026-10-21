@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tender Copilot — Communion Engineering, Jinja</title>
+<title>Tender Copilot{% if standalone %} — Standalone{% else %} — Communion Engineering, Jinja{% endif %}</title>
 <style>
 :root{--plum-950:#23092e;--plum-900:#33123f;--plum-700:#4d1e5e;--plum-500:#7c3e94;--gold:#f2a900;--gold-deep:#b97a00;--gold-100:#fdf0cd;--cream:#faf3e6;--paper:#fffdf6;--ink:#2c1a2e;--muted:#857183;--serif:Georgia,'Palatino Linotype',serif;--sans:-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -13,6 +13,10 @@ header .mark{width:44px;height:44px;border-radius:13px;background:var(--gold);di
 header .mark svg{width:26px;height:26px;stroke:#3a1149;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 header b{font-family:var(--serif);font-size:20px}header small{color:var(--gold);letter-spacing:2px;font-size:11px;text-transform:uppercase}
 header a{color:var(--gold);font-weight:700;text-decoration:none}
+header .hdr-actions{display:flex;align-items:center;gap:14px}
+header .linkbtn{background:none;border:0;color:var(--gold);font-weight:700;cursor:pointer;font-family:var(--sans);font-size:13px;padding:0}
+header .who{color:#e7d9ee;font-size:13px}
+.standalone-note{max-width:1080px;margin:12px auto -4px;padding:0 18px;font-size:13px;color:var(--muted)}
 main{padding:18px;max-width:1080px;margin:auto}
 .panel{background:var(--paper);border-radius:16px;padding:18px;margin-bottom:16px;border:1px solid #ecdfc8;border-top:4px solid var(--plum-500);box-shadow:0 2px 8px rgba(51,18,63,.08)}
 .panel h3{font-family:var(--serif);font-size:19px;color:var(--plum-900);margin-bottom:8px}
@@ -33,9 +37,13 @@ pre{white-space:pre-wrap;background:var(--plum-950);color:#f3e8f7;padding:14px;b
 </head>
 <body>
 <header><div class="b"><div class="mark"><svg viewBox="0 0 24 24"><path d="M10 4.5A6.5 6.5 0 0 1 16.7 9l1.8.6v3h-13v-3l1.8-.6z"/><path d="M3.5 15.5h17v2.5h-17z"/><path d="M10 4.5V2.8"/></svg></div>
-<div><b>Tender Copilot</b><br><small>Communion Engineering · Jinja</small></div></div>
-<div><a href="/">← Onzima Dawa</a></div></header>
+<div><b>Tender Copilot</b><br><small>{% if standalone %}Standalone workspace{% else %}Communion Engineering · Jinja{% endif %}</small></div></div>
+<div class="hdr-actions">
+{% if show_pharmacy_link %}<a href="/">← Onzima Dawa</a>{% endif %}
+{% if signed_in %}<span class="who">{{ user_name }}</span><button type="button" class="linkbtn" onclick="signOut()">Sign out</button>{% else %}<a href="/login?next=/tender">Sign in</a>{% endif %}
+</div></header>
 <main>
+<p class="standalone-note">{% if standalone %}Standalone Tender Copilot workspace — your staff sign-in works here and no pharmacy data is used.{% else %}Tender Copilot shares the same staff sign-in as Onzima Dawa.{% endif %}</p>
 <div class="panel"><h3>1 · Ingest Tender Document <span style="font-size:12px;color:var(--muted)">(0:00–0:30)</span></h3>
 <p class="hint">Upload a searchable tender PDF, or paste the tender text (scanned PDFs need OCR first).</p><br>
 <form class="grid" onsubmit="analyzePDF(event)">
@@ -61,15 +69,16 @@ pre{white-space:pre-wrap;background:var(--plum-950);color:#f3e8f7;padding:14px;b
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(u,m,b,isForm){const o={method:m||'GET'};if(isForm)o.body=b;else if(b){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(b)}const r=await fetch(u,o);if(r.status===401){$('tMsg').innerHTML='Please <a href="/login">log in</a> first (staff account).';throw new Error('login required')}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Error');return j}
+async function api(u,m,b,isForm){const o={method:m||'GET'};if(isForm)o.body=b;else if(b){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(b)}const r=await fetch(u,o);const j=await r.json().catch(()=>({}));if(r.status===401){$('tMsg').innerHTML='Please <a href="/login?next=/tender">sign in</a> first (staff account).';throw new Error('login required')}if(r.status===403)throw new Error(j.message||'Tender Copilot is not included in this plan.');if(!r.ok)throw new Error(j.error||'Error');return j}
 function render(d){$('tScore').textContent='— '+d.score+'% ('+d.found+'/'+d.total+')';
 $('tMatrix').innerHTML='<table><tr><th>Requirement</th><th>Status</th><th>Evidence</th></tr>'+d.matrix.map(m=>`<tr><td>${esc(m.label)}</td><td><span class="badge ${m.status==='FOUND'?'found':'missing'}">${esc(m.status)}</span></td><td style="font-size:12px">${esc(m.snippet)||'—'}</td></tr>`).join('')+'</table>';
 $('tRisks').innerHTML=d.risks.map(r=>`<div class="alert ${esc(r.level)}"><b>${esc(r.level)}</b> — ${esc(r.risk)}</div>`).join('');loadHist()}
 async function analyzePDF(e){e.preventDefault();const f=$('tFile').files[0];if(!f){$('tMsg').textContent='Choose a file first';return}const fd=new FormData();fd.append('file',f);$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',fd,true));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
 async function analyzeText(){const t=$('tText').value;if(!t.trim()){$('tMsg').textContent='Paste text first';return}$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',{text:t}));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
 async function genMethod(e){e.preventDefault();const d=await api('/api/tender/methodology','POST',{project_name:$('mProj').value,client:$('mClient').value,location:$('mLoc').value,duration_weeks:$('mWeeks').value,scope_summary:$('mScope').value,equipment:$('mEquip').value,team:$('mTeam').value});$('mOut').textContent=d.methodology}
-async function loadHist(){try{const h=await api('/api/tender/list');$('tHist').innerHTML=h.map(x=>`#${esc(x.id)} ${esc(x.filename)} — ${esc(x.score)}% (${esc(x.uploaded_at)})`).join('<br>')||'none yet'}catch(e){$('tHist').textContent='Log in via the Dawa page to view history.'}}
-loadHist();
+async function loadHist(){try{const h=await api('/api/tender/list');$('tHist').innerHTML=h.map(x=>`#${esc(x.id)} ${esc(x.filename)} — ${esc(x.score)}% (${esc(x.uploaded_at)})`).join('<br>')||'none yet'}catch(e){$('tHist').textContent='Sign in to view tender history.'}}
+async function signOut(){try{await fetch('/api/logout',{method:'POST'})}catch(e){}location.replace('/login?next=/tender')}
+{% if signed_in %}loadHist();{% else %}location.replace('/login?next=' + encodeURIComponent(location.pathname + location.search));{% endif %}
 </script>
 </body>
 </html>

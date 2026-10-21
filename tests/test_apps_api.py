@@ -88,6 +88,16 @@ def test_apps_api_for_tender_standalone(admin_client):
     assert apps["dashboard"]["entitled"] is True
 
 
+def test_apps_api_for_combined_pharmacy_and_tender(admin_client):
+    service.add_app("tender")
+
+    data = _payload(admin_client)
+    apps = _by_id(data)
+    assert data["plan"]["bundle"] == "pro"
+    assert apps["tender"]["entitled"] is True
+    assert apps["patients"]["entitled"] is True
+
+
 def test_apps_api_for_legacy_grandfathered_install(admin_client):
     service.set_bundle("legacy")
     data = _payload(admin_client)

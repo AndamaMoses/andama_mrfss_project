@@ -662,7 +662,9 @@ Revisit true modular runtime only when at least three of these are true:
 ## 14. Open decisions before Phase 4
 
 1. Final bundle prices — validate 120k/180k against the playbook's 80–150k.
-2. Tender Copilot brand name and domain.
+2. Tender Copilot brand name and domain. Brand retained as **Tender Copilot**;
+   optional separate-domain mapping is documented in
+   `docs/tender-standalone.md` (same codebase, no split).
 3. Tender landing: separate page now, or after three paying consultancies.
 4. Launcher landing default — Dashboard for staff, Apps for admins, or both?
 5. Hard expiry policy after the first renewal cycle; keep soft in v1.
@@ -680,6 +682,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 2 — Enforcement and API | DONE | 200 tests, ruff clean, smoke 9/9 | `drugshop/apps/guards.py` (endpoint map + `before_request` gate), `drugshop/apps/routes.py` (`GET /api/apps`), full route-coverage test, admin-denied/empty-table/page-redirect checks. Tender and Alerts tests now explicitly grant those standalone/add-on apps. |
 | 2a — Onzima grandfathering | DONE | 203 tests, ruff clean, smoke 9/9 | Added non-sellable `legacy` bundle (Pro + Alerts + Tender); `DEFAULT_BUNDLE` now seeds `legacy`. Existing already-seeded Pro installs can add the two apps with `plan add`. New deployments set `DRUGSHOP_BUNDLE=core`. |
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
+| 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
 
 ---
 
@@ -702,6 +705,7 @@ drugshop/static/js/boot.js             # apps bootstrap + grouped loaders
 drugshop/static/js/core/api.js         # 403 handling
 drugshop/__init__.py                   # register blueprint, gate, CLI
 drugshop/schema.sql                    # new tables
+docs/tender-standalone.md              # separate-domain mapping, demo hygiene
 run.py                                 # ensure_entitlements
 config.py                              # DEFAULT_BUNDLE, SUPPORT_WHATSAPP
 tests/conftest.py                      # seed Pro

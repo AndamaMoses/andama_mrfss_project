@@ -36,7 +36,9 @@ def test_launcher_markup_and_hooks_are_present(client):
         'id="upgradeModal"',
         'id="planCard"',
         'data-app="patients"',
+        'data-app="tender"',
         'data-section-apps="finance,patients"',
+        'data-section-apps="tender"',
         'id="i-apps"',
         'id="i-lock"',
     ):
@@ -46,9 +48,12 @@ def test_launcher_markup_and_hooks_are_present(client):
     for hook in (
         "function applyApps",
         "function renderLauncher",
+        "function launcherApps",
+        "var PHARMACY_APP_IDS",
         "function openUpgrade",
         "function closeUpgrade",
         "function handleUpgradeParam",
         "function canOpenTab",
     ):
         assert hook in js, hook
+    assert "app.id !== 'tender'" in js
