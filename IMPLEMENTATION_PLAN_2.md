@@ -537,7 +537,7 @@ results go in [`docs/pilot-tracker.md`](docs/pilot-tracker.md).
 | CLI | Set/add/remove, expiry, actor, invalid input, audit events |
 | Regression | All existing tests with Pro seeded (212 at Phase 5) |
 | Manual UI | Pro, Core, Growth, Tender; desktop/tablet/phone; keyboard |
-| Smoke | Login, `/api/apps`, Core denial, Pro access, Tender redirect, pages |
+| Smoke | Login, `/api/apps`, Core denial, Pro access, Tender redirect, backup, pages |
 
 Commands:
 
