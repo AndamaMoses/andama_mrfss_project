@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onzima Dawa — Kireka Apothecary System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --plum-950: #1b0724;
+      --plum-900: #2d0e37;
+      --plum-700: #4d1e5e;
+      --plum-500: #7c3e94;
+      --plum-100: #f1e5f6;
+      --gold: #f2a900;
+      --gold-deep: #b97a00;
+      --gold-100: #fdf0cd;
+      --cream: #faf3e6;
+      --paper: #fffdf6;
+      --ink: #2c1a2e;
+      --muted: #857183;
+      --terra: #c2502a;
+      --leaf: #2e7d4f;
+      --blood: #b3261e;
+      --serif: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
+      --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px
+    }
+
+    h1,
+    h2,
+    h3,
+    .serif {
+      font-family: var(--serif)
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh
+    }
+
+    /* ---------- Modern Glassmorphic Sidebar ---------- */
+    .side {
+      width: 260px;
+      min-width: 260px;
+      background: linear-gradient(180deg, #180520 0%, #260a33 35%, #1c0626 70%, #13031a 100%);
+      color: #ede2f3;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+      transition: width .28s cubic-bezier(.2, .8, .2, 1), transform .28s cubic-bezier(.2, .8, .2, 1);
+      z-index: 100;
+      border-right: 1px solid rgba(242, 169, 0, .15);
+      box-shadow: 2px 0 28px rgba(12, 2, 18, .4);
+      user-select: none;
+    }
+
+    .brand {
+      padding: 16px 14px 12px;
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      position: relative;
+      background: rgba(255, 255, 255, .015);
+    }
+
+    .brand .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffd86b 0%, #f2a900 65%, #b37500 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(242, 169, 0, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
+      border: 1px solid rgba(255, 255, 255, .3);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .brand .mark:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(242, 169, 0, .5)
+    }
+
+    .brand .mark svg {
+      width: 24px;
+      height: 24px;
+      stroke: #270732;
+      stroke-width: 2.1
+    }
+
+    .brand-text {
+      min-width: 0;
+      flex: 1
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .brand b {
+      font-family: var(--serif);
+      font-size: 17.5px;
+      color: #fff;
+      letter-spacing: .2px;
+      display: block;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, .4);
+    }
+
+    .brand-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: rgba(242, 169, 0, .18);
+      color: var(--gold);
+      border: 1px solid rgba(242, 169, 0, .35);
+      white-space: nowrap;
+    }
+
+    .brand small {
+      color: rgba(237, 226, 243, .65);
+      font-size: 11px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      display: block;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .side-close-btn {
+      display: none;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .16);
+      color: #efe3f4;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      margin-left: auto;
+      transition: all .18s ease;
+    }
+
+    .side-close-btn:hover {
+      background: rgba(242, 169, 0, .22);
+      border-color: var(--gold);
+      color: var(--gold)
+    }
+
+    /* Sidebar Live Status Pill */
+    .sidebar-status-pill {
+      margin: 9px 12px 3px;
+      padding: 4px 9px;
+      background: rgba(255, 255, 255, .035);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #cdb9d9;
+    }
+
+    .live-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, .7);
+      animation: pulse-green 2s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-green {
+      0% {
+        transform: scale(.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, .7)
+      }
+
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0)
+      }
+
+      100% {
+        transform: scale(.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0)
+      }
+    }
+
+    .live-text {
+      font-weight: 600;
+      letter-spacing: .3px;
+      flex: 1
+    }
+
+    .live-ver {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(242, 169, 0, .12);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* Sidebar Navigation */
+    .snav {
+      padding: 6px 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(242, 169, 0, .25) transparent;
+    }
+
+    .snav::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .snav::-webkit-scrollbar-thumb {
+      background: rgba(242, 169, 0, .25);
+      border-radius: 4px
+    }
+
+    .snav-section-title {
+      padding: 11px 9px 3px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: rgba(220, 200, 230, .4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .snav-section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .snav button,
+    .snav a.tender {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #d8c7e2;
+      padding: 8px 9px;
+      border-radius: 11px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      width: 100%;
+      text-decoration: none;
+      transition: all .18s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .snav button:hover,
+    .snav a.tender:hover {
+      background: rgba(255, 255, 255, .06);
+      border-color: rgba(255, 255, 255, .08);
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    .snav button.active {
+      background: linear-gradient(90deg, rgba(242, 169, 0, .22) 0%, rgba(242, 169, 0, .06) 100%);
+      border: 1px solid rgba(242, 169, 0, .35);
+      border-left: 3.5px solid var(--gold);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
+    }
+
+    .snav button.active .lbl {
+      color: #fff;
+      font-weight: 700
+    }
+
+    .snav button.active .ic-wrap {
+      background: rgba(242, 169, 0, .25);
+      color: var(--gold);
+      box-shadow: 0 0 10px rgba(242, 169, 0, .3);
+      border-color: rgba(242, 169, 0, .4);
+    }
+
+    .ic-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #d1bfe0;
+      transition: all .18s ease;
+      border: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .snav button:hover .ic-wrap,
+    .snav a.tender:hover .ic-wrap {
+      background: rgba(242, 169, 0, .16);
+      color: var(--gold);
+      border-color: rgba(242, 169, 0, .25);
+    }
+
+    .ic-wrap .ic {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .drug-ic-wrap {
+      color: #4ade80 !important
+    }
+
+    .tender-ic {
+      color: #fbbf24 !important
+    }
+
+    .staff-ic {
+      color: #60a5fa !important
+    }
+
+    .snav button .lbl,
+    .snav a.tender .lbl {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: .15px;
+    }
+
+    /* Micro Alert Badges */
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      line-height: 1;
+      letter-spacing: .3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+      animation: pop-in .25s ease;
+    }
+
+    @keyframes pop-in {
+      from {
+        transform: scale(.6);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .nav-badge.alert {
+      background: #e11d48;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .25)
+    }
+
+    .nav-badge.warn {
+      background: #d97706;
+      color: #fff
+    }
+
+    .nav-badge.gold {
+      background: var(--gold);
+      color: #2b0b37;
+      font-weight: 900
+    }
+
+    .ext-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(242, 169, 0, .15);
+      color: var(--gold);
+      border: 1px solid rgba(242, 169, 0, .3);
+    }
+
+    .ext-badge.mobile {
+      background: rgba(96, 165, 250, .15);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, .3)
+    }
+
+    .snav a.tender {
+      background: rgba(242, 169, 0, .05);
+      border: 1px dashed rgba(242, 169, 0, .35);
+      margin-top: 3px;
+    }
+
+    .snav a.tender:hover {
+      background: rgba(242, 169, 0, .14);
+      border-color: var(--gold)
+    }
+
+    .snav a.staff-link {
+      background: rgba(96, 165, 250, .05);
+      border: 1px dashed rgba(96, 165, 250, .3);
+      margin-top: 3px;
+    }
+
+    .snav a.staff-link:hover {
+      background: rgba(96, 165, 250, .14);
+      border-color: #60a5fa
+    }
+
+    /* Persona User Card */
+    .persona {
+      margin: 10px 10px 12px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 15px;
+      padding: 10px 11px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(15, 3, 20, .35);
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd359, #f2a900);
+      color: #270732;
+      font-family: var(--serif);
+      font-weight: 800;
+      font-size: 14.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
+      border: 1.5px solid rgba(255, 255, 255, .25);
+    }
+
+    .avatar-status-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #260a33;
+    }
+
+    .persona .who {
+      min-width: 0;
+      flex: 1
+    }
+
+    .persona .who b {
+      display: block;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rolebadge {
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .rolebadge.admin {
+      background: var(--gold);
+      color: #270732
+    }
+
+    .rolebadge.attendant {
+      background: rgba(124, 62, 148, .8);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .15)
+    }
+
+    .persona .acts {
+      display: flex;
+      flex-direction: column;
+      gap: 3px
+    }
+
+    .mini {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: #e5d8ec;
+      border-radius: 7px;
+      padding: 3px 8px;
+      font-size: 10.5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all .15s ease;
+    }
+
+    .mini:hover {
+      background: rgba(242, 169, 0, .22);
+      border-color: rgba(242, 169, 0, .45);
+      color: var(--gold)
+    }
+
+    .mini.danger:hover {
+      background: rgba(225, 29, 72, .25);
+      border-color: rgba(225, 29, 72, .45);
+      color: #fda4af
+    }
+
+    .side-collapse-btn {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .14);
+      color: #ede2f3;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      transition: all .18s ease;
+      flex-shrink: 0;
+    }
+
+    .side-collapse-btn:hover {
+      background: rgba(242, 169, 0, .22);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .side-collapse-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      transition: transform .25s ease
+    }
+
+    /* Desktop Collapsed Sidebar (Only applies on screens > 900px) */
+    @media(min-width:901px) {
+      .app.side-collapsed .side {
+        width: 74px;
+        min-width: 74px
+      }
+
+      .app.side-collapsed .brand {
+        padding: 14px 6px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center
+      }
+
+      .app.side-collapsed .brand .brand-text,
+      .app.side-collapsed .brand .brand-badge,
+      .app.side-collapsed .sidebar-status-pill {
+        display: none !important
+      }
+
+      .app.side-collapsed .side-collapse-btn {
+        margin: 0 auto;
+        width: 28px;
+        height: 28px
+      }
+
+      .app.side-collapsed .side-collapse-btn svg {
+        transform: rotate(180deg)
+      }
+
+      .app.side-collapsed .snav {
+        padding: 8px 6px;
+        align-items: center
+      }
+
+      .app.side-collapsed .snav-section-title {
+        padding: 10px 0 6px;
+        justify-content: center;
+        width: 100%
+      }
+
+      .app.side-collapsed .snav-section-title span {
+        display: none
+      }
+
+      .app.side-collapsed .snav-section-title::after {
+        content: "•";
+        color: rgba(255, 255, 255, .2);
+        font-size: 14px;
+        height: auto;
+        background: none;
+        text-align: center;
+      }
+
+      .app.side-collapsed .snav button,
+      .app.side-collapsed .snav a.tender {
+        justify-content: center;
+        padding: 8px 0;
+        width: 48px;
+        margin: 2px auto;
+        border-left: 1px solid transparent;
+      }
+
+      .app.side-collapsed .snav button.active {
+        border: 1px solid rgba(242, 169, 0, .4);
+        background: rgba(242, 169, 0, .2);
+      }
+
+      .app.side-collapsed .snav button .lbl,
+      .app.side-collapsed .snav a.tender .lbl,
+      .app.side-collapsed .ext-badge {
+        display: none !important
+      }
+
+      .app.side-collapsed .nav-badge {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        padding: 2px 4px;
+        font-size: 9px;
+        min-width: 14px;
+        text-align: center;
+      }
+
+      .app.side-collapsed .persona {
+        margin: 10px 6px;
+        padding: 8px 0;
+        justify-content: center
+      }
+
+      .app.side-collapsed .persona .who,
+      .app.side-collapsed .persona .acts {
+        display: none !important
+      }
+
+      /* Tooltips when collapsed */
+      .app.side-collapsed .snav button[data-title],
+      .app.side-collapsed .snav a.tender[data-title] {
+        position: relative
+      }
+
+      .app.side-collapsed .snav button[data-title]:hover::after,
+      .app.side-collapsed .snav a.tender[data-title]:hover::after {
+        content: attr(data-title);
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #180520;
+        color: #fff;
+        padding: 7px 13px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, .6);
+        border: 1px solid rgba(242, 169, 0, .35);
+        z-index: 9999;
+        pointer-events: none;
+        animation: tip-in .16s ease forwards;
+      }
+
+      .app.side-collapsed .snav button[data-title]:hover::before,
+      .app.side-collapsed .snav a.tender[data-title]:hover::before {
+        content: "";
+        position: absolute;
+        left: calc(100% + 6px);
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 5px 6px 5px 0;
+        border-style: solid;
+        border-color: transparent #180520 transparent transparent;
+        z-index: 10000;
+        pointer-events: none;
+      }
+    }
+
+    @keyframes tip-in {
+      from {
+        opacity: 0;
+        transform: translate(-4px, -50%)
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(0, -50%)
+      }
+    }
+
+    /* ---------- main ---------- */
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 22px 24px;
+      max-width: 1220px;
+      transition: padding .2s ease
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .desk-toggle-btn {
+      background: var(--paper);
+      border: 1.5px solid #d9c8a6;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--plum-700);
+      cursor: pointer;
+      transition: all .15s ease;
+      box-shadow: 0 2px 6px rgba(51, 18, 63, .06)
+    }
+
+    .desk-toggle-btn:hover {
+      background: var(--plum-100);
+      border-color: var(--gold);
+      color: var(--plum-900)
+    }
+
+    .desk-toggle-btn svg {
+      width: 20px;
+      height: 20px
+    }
+
+    .topbar h1 {
+      font-size: 26px;
+      color: var(--plum-900);
+      line-height: 1.2
+    }
+
+    .topbar h1 em {
+      color: var(--gold-deep);
+      font-style: normal
+    }
+
+    .topbar .clock {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    section.tab {
+      display: none
+    }
+
+    section.tab.active {
+      display: block;
+      animation: fade .25s ease
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .card {
+      background: var(--paper);
+      border-radius: 16px;
+      padding: 15px 16px;
+      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+      border: 1px solid #ecdfc8;
+      border-top: 4px solid var(--plum-500)
+    }
+
+    .card h3 {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: var(--sans);
+      font-weight: 800
+    }
+
+    .card .v {
+      font-family: var(--serif);
+      font-size: 27px;
+      font-weight: bold;
+      color: var(--plum-900);
+      margin-top: 5px
+    }
+
+    .card small {
+      color: var(--muted)
+    }
+
+    .card.gold {
+      border-top-color: var(--gold)
+    }
+
+    .card.danger {
+      border-top-color: var(--blood)
+    }
+
+    .card.warn {
+      border-top-color: var(--terra)
+    }
+
+    .panel {
+      background: var(--paper);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+      border: 1px solid #ecdfc8;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch
+    }
+
+    .panel>h2 {
+      font-size: 19px;
+      margin-bottom: 12px;
+      color: var(--plum-900);
+      display: flex;
+      align-items: center;
+      gap: 9px
+    }
+
+    .panel>h2 .ic {
+      stroke: var(--gold-deep)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px
+    }
+
+    th,
+    td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #eee0c8;
+      text-align: left
+    }
+
+    th {
+      color: var(--plum-700);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      border-bottom: 2px solid var(--gold)
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800
+    }
+
+    .b-expired {
+      background: #fbd9d5;
+      color: #8f1d12
+    }
+
+    .b-critical {
+      background: #fbe3b8;
+      color: #8a4a00
+    }
+
+    .b-warning {
+      background: #f9dcc3;
+      color: #8f3c10
+    }
+
+    .b-ok {
+      background: #cde9d6;
+      color: #155c33
+    }
+
+    .b-low {
+      background: #fbd9d5;
+      color: #8f1d12
+    }
+
+    .btn {
+      background: var(--plum-700);
+      color: #fff;
+      border: 0;
+      padding: 9px 16px;
+      border-radius: 11px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13.5px
+    }
+
+    .btn:hover {
+      background: var(--plum-900)
+    }
+
+    .btn.gold {
+      background: var(--gold);
+      color: #3a1149
+    }
+
+    .btn.gold:hover {
+      background: var(--gold-deep);
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--plum-700);
+      border: 1.5px solid var(--plum-500)
+    }
+
+    .btn.wa {
+      background: var(--leaf)
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 9px 11px;
+      border: 1.5px solid #d9c8a6;
+      border-radius: 10px;
+      font-size: 14px;
+      width: 100%;
+      background: #fffdf8;
+      font-family: var(--sans)
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid var(--gold);
+      border-color: var(--gold)
+    }
+
+    form.grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      align-items: end
+    }
+
+    .alert {
+      padding: 11px 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 14px
+    }
+
+    .alert.red {
+      background: #fdf0ee;
+      border: 1px solid #f2b8ae
+    }
+
+    .alert.amber {
+      background: #fdf6e3;
+      border: 1px solid #ecd27a
+    }
+
+    .alert.green {
+      background: #edf7f0;
+      border: 1px solid #a9d8bc
+    }
+
+    .flex {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    /* modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 9, 46, .6);
+      z-index: 55;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .modal.show {
+      display: flex
+    }
+
+    .modal .box {
+      background: var(--paper);
+      border-radius: 18px;
+      padding: 24px;
+      width: 380px;
+      border-top: 5px solid var(--gold)
+    }
+
+    .modal .box h2 {
+      color: var(--plum-900);
+      margin-bottom: 12px
+    }
+
+    .modal label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--muted)
+    }
+
+    .modal input {
+      margin: 4px 0 10px
+    }
+
+    /* receipt */
+    #receiptArea {
+      display: none
+    }
+
+    .receipt {
+      width: 280px;
+      margin: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #000;
+      background: #fff;
+      padding: 10px
+    }
+
+    .receipt h3,
+    .receipt p {
+      text-align: center;
+      margin: 2px 0
+    }
+
+    .receipt table {
+      font-size: 12px
+    }
+
+    .receipt td {
+      border: 0;
+      padding: 2px
+    }
+
+    @media print {
+      body * {
+        visibility: hidden
+      }
+
+      #receiptArea,
+      #receiptArea * {
+        visibility: visible
+      }
+
+      #receiptArea {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%
+      }
+    }
+
+    body[data-role="attendant"] [data-admin] {
+      display: none !important
+    }
+
+    /* Mobile Topbar & Bottom Nav elements hidden by default on desktop */
+    .mobile-topbar {
+      display: none
+    }
+
+    .side-backdrop {
+      display: none
+    }
+
+    .mobile-bottom-nav {
+      display: none
+    }
+
+    /* ---------- Responsive Media Queries ---------- */
+    @media(max-width:900px) {
+      .desk-toggle-btn {
+        display: none
+      }
+
+      .app {
+        display: block;
+        min-height: 100vh
+      }
+
+      /* Sticky Mobile Header */
+      .mobile-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 58px;
+        padding: 0 14px;
+        background: linear-gradient(135deg, var(--plum-950), var(--plum-900));
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 900;
+        box-shadow: 0 3px 14px rgba(35, 9, 46, .45)
+      }
+
+      .mob-menu-btn {
+        background: rgba(255, 255, 255, .1);
+        border: 1px solid rgba(255, 255, 255, .18);
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0
+      }
+
+      .mob-menu-btn:active {
+        background: rgba(242, 169, 0, .25)
+      }
+
+      .mob-menu-btn svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--gold)
+      }
+
+      .mob-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--serif);
+        font-size: 17px;
+        color: #fff
+      }
+
+      .mob-brand .mark-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0
+      }
+
+      .mob-brand .mark-sm svg {
+        width: 18px;
+        height: 18px;
+        stroke: #3a1149
+      }
+
+      .mob-avatar-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0
+      }
+
+      .avatar-sm {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #3a1149;
+        font-family: var(--serif);
+        font-weight: bold;
+        font-size: 13.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .3)
+      }
+
+      /* Off-canvas Mobile Drawer Sidebar */
+      .side {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 290px;
+        max-width: 85vw;
+        height: 100vh;
+        height: 100dvh;
+        min-width: 0 !important;
+        z-index: 1000;
+        transform: translateX(-100%);
+        box-shadow: none;
+        transition: transform .28s cubic-bezier(.2, .8, .2, 1);
+      }
+
+      .side.open {
+        transform: translateX(0);
+        box-shadow: 8px 0 40px rgba(0, 0, 0, .75)
+      }
+
+      .side-collapse-btn {
+        display: none !important
+      }
+
+      .side-close-btn {
+        display: flex !important
+      }
+
+      .snav {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch
+      }
+
+      .snav button,
+      .snav a.tender {
+        white-space: normal;
+        padding: 10px 12px;
+        transform: none !important;
+        width: 100% !important
+      }
+
+      .snav button span.lbl,
+      .snav a.tender span.lbl {
+        display: inline !important
+      }
+
+      .persona {
+        margin: 10px 12px
+      }
+
+      .persona .who,
+      .persona .acts {
+        display: flex !important
+      }
+
+      /* Backdrop Dimming */
+      .side-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 5, 28, .68);
+        backdrop-filter: blur(3px);
+        z-index: 995;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease
+      }
+
+      .side-backdrop.active {
+        opacity: 1;
+        pointer-events: auto
+      }
+
+      /* Thumb-friendly Mobile Bottom Bar */
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 58px;
+        background: var(--plum-950);
+        border-top: 1px solid rgba(242, 169, 0, .22);
+        z-index: 900;
+        padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+        box-shadow: 0 -3px 14px rgba(0, 0, 0, .35)
+      }
+
+      .mobile-bottom-nav button {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        background: none;
+        border: none;
+        color: #c9b3d4;
+        font-size: 10.5px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 4px 2px;
+        border-radius: 8px;
+        transition: color .15s, background .15s
+      }
+
+      .mobile-bottom-nav button .ic {
+        width: 20px;
+        height: 20px
+      }
+
+      .mobile-bottom-nav button.active {
+        color: var(--gold);
+        background: rgba(242, 169, 0, .14)
+      }
+
+      /* Content Spacing on Mobile */
+      .main {
+        padding: 14px 12px calc(74px + env(safe-area-inset-bottom)) 12px;
+        max-width: 100%
+      }
+
+      .topbar {
+        margin-bottom: 12px
+      }
+
+      .topbar h1 {
+        font-size: 22px
+      }
+
+      .panel {
+        padding: 14px
+      }
+
+      table {
+        min-width: 480px
+      }
+    }
+  </style>
+</head>
+
+<body data-role="">
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-mark" viewBox="0 0 24 24">
+      <path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z" />
+      <path d="M13.5 3.5l5.5 5.5" />
+      <path d="M7 21h10" />
+    </symbol>
+    <symbol id="i-dash" viewBox="0 0 24 24">
+      <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="3.5" width="7" height="4.5" rx="2" />
+      <rect x="13.5" y="10.5" width="7" height="10" rx="2" />
+      <rect x="3.5" y="13" width="7" height="7.5" rx="2" />
+    </symbol>
+    <symbol id="i-pos" viewBox="0 0 24 24">
+      <path d="M4 10h16l-1.4 8.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z" />
+      <path d="M8.5 10L12 4.5 15.5 10" />
+      <path d="M10 14.5h4" />
+    </symbol>
+    <symbol id="i-stock" viewBox="0 0 24 24">
+      <path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z" />
+      <path d="M3.5 7.5L12 12l8.5-4.5" />
+      <path d="M12 12v9" />
+    </symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24">
+      <rect x="3" y="7" width="18" height="13" rx="2.5" />
+      <circle cx="12" cy="13.5" r="3.6" />
+      <path d="M8.5 7l1.2-2.3h4.6L15.5 7" />
+    </symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24">
+      <path d="M7 4h11l-3.2-3.2M17 20H6l3.2 3.2" transform="translate(0 1.5)" />
+      <path d="M4 9.5h16M4 15.5h16" />
+    </symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24">
+      <path
+        d="M12 20s-7.5-4.6-9.3-9.2C1.5 7.6 3.6 4.5 6.8 4.5c2 0 3.7 1.2 5.2 3.3 1.5-2.1 3.2-3.3 5.2-3.3 3.2 0 5.3 3.1 4.1 6.3C19.5 15.4 12 20 12 20z" />
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M6 16v-5.5a6 6 0 0 1 12 0V16l1.5 2.5h-15z" />
+      <path d="M10 21a2.2 2.2 0 0 0 4 0" />
+    </symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="6.5" rx="7" ry="3" />
+      <path d="M5 6.5v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
+      <path d="M5 12.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" />
+    </symbol>
+    <symbol id="i-hat" viewBox="0 0 24 24">
+      <path d="M10 4.5A6.5 6.5 0 0 1 16.7 9l1.8.6v3h-13v-3l1.8-.6z" />
+      <path d="M3.5 15.5h17v2.5h-17z" />
+      <path d="M10 4.5V2.8" />
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3.6" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </symbol>
+    <symbol id="i-print" viewBox="0 0 24 24">
+      <path d="M7 8V3.5h10V8" />
+      <rect x="4" y="8" width="16" height="8" rx="2" />
+      <rect x="7" y="13.5" width="10" height="7" />
+    </symbol>
+    <symbol id="i-out" viewBox="0 0 24 24">
+      <path d="M14 4H6.5v16H14" />
+      <path d="M10 12h10.5M18 8.5L21.5 12 18 15.5" />
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3l7.5 3v5.5c0 4.5-3.2 7.7-7.5 9.5-4.3-1.8-7.5-5-7.5-9.5V6z" />
+      <path d="M9 11.5l2.2 2.2L15.5 9" />
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M9 3v18M14 9l-3 3 3 3" />
+    </symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24">
+      <path d="M10.5 2.5l-8 8a4.24 4.24 0 0 0 6 6l8-8a4.24 4.24 0 0 0-6-6z" />
+      <line x1="7" y1="12" x2="12" y2="7" />
+    </symbol>
+  </svg>
+
+  <!-- Mobile Top Header Bar -->
+  <header class="mobile-topbar" id="mobileTopbar">
+    <button type="button" class="mob-menu-btn" onclick="toggleMobileSidebar(true)" aria-label="Open menu">
+      <svg class="ic">
+        <use href="#i-menu" />
+      </svg>
+    </button>
+    <div class="mob-brand">
+      <div class="mark-sm"><svg>
+          <use href="#i-mark" />
+        </svg></div>
+      <b>Onzima Dawa</b>
+    </div>
+    <button type="button" class="mob-avatar-btn" onclick="openProfile()" aria-label="My Profile">
+      <div class="avatar-sm" id="mobAvatar">?</div>
+    </button>
+  </header>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="side-backdrop" id="sideBackdrop" onclick="toggleMobileSidebar(false)"></div>
+
+  <div class="app">
+    <aside class="side" id="appSidebar">
+      <div class="brand">
+        <div class="mark"><svg>
+            <use href="#i-mark" />
+          </svg></div>
+        <div class="brand-text">
+          <div class="brand-title-wrap">
+            <b>Onzima Dawa</b>
+            <span class="brand-badge">Apothecary</span>
+          </div>
+          <small>Kireka · Kampala</small>
+        </div>
+        <button type="button" class="side-collapse-btn" onclick="toggleDesktopSidebar()"
+          title="Collapse / Expand Sidebar" aria-label="Toggle Sidebar">
+          <svg class="ic">
+            <use href="#i-collapse" />
+          </svg>
+        </button>
+        <button type="button" class="side-close-btn" onclick="toggleMobileSidebar(false)"
+          aria-label="Close menu">✕</button>
+      </div>
+
+      <div class="sidebar-status-pill">
+        <span class="live-pulse"></span>
+        <span class="live-text">System Live</span>
+        <span class="live-ver">v2.2</span>
+      </div>
+
+      <nav class="snav" id="sidebarNav">
+        <div class="snav-section-title"><span>OPERATIONS</span></div>
+
+        <button class="active" data-tab="dash" data-title="Dukani Dashboard" onclick="switchTab('dash')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-dash" />
+            </svg></span>
+          <span class="lbl">Dukani Dashboard</span>
+        </button>
+
+        <button data-tab="pos" data-title="Sell / POS" onclick="switchTab('pos')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-pos" />
+            </svg></span>
+          <span class="lbl">Sell / POS</span>
+        </button>
+
+        <button data-tab="stock" data-title="Stock & Expiry" onclick="switchTab('stock')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-stock" />
+            </svg></span>
+          <span class="lbl">Stock & Expiry</span>
+          <span class="nav-badge alert" id="badgeStockExpiry" style="display:none">0</span>
+        </button>
+
+        <div class="snav-section-title"><span>FINANCE & CARE</span></div>
+
+        <button data-tab="inv" data-title="Invoices" onclick="switchTab('inv')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-cam" />
+            </svg></span>
+          <span class="lbl">Invoices</span>
+        </button>
+
+        <button data-tab="rec" data-title="Reconciliation" onclick="switchTab('rec')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-scale" />
+            </svg></span>
+          <span class="lbl">Reconciliation</span>
+        </button>
+
+        <button data-tab="pat" data-title="Refill Care" onclick="switchTab('pat')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-heart" />
+            </svg></span>
+          <span class="lbl">Refill Care</span>
+          <span class="nav-badge gold" id="badgeRefillCare" style="display:none">0</span>
+        </button>
+
+        <button data-tab="fin" data-title="Credit & Expenses" onclick="switchTab('fin')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-coins" />
+            </svg></span>
+          <span class="lbl">Credit & Expenses</span>
+          <span class="nav-badge warn" id="badgeCreditOwed" style="display:none">!</span>
+        </button>
+
+        <div class="snav-section-title" data-admin><span>INVENTORY & DATA</span></div>
+
+        <button data-tab="alerts" data-title="Stock Alerts" onclick="switchTab('alerts')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-bell" />
+            </svg></span>
+          <span class="lbl">Stock Alerts</span>
+          <span class="nav-badge alert" id="badgeStockAlerts" style="display:none">0</span>
+        </button>
+
+        <button data-tab="drugs" data-admin data-title="Drug Catalogue" onclick="switchTab('drugs')">
+          <span class="ic-wrap drug-ic-wrap"><svg class="ic">
+              <use href="#i-pill" />
+            </svg></span>
+          <span class="lbl">💊 Drug Catalogue</span>
+        </button>
+
+        <button data-tab="manage" data-admin data-title="Manage Data" onclick="switchTab('manage')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-shield" />
+            </svg></span>
+          <span class="lbl">Manage Data</span>
+        </button>
+
+        <div class="snav-section-title"><span>PORTALS</span></div>
+
+        <a class="tender" href="/tender" data-title="Tender Copilot">
+          <span class="ic-wrap tender-ic"><svg class="ic">
+              <use href="#i-hat" />
+            </svg></span>
+          <span class="lbl">Tender Copilot</span>
+          <span class="ext-badge">UNRA</span>
+        </a>
+
+        <a class="tender staff-link" href="/staff" data-title="My Shift · Mobile">
+          <span class="ic-wrap staff-ic"><svg class="ic">
+              <use href="#i-user" />
+            </svg></span>
+          <span class="lbl">My Shift · Mobile</span>
+          <span class="ext-badge mobile">POS</span>
+        </a>
+      </nav>
+
+      <div class="persona">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatar">?</div>
+          <span class="avatar-status-dot" title="Active"></span>
+        </div>
+        <div class="who">
+          <b id="whoName">…</b>
+          <span class="rolebadge attendant" id="whoRole">…</span>
+        </div>
+        <div class="acts">
+          <button class="mini" onclick="openProfile()" title="My Profile">Profile</button>
+          <button class="mini" onclick="switchUser()" title="Switch user account">Switch</button>
+          <button class="mini danger" onclick="logout()" title="Logout">Exit</button>
+        </div>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="desk-toggle-btn" onclick="toggleDesktopSidebar()"
+            title="Collapse / Expand Sidebar (Toggle)">
+            <svg class="ic">
+              <use href="#i-collapse" />
+            </svg>
+          </button>
+          <h1 id="pageTitle">Dukani <em>Dashboard</em></h1>
+        </div>
+        <span class="clock" id="clock"></span>
+      </div>
+      <main>
+        <section id="tab-dash" class="tab active">
+          <div class="cards" id="kpis"></div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-bell" />
+              </svg>Expiry Watchdog</h2>
+            <div id="watch"></div>
+          </div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-heart" />
+              </svg>Refills Due — Day-25 Rule</h2>
+            <div id="dashRefill"></div>
+          </div>
+        </section>
+
+        <section id="tab-pos" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-pos" />
+              </svg>Quick Sale — Single Item</h2>
+            <form class="grid" onsubmit="makeSale(event)">
+              <select id="sProd" required></select>
+              <input id="sQty" type="number" min="1" value="1" required placeholder="Qty">
+              <select id="sMethod">
+                <option value="CASH">CASH</option>
+                <option value="MTN_MOMO">MTN MoMo</option>
+                <option value="AIRTEL_MOMO">Airtel MoMo</option>
+                <option value="CREDIT">CREDIT</option>
+              </select>
+              <input id="sBy" placeholder="Served by">
+              <input id="sCust" placeholder="Customer name">
+              <input id="sPhone" placeholder="Customer phone">
+              <button class="btn">Sell</button>
+              <button type="button" class="btn ghost" onclick="addToBasket()">+ Basket</button>
+            </form>
+            <p id="saleMsg" style="margin-top:8px"></p>
+          </div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-pos" />
+              </svg>Basket — Multi-Item, One Receipt</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Est. total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="basketRows">
+                <tr>
+                  <td colspan="4">Empty — add items with + Basket</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="flex" style="margin-top:10px"><input id="bCustomer"
+                placeholder="Customer name (required for CREDIT)" style="max-width:260px">
+              <input id="bPhone" placeholder="Customer phone" style="max-width:180px">
+              <select id="bMethod" style="max-width:180px">
+                <option value="CASH">CASH</option>
+                <option value="MTN_MOMO">MTN MoMo</option>
+                <option value="AIRTEL_MOMO">Airtel MoMo</option>
+                <option value="CREDIT">CREDIT</option>
+              </select>
+              <input id="bBy" placeholder="Served by" style="max-width:160px">
+              <button class="btn gold" onclick="completeBasket()">Complete Sale + Print</button>
+              <button class="btn ghost" onclick="clearBasket()">Clear</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-print" />
+              </svg>Today's Sales <input type="date" id="salesDate" onchange="loadSales()" style="width:auto"> <button
+                class="btn ghost" onclick="printDayReport()">Day Report</button></h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th>Method</th>
+                  <th>Customer</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="salesRows"></tbody>
+            </table>
+          </div>
+          <div id="receiptArea">
+            <div class="receipt" id="receiptBox"></div>
+          </div>
+        </section>
+
+        <section id="tab-stock" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-stock" />
+              </svg>Register Product</h2>
+            <form class="grid" id="prodForm" onsubmit="addProduct(event)">
+              <input id="pName" required placeholder="Name e.g. Amoxicillin 500mg">
+              <input id="pCat" placeholder="Category" value="General">
+              <input id="pUnit" placeholder="Unit" value="tabs">
+              <input id="pReorder" type="number" value="10" placeholder="Reorder level">
+              <input id="pBuy" type="number" value="0" placeholder="Buy price UGX">
+              <input id="pSell" type="number" value="0" placeholder="Sell price UGX">
+              <button class="btn" id="prodBtn">Add</button>
+              <button type="button" class="btn ghost" id="prodCancel" style="display:none"
+                onclick="cancelEditProd()">Cancel</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-stock" />
+              </svg>Receive Stock Batch</h2>
+            <form class="grid" onsubmit="addBatch(event)">
+              <select id="bProd" required></select>
+              <input id="bNo" placeholder="Batch no">
+              <input id="bQty" type="number" min="1" required placeholder="Qty received">
+              <input id="bExp" type="date" required>
+              <input id="bSup" placeholder="Supplier">
+              <input id="bInv" placeholder="Invoice no">
+              <button class="btn">Save Batch</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Stock Levels</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>On Hand</th>
+                  <th>Reorder</th>
+                  <th>Sell UGX</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="stockRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Batches — FEFO Order</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Batch</th>
+                  <th>Left</th>
+                  <th>Expiry</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="batchRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-inv" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-cam" />
+              </svg>Capture Supplier Invoice</h2>
+            <form class="grid" onsubmit="uploadInvoice(event)">
+              <input id="iNo" placeholder="Invoice no">
+              <input id="iSup" placeholder="Supplier">
+              <input id="iDate" type="date">
+              <input id="iPhoto" type="file" accept="image/*">
+              <input id="iOcr" placeholder="OCR / typed notes (optional)">
+              <button class="btn">Save Invoice</button>
+            </form>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px">AI OCR hook: photo is stored in /uploads.
+              Connect Tesseract/Cloud Vision later — the <code>ocr_text</code> field is ready.</p>
+          </div>
+          <div class="panel">
+            <h2>Invoices</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Invoice</th>
+                  <th>Supplier</th>
+                  <th>Photo</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="invRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-rec" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-scale" />
+              </svg>End-of-Day MoMo & Cash Check</h2>
+            <div class="flex"><input type="date" id="rDate" style="max-width:200px">
+              <button class="btn ghost" onclick="calcRec()">Calculate Expected</button>
+            </div>
+            <div id="recExp" style="margin:10px 0"></div>
+            <form class="grid" onsubmit="saveRec(event)">
+              <input id="cCash" type="number" value="0" placeholder="Counted CASH">
+              <input id="cMtn" type="number" value="0" placeholder="Counted MTN MoMo">
+              <input id="cAirtel" type="number" value="0" placeholder="Counted Airtel MoMo">
+              <input id="rNotes" placeholder="Notes">
+              <button class="btn">Save Reconciliation</button>
+            </form>
+            <p id="recMsg"></p>
+          </div>
+          <div class="panel">
+            <h2>History</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Expected (C/M/A)</th>
+                  <th>Counted (C/M/A)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-pat" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-heart" />
+              </svg>Enroll Chronic Patient</h2>
+            <form class="grid" onsubmit="addPatient(event)">
+              <input id="ptName" required placeholder="Patient name">
+              <input id="ptPhone" required placeholder="Phone e.g. 0774...">
+              <select id="ptDrug"></select>
+              <input id="ptLast" type="date" required>
+              <input id="ptCycle" type="number" value="30">
+              <button class="btn">Save</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Reminders — Auto Day-25</h2>
+            <div id="remList"></div>
+          </div>
+        </section>
+
+        <section id="tab-alerts" class="tab">
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-shield" />
+              </svg>Alert Settings</h2>
+            <form class="grid" onsubmit="saveSettings(event)">
+              <input id="setShop" placeholder="Shop name">
+              <input id="setPhone" placeholder="Shop phone">
+              <input id="setMgr" placeholder="Manager phone for SMS (e.g. 077...)">
+              <input id="setFooter" placeholder="Receipt footer">
+              <button class="btn">Save Settings</button>
+            </form>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px">Real SMS via Africa's Talking: set
+              <code>AT_USERNAME</code> + <code>AT_API_KEY</code> env vars on the server. Without them, messages are
+              logged as SIMULATED and you can send via phone SMS/WhatsApp buttons.</p>
+          </div>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-bell" />
+              </svg>Low-Stock Alerts <button class="btn ghost" onclick="loadAlerts()">Refresh</button></h2>
+            <div id="alertList"></div>
+          </div>
+          <div class="panel">
+            <h2>Send Log</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>To</th>
+                  <th>Channel</th>
+                  <th>Status</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody id="smsRows"></tbody>
+            </table>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-print" />
+              </svg>Backup & Export</h2>
+            <div class="flex">
+              <button class="btn" onclick="location.href='/api/backup'">Download Backup (.db)</button>
+              <button class="btn ghost" onclick="location.href='/api/export/sales'">Sales CSV</button>
+              <button class="btn ghost" onclick="location.href='/api/export/stock'">Stock CSV</button>
+              <button class="btn ghost" onclick="location.href='/api/export/patients'">Patients CSV</button>
+            </div>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-user" />
+              </svg>Team — Staff Accounts</h2>
+            <form class="grid" onsubmit="addUser(event)"><input id="nuName" placeholder="Username"><input id="nuPass"
+                placeholder="Password"><input id="nuDisp" placeholder="Display name"><select id="nuRole">
+                <option value="attendant">Sales Agent</option>
+                <option value="admin">Shop Owner</option>
+              </select><button class="btn gold">Add Staff</button></form>
+            <p id="userMsg"></p><br>
+            <table>
+              <thead>
+                <tr>
+                  <th>Staff</th>
+                  <th>Username</th>
+                  <th>Persona</th>
+                  <th>Phone</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="teamRows"></tbody>
+            </table>
+          </div>
+          <div class="panel" data-admin>
+            <h2><svg class="ic">
+                <use href="#i-dash" />
+              </svg>Login & Shift Activity <button class="btn ghost" onclick="loadActivity()">Refresh</button></h2>
+            <div id="shiftBox"></div>
+            <h3 style="margin:10px 0 6px;font-family:var(--serif);color:var(--plum-900)">Recent Sign-ins</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Staff</th>
+                  <th>Time</th>
+                  <th>From</th>
+                </tr>
+              </thead>
+              <tbody id="loginRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-fin" class="tab">
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-coins" />
+              </svg>Credit Ledger <button class="btn ghost" onclick="loadCredit()">Refresh</button></h2>
+            <div id="creditSummary"></div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Paid</th>
+                  <th>Balance</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="creditRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Expenses <input type="month" id="expMonth" onchange="loadExpenses()" style="width:auto"></h2>
+            <form class="grid" onsubmit="addExpense(event)"><input id="eDesc" required
+                placeholder="Description e.g. Shop rent"><input id="eCat" placeholder="Category" value="Rent"><input
+                id="eAmt" type="number" min="1" required placeholder="Amount UGX"><input id="eDate" type="date"><button
+                class="btn">Add Expense</button></form><br>
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="expRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Profit Today</h2>
+            <div id="profitBox"></div>
+          </div>
+          <div class="panel">
+            <h2>Customer Directory <button class="btn ghost" onclick="loadCustomers()">Refresh</button></h2>
+            <form class="grid" onsubmit="addCustomer(event)"><input id="ncName" placeholder="Name"><input id="ncPhone"
+                placeholder="Phone e.g. 077..."><input id="ncNotes" placeholder="Notes (optional)"><button
+                class="btn">Add Customer</button></form><br>
+            <input id="custQ" placeholder="Search name or phone…" oninput="loadCustomers()"
+              style="max-width:280px"><br><br>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Visits</th>
+                  <th>Spent UGX</th>
+                  <th>Owes UGX</th>
+                </tr>
+              </thead>
+              <tbody id="custRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== DRUG CATALOGUE TAB (Admin Only) ===== -->
+        <section id="tab-drugs" class="tab" data-admin>
+          <style>
+            .drug-hero {
+              background: linear-gradient(135deg, #1a4d2e 0%, #2e7d4f 60%, #3da06a 100%);
+              border-radius: 18px;
+              padding: 22px 24px;
+              margin-bottom: 18px;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 18px
+            }
+
+            .drug-hero .dh-icon {
+              width: 56px;
+              height: 56px;
+              border-radius: 16px;
+              background: rgba(255, 255, 255, .15);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              font-size: 28px
+            }
+
+            .drug-hero h2 {
+              color: #fff;
+              font-size: 22px;
+              margin: 0 0 4px;
+              font-family: var(--serif)
+            }
+
+            .drug-hero p {
+              color: rgba(255, 255, 255, .82);
+              font-size: 13px;
+              margin: 0
+            }
+
+            .drug-lock {
+              display: inline-block;
+              background: rgba(255, 255, 255, .18);
+              border: 1px solid rgba(255, 255, 255, .3);
+              padding: 3px 12px;
+              border-radius: 20px;
+              font-size: 11px;
+              font-weight: 800;
+              letter-spacing: .8px;
+              text-transform: uppercase;
+              margin-top: 8px
+            }
+
+            .drug-stats-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+              gap: 10px;
+              margin-bottom: 18px
+            }
+
+            .dstat {
+              background: var(--paper);
+              border-radius: 14px;
+              padding: 13px 15px;
+              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+              border: 1px solid #ecdfc8;
+              border-top: 3px solid #2e7d4f
+            }
+
+            .dstat h4 {
+              font-size: 11px;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: .9px;
+              font-family: var(--sans);
+              font-weight: 800;
+              margin-bottom: 4px
+            }
+
+            .dstat .dv {
+              font-family: var(--serif);
+              font-size: 24px;
+              font-weight: bold;
+              color: #1a4d2e
+            }
+
+            .drug-form-panel {
+              background: var(--paper);
+              border-radius: 16px;
+              padding: 20px;
+              margin-bottom: 16px;
+              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+              border: 2px solid #a5d6b5;
+              position: relative;
+              overflow: hidden
+            }
+
+            .drug-form-panel::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 4px;
+              background: linear-gradient(90deg, #2e7d4f, #3da06a)
+            }
+
+            .drug-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+              gap: 10px;
+              align-items: end
+            }
+
+            .drug-grid label {
+              font-size: 11.5px;
+              font-weight: 800;
+              color: var(--muted);
+              display: block;
+              margin-bottom: 3px;
+              text-transform: uppercase;
+              letter-spacing: .5px
+            }
+
+            .drug-grid input {
+              margin: 0
+            }
+
+            .btn-green {
+              background: linear-gradient(135deg, #2e7d4f, #3da06a);
+              color: #fff;
+              border: 0;
+              padding: 10px 18px;
+              border-radius: 11px;
+              cursor: pointer;
+              font-weight: 800;
+              font-size: 13.5px;
+              transition: opacity .15s;
+              white-space: nowrap;
+              width: 100%
+            }
+
+            .btn-green:hover {
+              opacity: .88
+            }
+
+            .btn-red-sm {
+              background: linear-gradient(135deg, #b3261e, #e53935);
+              color: #fff;
+              border: 0;
+              padding: 5px 11px;
+              border-radius: 9px;
+              cursor: pointer;
+              font-weight: 700;
+              font-size: 12px;
+              transition: opacity .15s
+            }
+
+            .btn-red-sm:hover {
+              opacity: .85
+            }
+
+            .btn-edit-sm {
+              background: var(--plum-700);
+              color: #fff;
+              border: 0;
+              padding: 5px 11px;
+              border-radius: 9px;
+              cursor: pointer;
+              font-weight: 700;
+              font-size: 12px
+            }
+
+            .btn-edit-sm:hover {
+              background: var(--plum-900)
+            }
+
+            .drug-table-panel {
+              background: var(--paper);
+              border-radius: 16px;
+              padding: 18px;
+              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+              border: 1px solid #ecdfc8;
+              overflow-x: auto
+            }
+
+            .drug-table-panel h2 {
+              color: #1a4d2e;
+              margin-bottom: 10px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              flex-wrap: wrap
+            }
+
+            #drugTable th {
+              color: #1a4d2e;
+              border-bottom: 2px solid #2e7d4f
+            }
+
+            .pill-ok {
+              display: inline-block;
+              padding: 2px 10px;
+              border-radius: 20px;
+              font-size: 11.5px;
+              font-weight: 800;
+              background: #e8f5ed;
+              color: #1a4d2e;
+              border: 1px solid #a5d6b5
+            }
+
+            .pill-low {
+              display: inline-block;
+              padding: 2px 10px;
+              border-radius: 20px;
+              font-size: 11.5px;
+              font-weight: 800;
+              background: #fbd9d5;
+              color: #8f1d12;
+              border: 1px solid #f2b8ae
+            }
+
+            .drug-empty {
+              text-align: center;
+              padding: 40px;
+              color: var(--muted);
+              font-size: 15px
+            }
+          </style>
+
+          <div class="drug-hero">
+            <div class="dh-icon">💊</div>
+            <div>
+              <h2>Drug Catalogue</h2>
+              <p>Manage your complete medicines inventory. Add new drugs, update prices, or remove discontinued items.
+              </p>
+              <span class="drug-lock">🔒 Admin Access Only</span>
+            </div>
+          </div>
+
+          <div class="drug-stats-grid" id="drugStats"></div>
+
+          <div class="drug-form-panel">
+            <h2 style="color:#1a4d2e;margin-bottom:14px"><svg class="ic" style="stroke:#2e7d4f">
+                <use href="#i-pill" />
+              </svg> <span id="drugFormTitle">Add New Drug / Medicine</span></h2>
+            <form class="drug-grid" id="drugForm" onsubmit="saveDrug(event)">
+              <div>
+                <label>Drug Name *</label>
+                <input id="dName" required placeholder="e.g. Amoxicillin 500mg">
+              </div>
+              <div>
+                <label>Category</label>
+                <input id="dCat" placeholder="Antibiotic / Analgesic…" value="General">
+              </div>
+              <div>
+                <label>Unit</label>
+                <input id="dUnit" placeholder="tabs / ml / sachets" value="tabs">
+              </div>
+              <div>
+                <label>Reorder Level</label>
+                <input id="dReorder" type="number" value="10" min="0">
+              </div>
+              <div>
+                <label>Buy Price (UGX)</label>
+                <input id="dBuy" type="number" value="0" min="0" step="any">
+              </div>
+              <div>
+                <label>Sell Price (UGX)</label>
+                <input id="dSell" type="number" value="0" min="0" step="any">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <button type="submit" class="btn-green" id="drugBtn">➕ Add Drug</button>
+                <button type="button" class="btn ghost" id="drugCancel" style="display:none"
+                  onclick="cancelDrugEdit()">Cancel</button>
+              </div>
+            </form>
+            <p id="drugMsg" style="margin-top:10px;font-size:13px;font-weight:700"></p>
+          </div>
+
+          <div class="drug-table-panel">
+            <h2>
+              <svg class="ic" style="stroke:#2e7d4f">
+                <use href="#i-pill" />
+              </svg>
+              All Drugs in Catalogue
+              <span id="drugCountBadge"
+                style="font-size:13px;font-weight:700;color:var(--muted);font-family:var(--sans)"></span>
+              <input id="drugSearch" placeholder="🔍 Search drug…" oninput="filterDrugs()"
+                style="margin-left:auto;max-width:190px;font-size:13px;padding:7px 10px">
+              <button class="btn ghost" onclick="loadDrugCatalogue()" style="margin-left:6px">Refresh</button>
+            </h2>
+            <table id="drugTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Drug / Medicine</th>
+                  <th>Category</th>
+                  <th>Unit</th>
+                  <th>Reorder</th>
+                  <th>Buy UGX</th>
+                  <th>Sell UGX</th>
+                  <th>On Hand</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="drugRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-manage" class="tab" data-admin>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-shield" />
+              </svg>Owner Controls — Add, Edit & Delete</h2>
+            <p style="font-size:13px;color:var(--muted)">Deletes are guarded: items linked to sales or stock cannot be
+              removed until those records are voided. Voiding a sale puts the stock back on the shelf.</p>
+          </div>
+          <div class="panel">
+            <h2>Products</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Stock</th>
+                  <th>Sell UGX</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mgProdRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Stock Batches</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Batch</th>
+                  <th>Left</th>
+                  <th>Expiry</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mgBatchRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Sales — Void a Sale <input type="date" id="mgDate" onchange="loadManage()" style="width:auto"></h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th>Method</th>
+                  <th>By</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mgSaleRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Patients</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Drug</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mgPatRows"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Supplier Invoices</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Invoice</th>
+                  <th>Supplier</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mgInvRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div class="modal" id="profileModal">
+    <div class="box">
+      <h2>My Profile</h2>
+      <label>Display name</label><input id="pfName">
+      <label>Phone</label><input id="pfPhone">
+      <label>New password (leave blank to keep)</label><input id="pfPassNew" type="password">
+      <div class="flex"><button class="btn" onclick="saveProfile()">Save</button><button class="btn ghost"
+          onclick="closeProfile()">Close</button></div>
+      <p id="pfMsg" style="font-size:13px"></p>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Thumb Navigation -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button type="button" class="active" data-bottom-tab="dash" onclick="switchTab('dash')">
+      <svg class="ic">
+        <use href="#i-dash" />
+      </svg>
+      <span>Home</span>
+    </button>
+    <button type="button" data-bottom-tab="pos" onclick="switchTab('pos')">
+      <svg class="ic">
+        <use href="#i-pos" />
+      </svg>
+      <span>Sell</span>
+    </button>
+    <button type="button" data-bottom-tab="stock" onclick="switchTab('stock')">
+      <svg class="ic">
+        <use href="#i-stock" />
+      </svg>
+      <span>Stock</span>
+    </button>
+    <button type="button" data-bottom-tab="pat" onclick="switchTab('pat')">
+      <svg class="ic">
+        <use href="#i-heart" />
+      </svg>
+      <span>Care</span>
+    </button>
+    <button type="button" onclick="toggleMobileSidebar(true)">
+      <svg class="ic">
+        <use href="#i-menu" />
+      </svg>
+      <span>Menu</span>
+    </button>
+  </nav>
+
+  <script src="/static/js/core/api.js"></script>
+  <script src="/static/js/core/format.js"></script>
+  <script src="/static/js/core/ui.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/pos.js"></script>
+  <script src="/static/js/stock.js"></script>
+  <script src="/static/js/patients.js"></script>
+  <script src="/static/js/finance.js"></script>
+  <script src="/static/js/credit.js"></script>
+  <script src="/static/js/customers.js"></script>
+  <script src="/static/js/team.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/alerts.js"></script>
+  <script src="/static/js/manage.js"></script>
+  <script src="/static/js/boot.js"></script>
+</body>
+
+</html>

@@ -64,4 +64,28 @@ Challenges faced by consultants Agencies
 15.	Data confidentiality and security – Consultants often handle sensitive client information and must protect it from unauthorized access.
 
 
+## Running locally
 
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+$env:PYTHONIOENCODING = "utf-8"
+python -m pip install -r requirements-dev.txt
+python run.py
+```
+
+Open `http://127.0.0.1:5000` for the drug shop and
+`http://127.0.0.1:5000/tender` for Tender Copilot.
+
+## Tests and lint
+
+```powershell
+python -m pytest -q
+python -m ruff check .
+```
+
+With the app running, execute the HTTP smoke checks:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
+```

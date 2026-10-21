@@ -1,6 +1,8 @@
 """Fix CSS class names in drug catalogue JS section."""
-path = 'templates/index.html'
-with open(path, 'r', encoding='utf-8') as f:
+from pathlib import Path
+
+path = Path(__file__).resolve().parents[1] / "drugshop" / "templates" / "index.html"
+with path.open('r', encoding='utf-8') as f:
     content = f.read()
 
 # Simple targeted replacements within the drug section only
@@ -22,6 +24,6 @@ for old, new in replacements:
     else:
         print(f'  Not found: {old!r}')
 
-with open(path, 'w', encoding='utf-8') as f:
+with path.open('w', encoding='utf-8') as f:
     f.write(content)
 print('Done.')

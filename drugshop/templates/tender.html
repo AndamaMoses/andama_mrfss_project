@@ -60,14 +60,15 @@ pre{white-space:pre-wrap;background:var(--plum-950);color:#f3e8f7;padding:14px;b
 </main>
 <script>
 const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(u,m,b,isForm){const o={method:m||'GET'};if(isForm)o.body=b;else if(b){o.headers={'Content-Type':'application/json'};o.body=JSON.stringify(b)}const r=await fetch(u,o);if(r.status===401){$('tMsg').innerHTML='Please <a href="/login">log in</a> first (staff account).';throw new Error('login required')}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Error');return j}
 function render(d){$('tScore').textContent='— '+d.score+'% ('+d.found+'/'+d.total+')';
-$('tMatrix').innerHTML='<table><tr><th>Requirement</th><th>Status</th><th>Evidence</th></tr>'+d.matrix.map(m=>`<tr><td>${m.label}</td><td><span class="badge ${m.status==='FOUND'?'found':'missing'}">${m.status}</span></td><td style="font-size:12px">${m.snippet||'—'}</td></tr>`).join('')+'</table>';
-$('tRisks').innerHTML=d.risks.map(r=>`<div class="alert ${r.level}"><b>${r.level}</b> — ${r.risk}</div>`).join('');loadHist()}
+$('tMatrix').innerHTML='<table><tr><th>Requirement</th><th>Status</th><th>Evidence</th></tr>'+d.matrix.map(m=>`<tr><td>${esc(m.label)}</td><td><span class="badge ${m.status==='FOUND'?'found':'missing'}">${esc(m.status)}</span></td><td style="font-size:12px">${esc(m.snippet)||'—'}</td></tr>`).join('')+'</table>';
+$('tRisks').innerHTML=d.risks.map(r=>`<div class="alert ${esc(r.level)}"><b>${esc(r.level)}</b> — ${esc(r.risk)}</div>`).join('');loadHist()}
 async function analyzePDF(e){e.preventDefault();const f=$('tFile').files[0];if(!f){$('tMsg').textContent='Choose a file first';return}const fd=new FormData();fd.append('file',f);$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',fd,true));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
 async function analyzeText(){const t=$('tText').value;if(!t.trim()){$('tMsg').textContent='Paste text first';return}$('tMsg').textContent='Analyzing…';try{render(await api('/api/tender/analyze','POST',{text:t}));$('tMsg').textContent='✓ Done'}catch(err){$('tMsg').textContent='❌ '+err.message}}
 async function genMethod(e){e.preventDefault();const d=await api('/api/tender/methodology','POST',{project_name:$('mProj').value,client:$('mClient').value,location:$('mLoc').value,duration_weeks:$('mWeeks').value,scope_summary:$('mScope').value,equipment:$('mEquip').value,team:$('mTeam').value});$('mOut').textContent=d.methodology}
-async function loadHist(){try{const h=await api('/api/tender/list');$('tHist').innerHTML=h.map(x=>`#${x.id} ${x.filename} — ${x.score}% (${x.uploaded_at})`).join('<br>')||'none yet'}catch(e){$('tHist').textContent='Log in via the Dawa page to view history.'}}
+async function loadHist(){try{const h=await api('/api/tender/list');$('tHist').innerHTML=h.map(x=>`#${esc(x.id)} ${esc(x.filename)} — ${esc(x.score)}% (${esc(x.uploaded_at)})`).join('<br>')||'none yet'}catch(e){$('tHist').textContent='Log in via the Dawa page to view history.'}}
 loadHist();
 </script>
 </body>

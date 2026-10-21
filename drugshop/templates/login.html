@@ -383,59 +383,50 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
 
   <div class="form-area">
     <h2>Staff Sign In</h2>
-    <p class="desc">Select your profile for 1-click access, or type your credentials.</p>
+    <p class="desc">Select your profile to fill your username, then enter your password.</p>
     
     <div id="curBanner" class="cur-user-banner"></div>
 
     <div class="personas-label">
-      <span>Profiles / Quick Login</span>
-      <span style="font-weight: normal; color: var(--muted)">Click card to auto-fill</span>
+      <span>Profiles</span>
+      <span style="font-weight: normal; color: var(--muted)">Click a card to fill your username</span>
     </div>
 
     <div class="personas" id="personaList">
       <!-- Fallback static personas if API delayed -->
-      <div class="persona sel" id="p_admin" onclick="selectUser('admin', 'admin123')">
+      <div class="persona sel" id="p_admin" onclick="selectUser('admin')">
         <div class="avatar">CO</div>
         <div class="info">
           <b>Charles Onzima</b>
-          <small>Shop Owner · admin</small>
+          <small>Shop Owner &middot; admin</small>
         </div>
-        <button type="button" class="quick-btn" onclick="quickLogin('admin','admin123',event)">⚡ Sign In</button>
       </div>
-      <div class="persona" id="p_andama" onclick="selectUser('andama', 'admin123')">
+      <div class="persona" id="p_andama" onclick="selectUser('andama')">
         <div class="avatar">AM</div>
         <div class="info">
           <b>Andama Moses</b>
-          <small>Shop Owner · andama</small>
+          <small>Shop Owner &middot; andama</small>
         </div>
-        <button type="button" class="quick-btn" onclick="quickLogin('andama','admin123',event)">⚡ Sign In</button>
       </div>
-      <div class="persona" id="p_grace" onclick="selectUser('grace', 'grace123')">
+      <div class="persona" id="p_grace" onclick="selectUser('grace')">
         <div class="avatar">SA</div>
         <div class="info">
           <b>Sarah Achen</b>
-          <small>Sales Agent · grace</small>
+          <small>Sales Agent &middot; grace</small>
         </div>
-        <button type="button" class="quick-btn" onclick="quickLogin('grace','grace123',event)">⚡ Sign In</button>
       </div>
     </div>
 
     <form id="loginForm" onsubmit="go(event)">
       <label for="uName">Username or Full Name</label>
       <div class="input-wrap">
-        <input id="uName" value="admin" placeholder="e.g. admin, andama, or grace" oninput="onUserInput(this.value)" autocomplete="username" required>
+        <input id="uName" placeholder="e.g. admin, andama, or grace" oninput="onUserInput(this.value)" autocomplete="username" required>
       </div>
 
       <label for="uPass">Password</label>
       <div class="input-wrap">
-        <input id="uPass" type="password" value="admin123" placeholder="••••••••" autocomplete="current-password" required>
+        <input id="uPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
         <button type="button" class="toggle-pwd" id="toggleBtn" onclick="togglePassword()">Show</button>
-      </div>
-
-      <div class="chips">
-        <span class="chip" onclick="fillCreds('admin', 'admin123')">🔑 admin / admin123</span>
-        <span class="chip" onclick="fillCreds('andama', 'admin123')">🔑 andama / admin123</span>
-        <span class="chip" onclick="fillCreds('grace', 'grace123')">🔑 grace / grace123</span>
       </div>
 
       <button type="submit" class="go" id="submitBtn">Sign In →</button>
@@ -444,57 +435,35 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
     <div id="err"></div>
 
     <div class="foot">
-      Default passwords: <code>admin123</code> (Admin) · <code>grace123</code> (Agent)
+      Ask the shop owner if you need login details.
     </div>
   </div>
 </div>
 
 <script>
 const ROLE_NAMES = { admin: 'Shop Owner', attendant: 'Sales Agent' };
-const DEFAULT_PASSWORDS = {
-  admin: 'admin123',
-  andama: 'admin123',
-  grace: 'grace123'
-};
 
 function initials(n) {
   return (n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-function getDefaultPassword(username, role) {
-  const u = (username || '').toLowerCase();
-  if (DEFAULT_PASSWORDS[u]) return DEFAULT_PASSWORDS[u];
-  return role === 'admin' ? 'admin123' : 'grace123';
-}
-
-function selectUser(username, defaultPw) {
+function selectUser(username) {
   document.getElementById('uName').value = username;
   document.querySelectorAll('.persona').forEach(p => p.classList.remove('sel'));
   const card = document.getElementById('p_' + username);
   if (card) card.classList.add('sel');
 
-  // Populate default password
   const passEl = document.getElementById('uPass');
-  passEl.value = defaultPw || getDefaultPassword(username);
+  passEl.value = '';
+  passEl.focus();
   clearError();
-}
-
-function fillCreds(u, p) {
-  selectUser(u, p);
-  document.getElementById('uPass').focus();
 }
 
 function onUserInput(val) {
   const clean = val.trim().toLowerCase();
   document.querySelectorAll('.persona').forEach(p => p.classList.remove('sel'));
   const card = document.getElementById('p_' + clean);
-  if (card) {
-    card.classList.add('sel');
-    const passEl = document.getElementById('uPass');
-    if (!passEl.value) {
-      passEl.value = getDefaultPassword(clean);
-    }
-  }
+  if (card) card.classList.add('sel');
 }
 
 function togglePassword() {
@@ -521,16 +490,6 @@ function showError(msg) {
   errEl.className = 'show';
 }
 
-async function quickLogin(username, password, event) {
-  if (event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-  document.getElementById('uName').value = username;
-  document.getElementById('uPass').value = password;
-  await go();
-}
-
 async function renderPersonas() {
   try {
     const res = await fetch('/api/personas');
@@ -544,24 +503,16 @@ async function renderPersonas() {
     container.innerHTML = list.map((p, idx) => {
       const u = p.username.toLowerCase();
       const isSel = currentSelected ? currentSelected === u : idx === 0;
-      const defPw = getDefaultPassword(u, p.role);
       return `
-        <div class="persona ${isSel ? 'sel' : ''}" id="p_${p.username}" onclick="selectUser('${p.username}', '${defPw}')">
+        <div class="persona ${isSel ? 'sel' : ''}" id="p_${p.username}" onclick="selectUser('${p.username}')">
           <div class="avatar">${initials(p.display_name || p.username)}</div>
           <div class="info">
             <b>${p.display_name || p.username}</b>
-            <small>${ROLE_NAMES[p.role] || p.role} · ${p.username}</small>
+            <small>${ROLE_NAMES[p.role] || p.role} &middot; ${p.username}</small>
           </div>
-          <button type="button" class="quick-btn" onclick="quickLogin('${p.username}', '${defPw}', event)">⚡ Sign In</button>
         </div>
       `;
     }).join('');
-
-    // Ensure initial password is set if input is empty
-    const passEl = document.getElementById('uPass');
-    if (!passEl.value && list.length > 0) {
-      passEl.value = getDefaultPassword(list[0].username, list[0].role);
-    }
   } catch (e) {
     console.warn('Could not load persona list', e);
   }
