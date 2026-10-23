@@ -59,6 +59,29 @@ def test_login_staff_ok(client):
     assert r.get_json()["role"] == "attendant"
 
 
+def test_login_accepts_full_profile_name(client):
+    r = client.post("/api/login", json={"username": "Charles Onzima", "password": "admin123"})
+    assert r.status_code == 200
+    assert r.get_json()["username"] == "admin"
+
+
+def test_login_accepts_first_name(client):
+    r = client.post("/api/login", json={"username": "Sarah", "password": "grace123"})
+    assert r.status_code == 200
+    assert r.get_json()["username"] == "grace"
+
+
+def test_login_name_matching_is_case_insensitive(client):
+    r = client.post("/api/login", json={"username": "  sArAh  ", "password": "grace123"})
+    assert r.status_code == 200
+    assert r.get_json()["username"] == "grace"
+
+
+def test_login_first_name_with_wrong_password_401(client):
+    r = client.post("/api/login", json={"username": "Sarah", "password": "admin123"})
+    assert r.status_code == 401
+
+
 def test_logout_clears_session(admin_client):
     assert admin_client.post("/api/logout").status_code == 200
     assert admin_client.get("/api/products").status_code == 401
@@ -67,7 +90,7 @@ def test_logout_clears_session(admin_client):
 def test_personas_lists_default_users(client):
     rows = client.get("/api/personas").get_json()
     usernames = {u["username"] for u in rows}
-    assert {"admin", "andama", "grace"} <= usernames
+    assert {"admin", "grace"} <= usernames
 
 
 def test_change_password_then_login_with_new(admin_client):
@@ -146,6 +169,63 @@ def test_users_create_and_delete(admin_client):
 def test_users_create_requires_admin(staff_client):
     r = staff_client.post("/api/users", json={"username": "x", "password": "secret1"})
     assert r.status_code == 403
+
+
+def test_admin_resets_staff_password(admin_client):
+    rows = admin_client.get("/api/users").get_json()
+    grace = next(u for u in rows if u["username"] == "grace")
+    r = admin_client.post(f"/api/users/{grace['id']}/reset-password",
+                          json={"password": "newgrace1"})
+    assert r.status_code == 200
+
+    fresh = admin_client.application.test_client()
+    assert fresh.post("/api/login", json={"username": "grace", "password": "grace123"}).status_code == 401
+    assert fresh.post("/api/login", json={"username": "grace", "password": "newgrace1"}).status_code == 200
+
+
+def test_admin_can_delete_staff_with_login_history(admin_client):
+    rows = admin_client.get("/api/users").get_json()
+    grace = next(u for u in rows if u["username"] == "grace")
+    staff = admin_client.application.test_client()
+    assert staff.post("/api/login", json={"username": "grace", "password": "grace123"}).status_code == 200
+
+    r = admin_client.delete(f"/api/users/{grace['id']}")
+    assert r.status_code == 200
+    remaining = {u["username"] for u in admin_client.get("/api/users").get_json()}
+    assert "grace" not in remaining
+
+
+def test_reset_password_requires_admin(staff_client):
+    me = staff_client.get("/api/me").get_json()
+    r = staff_client.post(f"/api/users/{me['id']}/reset-password", json={"password": "newpass1"})
+    assert r.status_code == 403
+
+
+def test_reset_password_too_short_400(admin_client):
+    rows = admin_client.get("/api/users").get_json()
+    grace = next(u for u in rows if u["username"] == "grace")
+    r = admin_client.post(f"/api/users/{grace['id']}/reset-password", json={"password": "short"})
+    assert r.status_code == 400
+
+
+def test_reset_password_unknown_user_404(admin_client):
+    r = admin_client.post("/api/users/9999/reset-password", json={"password": "newpass1"})
+    assert r.status_code == 404
+
+
+def test_reset_password_cli_recovers_lockout(app_under_test):
+    runner = app_under_test.test_cli_runner()
+    result = runner.invoke(args=["reset-password", "grace", "--password", "cligrace1"])
+    assert result.exit_code == 0
+
+    client = app_under_test.test_client()
+    assert client.post("/api/login", json={"username": "grace", "password": "cligrace1"}).status_code == 200
+
+
+def test_reset_password_cli_unknown_user(app_under_test):
+    runner = app_under_test.test_cli_runner()
+    result = runner.invoke(args=["reset-password", "nobody", "--password", "cligrace1"])
+    assert result.exit_code == 1
 
 
 def test_change_password_too_short_400(admin_client):

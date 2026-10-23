@@ -9,14 +9,33 @@ import sys
 from pathlib import Path
 
 import pytest
+from werkzeug.security import generate_password_hash
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
+@pytest.fixture(autouse=True)
+def fast_password_hashing(monkeypatch):
+    """Keep the suite fast without weakening production hashing.
+
+    Bootstrap and user-management tests exercise real hash/verify paths, but
+    the default scrypt work factor makes a 200-test suite take minutes. The
+    stored hash carries its own method, so verification stays real.
+    """
+    from drugshop.auth import routes as auth_routes
+    from drugshop.auth import service as auth_service
+
+    def fast_hash(value):
+        return generate_password_hash(value, method="pbkdf2:sha256:1000")
+
+    monkeypatch.setattr(auth_service, "generate_password_hash", fast_hash)
+    monkeypatch.setattr(auth_routes, "generate_password_hash", fast_hash)
+
+
 @pytest.fixture()
-def app_under_test(tmp_path):
+def app_under_test(tmp_path, fast_password_hashing):
     from drugshop import create_app
     from drugshop import db as dbm
     from drugshop.apps import service as apps_service

@@ -11,7 +11,6 @@ from drugshop.db import execute, q_one
 DEFAULT_USERS = (
     # username, password, role, display_name
     ("admin", "admin123", "admin", "Charles Onzima"),
-    ("andama", "admin123", "admin", "Andama Moses"),
     ("grace", "grace123", "attendant", "Sarah Achen"),
 )
 

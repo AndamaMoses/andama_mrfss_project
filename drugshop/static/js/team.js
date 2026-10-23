@@ -12,7 +12,7 @@ async function addUser(e) {
 async function loadTeam() {
   try {
     const rows = await api('/api/users');
-    $('teamRows').innerHTML = rows.map(r => `<tr><td><b>${r.display_name || r.username}</b></td><td>${r.username}</td><td><span class="rolebadge ${r.role}">${ROLE_LABEL[r.role] || r.role}</span></td><td>${r.phone || '—'}</td><td>${r.username !== ME.username ? `<button class="btn ghost" onclick="delUser(${r.id},'${r.username}')">Remove</button>` : '<small style="color:var(--muted)">you</small>'}</td></tr>`).join('');
+    $('teamRows').innerHTML = rows.map(r => `<tr><td><b>${r.display_name || r.username}</b></td><td>${r.username}</td><td><span class="rolebadge ${r.role}">${ROLE_LABEL[r.role] || r.role}</span></td><td>${r.phone || '—'}</td><td>${r.username !== ME.username ? `<span class="flex"><button class="btn ghost" onclick="resetUserPassword(${r.id}, this.dataset.name)" data-name="${escHtml(r.username)}">Reset password</button><button class="btn ghost" onclick="delUser(${r.id},'${r.username}')">Remove</button></span>` : '<small style="color:var(--muted)">you</small>'}</td></tr>`).join('');
   } catch (e) { }
   loadActivity();
 }
@@ -24,6 +24,16 @@ async function loadActivity() {
     $('shiftBox').innerHTML = a.sales_by_staff.length ? '<table><thead><tr><th>Staff</th><th>Sales</th><th>Revenue UGX</th></tr></thead><tbody>' + a.sales_by_staff.map(s => `<tr><td>${s.staff}</td><td>${s.sales}</td><td>${Math.round(s.revenue).toLocaleString()}</td></tr>`).join('') + '</tbody></table>' : '<div class="alert green">No sales recorded yet today.</div>';
     $('loginRows').innerHTML = a.recent_logins.map(l => `<tr><td>${l.name} <small style="color:var(--muted)">(${l.username})</small></td><td>${l.login_at}</td><td>${l.ip || '—'}</td></tr>`).join('') || '<tr><td colspan=3>No sign-ins yet</td></tr>';
   } catch (e) { }
+}
+
+async function resetUserPassword(id, name) {
+  const pw = prompt('New password for "' + name + '" (6+ characters):');
+  if (pw === null) return;
+  if (pw.length < 6) { alert('Password must be at least 6 characters.'); return; }
+  try {
+    await api('/api/users/' + id + '/reset-password', 'POST', { password: pw });
+    $('userMsg').textContent = 'Password reset for ' + name + ' ✓';
+  } catch (e) { alert('❌ ' + e.message) }
 }
 
 async function delUser(id, name) {

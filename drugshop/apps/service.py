@@ -1,6 +1,6 @@
 """Entitlement service: plan reads, plan changes, seeding, and audit events.
 
-Phase 1 of ``IMPLEMENTATION_PLAN_2.md``. Entitlements are stored per
+Phase 1 of ``docs/packaging-plan.md``. Entitlements are stored per
 installation (one deployment serves one shop); they gate access but never
 install or delete code or business data. Removing an app only revokes access —
 rows in the shop's tables are untouched.

@@ -39,6 +39,7 @@ def create_app(config=None):
     from drugshop.apps.cli import register_cli
     from drugshop.apps.routes import bp as apps_bp
     from drugshop.auth import guards
+    from drugshop.auth.cli import register_cli as register_auth_cli
     from drugshop.auth.routes import bp as auth_bp
     from drugshop.credit.routes import bp as credit_bp
     from drugshop.customers.routes import bp as customers_bp
@@ -70,5 +71,19 @@ def create_app(config=None):
     # complete URL map. The auth gate above stays first, so anonymous API
     # requests still receive 401 before entitlement checks.
     app_guards.register_gate(app)
+    register_auth_cli(app)
     register_cli(app)
+
+    @app.after_request
+    def security_headers(response):
+        """Baseline headers for a private, authenticated workspace."""
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "same-origin")
+        response.headers.setdefault(
+            "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
+        )
+        response.headers.setdefault("X-Robots-Tag", "noindex, nofollow")
+        return response
+
     return app

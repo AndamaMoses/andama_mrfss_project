@@ -1,6 +1,6 @@
 """Static catalog of sellable apps and bundles.
 
-Phase 1 of ``IMPLEMENTATION_PLAN_2.md``. This module is the single source of
+Phase 1 of ``docs/packaging-plan.md``. This module is the single source of
 truth for what the product can offer, which bundle contains which apps, and
 which blueprints/endpoints belong to which app. Runtime enforcement (the
 request gate and the ``/api/apps`` payload) arrives in Phase 2; the entitlement

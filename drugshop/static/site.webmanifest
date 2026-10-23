@@ -1,0 +1,17 @@
+{
+  "name": "Onzima Dawa — Pharmacy Operations",
+  "short_name": "Onzima Dawa",
+  "description": "Point of sale, inventory, refill care and finance for Onzima Charles Drug Shop.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F7F6",
+  "theme_color": "#0F2A25",
+  "icons": [
+    {
+      "src": "/static/img/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

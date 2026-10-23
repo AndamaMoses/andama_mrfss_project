@@ -8,6 +8,29 @@ MODULES = (
 )
 
 
+def test_brand_assets_and_metadata_are_served(client):
+    html = client.get("/").get_data(as_text=True)
+    assert 'rel="icon"' in html
+    assert "/static/img/favicon.svg" in html
+    assert "/static/site.webmanifest" in html
+
+    favicon = client.get("/static/img/favicon.svg")
+    assert favicon.status_code == 200
+    assert favicon.mimetype == "image/svg+xml"
+
+    manifest = client.get("/static/site.webmanifest")
+    assert manifest.status_code == 200
+    assert b'"short_name": "Onzima Dawa"' in manifest.data
+
+
+def test_security_headers_are_set(client):
+    response = client.get("/login")
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert response.headers["Referrer-Policy"] == "same-origin"
+    assert response.headers["X-Robots-Tag"] == "noindex, nofollow"
+
+
 def test_all_pages_render(client):
     # Tender is a standalone app; enable it so this stays a render test rather
     # than an entitlement test (the redirect is covered in test_app_gate.py).

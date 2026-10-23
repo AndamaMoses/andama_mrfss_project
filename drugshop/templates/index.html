@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Onzima Dawa — Kireka Apothecary System</title>
+  <meta name="description" content="Onzima Dawa pharmacy operations: point of sale, batch and expiry-aware inventory, refill care, finance and stock alerts.">
+  <meta name="theme-color" content="#0F2A25">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="application-name" content="Onzima Dawa">
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <link rel="apple-touch-icon" href="/static/img/favicon.svg">
+  <link rel="manifest" href="/static/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -12,19 +19,19 @@
     rel="stylesheet">
   <style>
     :root {
-      --plum-950: #1b0724;
-      --plum-900: #2d0e37;
-      --plum-700: #4d1e5e;
-      --plum-500: #7c3e94;
-      --plum-100: #f1e5f6;
-      --gold: #f2a900;
-      --gold-deep: #b97a00;
-      --gold-100: #fdf0cd;
-      --cream: #faf3e6;
-      --paper: #fffdf6;
-      --ink: #2c1a2e;
-      --muted: #857183;
-      --terra: #c2502a;
+      --pine-950: #081714;
+      --pine-900: #0F2A25;
+      --pine-700: #1B4D42;
+      --pine-500: #2F7A68;
+      --pine-100: #E7F1EE;
+      --brass: #C9A227;
+      --brass-deep: #9A7715;
+      --brass-100: #F6EDD2;
+      --canvas: #F4F7F6;
+      --surface: #FFFFFF;
+      --ink: #16221F;
+      --muted: #647773;
+      --terra: #B7791F;
       --leaf: #2e7d4f;
       --blood: #b3261e;
       --serif: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
@@ -38,7 +45,7 @@
     }
 
     body {
-      background: var(--cream);
+      background: var(--canvas);
       color: var(--ink);
       font-family: var(--sans);
       font-size: 15px
@@ -60,8 +67,8 @@
     .side {
       width: 260px;
       min-width: 260px;
-      background: linear-gradient(180deg, #180520 0%, #260a33 35%, #1c0626 70%, #13031a 100%);
-      color: #ede2f3;
+      background: linear-gradient(180deg, #071512 0%, #0C2621 35%, #0A1C18 70%, #06120F 100%);
+      color: #EAF2EF;
       display: flex;
       flex-direction: column;
       position: sticky;
@@ -70,8 +77,8 @@
       flex-shrink: 0;
       transition: width .28s cubic-bezier(.2, .8, .2, 1), transform .28s cubic-bezier(.2, .8, .2, 1);
       z-index: 100;
-      border-right: 1px solid rgba(242, 169, 0, .15);
-      box-shadow: 2px 0 28px rgba(12, 2, 18, .4);
+      border-right: 1px solid rgba(201, 162, 39, .15);
+      box-shadow: 2px 0 28px rgba(6, 18, 15, .4);
       user-select: none;
     }
 
@@ -89,25 +96,25 @@
       width: 42px;
       height: 42px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #ffd86b 0%, #f2a900 65%, #b37500 100%);
+      background: linear-gradient(135deg, #E8CE7A 0%, #C9A227 65%, #8F6E14 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(242, 169, 0, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
+      box-shadow: 0 4px 16px rgba(201, 162, 39, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
       border: 1px solid rgba(255, 255, 255, .3);
       transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .brand .mark:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(242, 169, 0, .5)
+      box-shadow: 0 6px 20px rgba(201, 162, 39, .5)
     }
 
     .brand .mark svg {
       width: 24px;
       height: 24px;
-      stroke: #270732;
+      stroke: #071C17;
       stroke-width: 2.1
     }
 
@@ -135,26 +142,15 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, .4);
     }
 
-    .brand-badge {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .7px;
-      text-transform: uppercase;
-      padding: 1px 6px;
-      border-radius: 6px;
-      background: rgba(242, 169, 0, .18);
-      color: var(--gold);
-      border: 1px solid rgba(242, 169, 0, .35);
-      white-space: nowrap;
-    }
-
     .brand small {
-      color: rgba(237, 226, 243, .65);
-      font-size: 11px;
-      letter-spacing: 1.4px;
+      color: rgba(236, 244, 241, .65);
+      font-size: 10.5px;
+      letter-spacing: 1.1px;
       text-transform: uppercase;
       display: block;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       margin-top: 2px;
     }
 
@@ -162,7 +158,7 @@
       display: none;
       background: rgba(255, 255, 255, .08);
       border: 1px solid rgba(255, 255, 255, .16);
-      color: #efe3f4;
+      color: #EAF2EF;
       width: 32px;
       height: 32px;
       border-radius: 9px;
@@ -175,9 +171,9 @@
     }
 
     .side-close-btn:hover {
-      background: rgba(242, 169, 0, .22);
-      border-color: var(--gold);
-      color: var(--gold)
+      background: rgba(201, 162, 39, .22);
+      border-color: var(--brass);
+      color: var(--brass)
     }
 
     /* Sidebar Live Status Pill */
@@ -191,7 +187,7 @@
       align-items: center;
       gap: 8px;
       font-size: 11px;
-      color: #cdb9d9;
+      color: #B9CFC9;
     }
 
     .live-pulse {
@@ -230,8 +226,8 @@
     .live-ver {
       font-size: 9.5px;
       font-weight: 700;
-      color: var(--gold);
-      background: rgba(242, 169, 0, .12);
+      color: var(--brass);
+      background: rgba(201, 162, 39, .12);
       padding: 1px 5px;
       border-radius: 4px;
     }
@@ -246,7 +242,7 @@
       overflow-x: hidden;
       flex: 1;
       scrollbar-width: thin;
-      scrollbar-color: rgba(242, 169, 0, .25) transparent;
+      scrollbar-color: rgba(201, 162, 39, .25) transparent;
     }
 
     .snav::-webkit-scrollbar {
@@ -254,7 +250,7 @@
     }
 
     .snav::-webkit-scrollbar-thumb {
-      background: rgba(242, 169, 0, .25);
+      background: rgba(201, 162, 39, .25);
       border-radius: 4px
     }
 
@@ -263,7 +259,7 @@
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 1.2px;
-      color: rgba(220, 200, 230, .4);
+      color: rgba(214, 232, 227, .4);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -286,7 +282,7 @@
       gap: 10px;
       background: transparent;
       border: 1px solid transparent;
-      color: #d8c7e2;
+      color: #C7DAD4;
       padding: 8px 9px;
       border-radius: 11px;
       cursor: pointer;
@@ -307,9 +303,9 @@
     }
 
     .snav button.active {
-      background: linear-gradient(90deg, rgba(242, 169, 0, .22) 0%, rgba(242, 169, 0, .06) 100%);
-      border: 1px solid rgba(242, 169, 0, .35);
-      border-left: 3.5px solid var(--gold);
+      background: linear-gradient(90deg, rgba(201, 162, 39, .22) 0%, rgba(201, 162, 39, .06) 100%);
+      border: 1px solid rgba(201, 162, 39, .35);
+      border-left: 3.5px solid var(--brass);
       color: #fff;
       box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
     }
@@ -320,10 +316,10 @@
     }
 
     .snav button.active .ic-wrap {
-      background: rgba(242, 169, 0, .25);
-      color: var(--gold);
-      box-shadow: 0 0 10px rgba(242, 169, 0, .3);
-      border-color: rgba(242, 169, 0, .4);
+      background: rgba(201, 162, 39, .25);
+      color: var(--brass);
+      box-shadow: 0 0 10px rgba(201, 162, 39, .3);
+      border-color: rgba(201, 162, 39, .4);
     }
 
     .ic-wrap {
@@ -335,16 +331,16 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: #d1bfe0;
+      color: #C2D6D0;
       transition: all .18s ease;
       border: 1px solid rgba(255, 255, 255, .06);
     }
 
     .snav button:hover .ic-wrap,
     .snav a.tender:hover .ic-wrap {
-      background: rgba(242, 169, 0, .16);
-      color: var(--gold);
-      border-color: rgba(242, 169, 0, .25);
+      background: rgba(201, 162, 39, .16);
+      color: var(--brass);
+      border-color: rgba(201, 162, 39, .25);
     }
 
     .ic-wrap .ic {
@@ -366,7 +362,7 @@
     }
 
     .staff-ic {
-      color: #60a5fa !important
+      color: #3B82F6 !important
     }
 
     .snav button .lbl,
@@ -403,19 +399,19 @@
     }
 
     .nav-badge.alert {
-      background: #e11d48;
+      background: #D92D20;
       color: #fff;
       border: 1px solid rgba(255, 255, 255, .25)
     }
 
     .nav-badge.warn {
-      background: #d97706;
+      background: #B7791F;
       color: #fff
     }
 
     .nav-badge.gold {
-      background: var(--gold);
-      color: #2b0b37;
+      background: var(--brass);
+      color: #0A241F;
       font-weight: 900
     }
 
@@ -425,37 +421,37 @@
       letter-spacing: .8px;
       padding: 2px 6px;
       border-radius: 6px;
-      background: rgba(242, 169, 0, .15);
-      color: var(--gold);
-      border: 1px solid rgba(242, 169, 0, .3);
+      background: rgba(201, 162, 39, .15);
+      color: var(--brass);
+      border: 1px solid rgba(201, 162, 39, .3);
     }
 
     .ext-badge.mobile {
-      background: rgba(96, 165, 250, .15);
+      background: rgba(59, 130, 246, .15);
       color: #93c5fd;
-      border-color: rgba(96, 165, 250, .3)
+      border-color: rgba(59, 130, 246, .3)
     }
 
     .snav a.tender {
-      background: rgba(242, 169, 0, .05);
-      border: 1px dashed rgba(242, 169, 0, .35);
+      background: rgba(201, 162, 39, .05);
+      border: 1px dashed rgba(201, 162, 39, .35);
       margin-top: 3px;
     }
 
     .snav a.tender:hover {
-      background: rgba(242, 169, 0, .14);
-      border-color: var(--gold)
+      background: rgba(201, 162, 39, .14);
+      border-color: var(--brass)
     }
 
     .snav a.staff-link {
-      background: rgba(96, 165, 250, .05);
-      border: 1px dashed rgba(96, 165, 250, .3);
+      background: rgba(59, 130, 246, .05);
+      border: 1px dashed rgba(59, 130, 246, .3);
       margin-top: 3px;
     }
 
     .snav a.staff-link:hover {
-      background: rgba(96, 165, 250, .14);
-      border-color: #60a5fa
+      background: rgba(59, 130, 246, .14);
+      border-color: #3B82F6
     }
 
     /* Persona User Card */
@@ -470,7 +466,7 @@
       align-items: center;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 16px rgba(15, 3, 20, .35);
+      box-shadow: 0 4px 16px rgba(7, 21, 18, .35);
     }
 
     .avatar-wrap {
@@ -482,8 +478,8 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #ffd359, #f2a900);
-      color: #270732;
+      background: linear-gradient(135deg, #E0C55F, #C9A227);
+      color: #071C17;
       font-family: var(--serif);
       font-weight: 800;
       font-size: 14.5px;
@@ -502,7 +498,7 @@
       height: 9px;
       border-radius: 50%;
       background: #10b981;
-      border: 2px solid #260a33;
+      border: 2px solid #0C2621;
     }
 
     .persona .who {
@@ -532,12 +528,12 @@
     }
 
     .rolebadge.admin {
-      background: var(--gold);
-      color: #270732
+      background: var(--brass);
+      color: #071C17
     }
 
     .rolebadge.attendant {
-      background: rgba(124, 62, 148, .8);
+      background: rgba(47, 122, 104, .8);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, .15)
     }
@@ -551,7 +547,7 @@
     .mini {
       background: rgba(255, 255, 255, .08);
       border: 1px solid rgba(255, 255, 255, .12);
-      color: #e5d8ec;
+      color: #D8E7E2;
       border-radius: 7px;
       padding: 3px 8px;
       font-size: 10.5px;
@@ -561,21 +557,21 @@
     }
 
     .mini:hover {
-      background: rgba(242, 169, 0, .22);
-      border-color: rgba(242, 169, 0, .45);
-      color: var(--gold)
+      background: rgba(201, 162, 39, .22);
+      border-color: rgba(201, 162, 39, .45);
+      color: var(--brass)
     }
 
     .mini.danger:hover {
-      background: rgba(225, 29, 72, .25);
-      border-color: rgba(225, 29, 72, .45);
+      background: rgba(217, 45, 32, .25);
+      border-color: rgba(217, 45, 32, .45);
       color: #fda4af
     }
 
     .side-collapse-btn {
       background: rgba(255, 255, 255, .07);
       border: 1px solid rgba(255, 255, 255, .14);
-      color: #ede2f3;
+      color: #EAF2EF;
       width: 30px;
       height: 30px;
       border-radius: 8px;
@@ -589,9 +585,9 @@
     }
 
     .side-collapse-btn:hover {
-      background: rgba(242, 169, 0, .22);
-      border-color: var(--gold);
-      color: var(--gold);
+      background: rgba(201, 162, 39, .22);
+      border-color: var(--brass);
+      color: var(--brass);
     }
 
     .side-collapse-btn svg {
@@ -618,7 +614,6 @@
       }
 
       .app.side-collapsed .brand .brand-text,
-      .app.side-collapsed .brand .brand-badge,
       .app.side-collapsed .sidebar-status-pill {
         display: none !important
       }
@@ -667,8 +662,8 @@
       }
 
       .app.side-collapsed .snav button.active {
-        border: 1px solid rgba(242, 169, 0, .4);
-        background: rgba(242, 169, 0, .2);
+        border: 1px solid rgba(201, 162, 39, .4);
+        background: rgba(201, 162, 39, .2);
       }
 
       .app.side-collapsed .snav button .lbl,
@@ -711,7 +706,7 @@
         left: calc(100% + 12px);
         top: 50%;
         transform: translateY(-50%);
-        background: #180520;
+        background: #071512;
         color: #fff;
         padding: 7px 13px;
         border-radius: 9px;
@@ -719,7 +714,7 @@
         font-weight: 600;
         white-space: nowrap;
         box-shadow: 0 6px 20px rgba(0, 0, 0, .6);
-        border: 1px solid rgba(242, 169, 0, .35);
+        border: 1px solid rgba(201, 162, 39, .35);
         z-index: 9999;
         pointer-events: none;
         animation: tip-in .16s ease forwards;
@@ -734,7 +729,7 @@
         transform: translateY(-50%);
         border-width: 5px 6px 5px 0;
         border-style: solid;
-        border-color: transparent #180520 transparent transparent;
+        border-color: transparent #071512 transparent transparent;
         z-index: 10000;
         pointer-events: none;
       }
@@ -777,24 +772,24 @@
     }
 
     .desk-toggle-btn {
-      background: var(--paper);
-      border: 1.5px solid #d9c8a6;
+      background: var(--surface);
+      border: 1.5px solid #CFDAD6;
       border-radius: 10px;
       width: 38px;
       height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--plum-700);
+      color: var(--pine-700);
       cursor: pointer;
       transition: all .15s ease;
-      box-shadow: 0 2px 6px rgba(51, 18, 63, .06)
+      box-shadow: 0 2px 6px rgba(18, 48, 41, .06)
     }
 
     .desk-toggle-btn:hover {
-      background: var(--plum-100);
-      border-color: var(--gold);
-      color: var(--plum-900)
+      background: var(--pine-100);
+      border-color: var(--brass);
+      color: var(--pine-900)
     }
 
     .desk-toggle-btn svg {
@@ -804,12 +799,12 @@
 
     .topbar h1 {
       font-size: 26px;
-      color: var(--plum-900);
+      color: var(--pine-900);
       line-height: 1.2
     }
 
     .topbar h1 em {
-      color: var(--gold-deep);
+      color: var(--brass-deep);
       font-style: normal
     }
 
@@ -847,12 +842,12 @@
     }
 
     .card {
-      background: var(--paper);
+      background: var(--surface);
       border-radius: 16px;
       padding: 15px 16px;
-      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
-      border: 1px solid #ecdfc8;
-      border-top: 4px solid var(--plum-500)
+      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
+      border: 1px solid #E2E9E7;
+      border-top: 4px solid var(--pine-500)
     }
 
     .card h3 {
@@ -868,7 +863,7 @@
       font-family: var(--serif);
       font-size: 27px;
       font-weight: bold;
-      color: var(--plum-900);
+      color: var(--pine-900);
       margin-top: 5px
     }
 
@@ -877,7 +872,7 @@
     }
 
     .card.gold {
-      border-top-color: var(--gold)
+      border-top-color: var(--brass)
     }
 
     .card.danger {
@@ -889,12 +884,12 @@
     }
 
     .panel {
-      background: var(--paper);
+      background: var(--surface);
       border-radius: 16px;
       padding: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
-      border: 1px solid #ecdfc8;
+      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
+      border: 1px solid #E2E9E7;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch
     }
@@ -902,7 +897,7 @@
     .panel>h2 {
       font-size: 19px;
       margin-bottom: 12px;
-      color: var(--plum-900);
+      color: var(--pine-900);
       display: flex;
       align-items: center;
       gap: 9px
@@ -912,7 +907,7 @@
       width: 20px;
       height: 20px;
       flex-shrink: 0;
-      stroke: var(--gold-deep)
+      stroke: var(--brass-deep)
     }
 
     table {
@@ -924,16 +919,16 @@
     th,
     td {
       padding: 9px 8px;
-      border-bottom: 1px solid #eee0c8;
+      border-bottom: 1px solid #E8EEEC;
       text-align: left
     }
 
     th {
-      color: var(--plum-700);
+      color: var(--pine-700);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: .8px;
-      border-bottom: 2px solid var(--gold)
+      border-bottom: 2px solid var(--brass)
     }
 
     .badge {
@@ -945,32 +940,32 @@
     }
 
     .b-expired {
-      background: #fbd9d5;
+      background: #FBDDD9;
       color: #8f1d12
     }
 
     .b-critical {
-      background: #fbe3b8;
+      background: #FBE7C2;
       color: #8a4a00
     }
 
     .b-warning {
-      background: #f9dcc3;
+      background: #F9E2CB;
       color: #8f3c10
     }
 
     .b-ok {
-      background: #cde9d6;
+      background: #D8EDE2;
       color: #155c33
     }
 
     .b-low {
-      background: #fbd9d5;
+      background: #FBDDD9;
       color: #8f1d12
     }
 
     .btn {
-      background: var(--plum-700);
+      background: var(--pine-700);
       color: #fff;
       border: 0;
       padding: 9px 16px;
@@ -981,23 +976,23 @@
     }
 
     .btn:hover {
-      background: var(--plum-900)
+      background: var(--pine-900)
     }
 
     .btn.gold {
-      background: var(--gold);
-      color: #3a1149
+      background: var(--brass);
+      color: #0A241F
     }
 
     .btn.gold:hover {
-      background: var(--gold-deep);
+      background: var(--brass-deep);
       color: #fff
     }
 
     .btn.ghost {
       background: transparent;
-      color: var(--plum-700);
-      border: 1.5px solid var(--plum-500)
+      color: var(--pine-700);
+      border: 1.5px solid var(--pine-500)
     }
 
     .btn.wa {
@@ -1008,19 +1003,19 @@
     select,
     textarea {
       padding: 9px 11px;
-      border: 1.5px solid #d9c8a6;
+      border: 1.5px solid #CFDAD6;
       border-radius: 10px;
       font-size: 14px;
       width: 100%;
-      background: #fffdf8;
+      background: #FBFDFC;
       font-family: var(--sans)
     }
 
     input:focus,
     select:focus,
     textarea:focus {
-      outline: 2px solid var(--gold);
-      border-color: var(--gold)
+      outline: 2px solid var(--brass);
+      border-color: var(--brass)
     }
 
     form.grid {
@@ -1064,7 +1059,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(35, 9, 46, .6);
+      background: rgba(10, 31, 27, .6);
       z-index: 55;
       align-items: center;
       justify-content: center;
@@ -1076,15 +1071,15 @@
     }
 
     .modal .box {
-      background: var(--paper);
+      background: var(--surface);
       border-radius: 18px;
       padding: 24px;
       width: 380px;
-      border-top: 5px solid var(--gold)
+      border-top: 5px solid var(--brass)
     }
 
     .modal .box h2 {
-      color: var(--plum-900);
+      color: var(--pine-900);
       margin-bottom: 12px
     }
 
@@ -1182,12 +1177,12 @@
         justify-content: space-between;
         height: 58px;
         padding: 0 14px;
-        background: linear-gradient(135deg, var(--plum-950), var(--plum-900));
+        background: linear-gradient(135deg, var(--pine-950), var(--pine-900));
         color: #fff;
         position: sticky;
         top: 0;
         z-index: 900;
-        box-shadow: 0 3px 14px rgba(35, 9, 46, .45)
+        box-shadow: 0 3px 14px rgba(10, 31, 27, .45)
       }
 
       .mob-menu-btn {
@@ -1205,13 +1200,13 @@
       }
 
       .mob-menu-btn:active {
-        background: rgba(242, 169, 0, .25)
+        background: rgba(201, 162, 39, .25)
       }
 
       .mob-menu-btn svg {
         width: 22px;
         height: 22px;
-        stroke: var(--gold)
+        stroke: var(--brass)
       }
 
       .mob-brand {
@@ -1227,7 +1222,7 @@
         width: 32px;
         height: 32px;
         border-radius: 9px;
-        background: var(--gold);
+        background: var(--brass);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1237,7 +1232,7 @@
       .mob-brand .mark-sm svg {
         width: 18px;
         height: 18px;
-        stroke: #3a1149
+        stroke: #0A241F
       }
 
       .mob-avatar-btn {
@@ -1251,8 +1246,8 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: var(--gold);
-        color: #3a1149;
+        background: var(--brass);
+        color: #0A241F;
         font-family: var(--serif);
         font-weight: bold;
         font-size: 13.5px;
@@ -1326,7 +1321,7 @@
         display: block;
         position: fixed;
         inset: 0;
-        background: rgba(20, 5, 28, .68);
+        background: rgba(8, 23, 20, .68);
         backdrop-filter: blur(3px);
         z-index: 995;
         opacity: 0;
@@ -1347,8 +1342,8 @@
         right: 0;
         bottom: 0;
         height: 58px;
-        background: var(--plum-950);
-        border-top: 1px solid rgba(242, 169, 0, .22);
+        background: var(--pine-950);
+        border-top: 1px solid rgba(201, 162, 39, .22);
         z-index: 900;
         padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
         box-shadow: 0 -3px 14px rgba(0, 0, 0, .35)
@@ -1363,7 +1358,7 @@
         gap: 2px;
         background: none;
         border: none;
-        color: #c9b3d4;
+        color: #B9CFC9;
         font-size: 10.5px;
         font-weight: 700;
         cursor: pointer;
@@ -1378,8 +1373,8 @@
       }
 
       .mobile-bottom-nav button.active {
-        color: var(--gold);
-        background: rgba(242, 169, 0, .14)
+        color: var(--brass);
+        background: rgba(201, 162, 39, .14)
       }
 
       /* Content Spacing on Mobile */
@@ -1417,12 +1412,12 @@
       align-items: flex-end;
       justify-content: space-between;
       gap: 20px;
-      background: linear-gradient(135deg, var(--plum-950), var(--plum-700) 68%, #7a4210);
+      background: linear-gradient(135deg, var(--pine-950), var(--pine-700) 68%, #8A6A1F);
       color: #fff;
       border-radius: 18px;
       padding: 24px;
       margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(45, 14, 55, .22)
+      box-shadow: 0 8px 24px rgba(15, 42, 37, .22)
     }
 
     .apps-hero::after {
@@ -1433,7 +1428,7 @@
       right: -70px;
       top: -110px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(242, 169, 0, .3), transparent 68%);
+      background: radial-gradient(circle, rgba(201, 162, 39, .3), transparent 68%);
       pointer-events: none
     }
 
@@ -1445,7 +1440,7 @@
 
     .apps-eyebrow {
       display: inline-block;
-      color: var(--gold);
+      color: var(--brass);
       font-size: 10.5px;
       font-weight: 800;
       letter-spacing: 1.4px;
@@ -1461,7 +1456,7 @@
     }
 
     .apps-hero h2 em {
-      color: var(--gold);
+      color: var(--brass);
       font-style: italic
     }
 
@@ -1478,7 +1473,7 @@
       min-width: 205px;
       text-align: right;
       background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(242, 169, 0, .38);
+      border: 1px solid rgba(201, 162, 39, .38);
       border-radius: 14px;
       padding: 12px 15px;
       backdrop-filter: blur(4px)
@@ -1495,7 +1490,7 @@
 
     .apps-plan strong {
       display: block;
-      color: var(--gold);
+      color: var(--brass);
       font-family: var(--serif);
       font-size: 20px;
       line-height: 1.25;
@@ -1526,22 +1521,22 @@
       text-align: left;
       font-family: var(--sans);
       color: var(--ink);
-      background: var(--paper);
-      border: 1px solid #ecdfc8;
+      background: var(--surface);
+      border: 1px solid #E2E9E7;
       border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
       cursor: pointer;
       transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease
     }
 
     .app-card:hover {
       transform: translateY(-2px);
-      border-color: var(--gold);
-      box-shadow: 0 8px 20px rgba(51, 18, 63, .13)
+      border-color: var(--brass);
+      box-shadow: 0 8px 20px rgba(18, 48, 41, .13)
     }
 
     .app-card:focus-visible {
-      outline: 3px solid var(--gold);
+      outline: 3px solid var(--brass);
       outline-offset: 2px
     }
 
@@ -1553,9 +1548,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--plum-100);
-      color: var(--plum-700);
-      border: 1px solid rgba(124, 62, 148, .12)
+      background: var(--pine-100);
+      color: var(--pine-700);
+      border: 1px solid rgba(47, 122, 104, .12)
     }
 
     .app-card .app-ic svg {
@@ -1579,7 +1574,7 @@
       font-family: var(--serif);
       font-size: 17px;
       line-height: 1.25;
-      color: var(--plum-900)
+      color: var(--pine-900)
     }
 
     .app-card .app-body small {
@@ -1595,8 +1590,8 @@
       margin-top: 9px;
       padding: 2px 8px;
       border-radius: 20px;
-      background: var(--gold-100);
-      color: var(--gold-deep);
+      background: var(--brass-100);
+      color: var(--brass-deep);
       font-size: 9.5px;
       font-weight: 800;
       letter-spacing: .65px;
@@ -1604,7 +1599,7 @@
     }
 
     .app-card.locked {
-      background: #fbf7ee;
+      background: #F7FAF9;
       border-style: dashed;
       box-shadow: none
     }
@@ -1614,8 +1609,8 @@
     }
 
     .app-card.locked .app-ic {
-      background: #f1ece1;
-      color: #9b8b74
+      background: #EDF1F0;
+      color: #7C8A86
     }
 
     .app-lock {
@@ -1628,9 +1623,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--gold);
-      background: var(--plum-900);
-      box-shadow: 0 2px 7px rgba(45, 14, 55, .25)
+      color: var(--brass);
+      background: var(--pine-900);
+      box-shadow: 0 2px 7px rgba(15, 42, 37, .25)
     }
 
     .app-lock svg {
@@ -1648,8 +1643,8 @@
       padding: 28px;
       text-align: center;
       color: var(--muted);
-      background: var(--paper);
-      border: 1px dashed #d9c8a6;
+      background: var(--surface);
+      border: 1px dashed #CFDAD6;
       border-radius: 16px
     }
 
@@ -1664,7 +1659,7 @@
       display: inline-block;
       padding: 3px 9px;
       border-radius: 20px;
-      background: #cde9d6;
+      background: #D8EDE2;
       color: #155c33;
       font-family: var(--sans);
       font-size: 9.5px;
@@ -1675,7 +1670,7 @@
     }
 
     .plan-status.inactive {
-      background: #fbd9d5;
+      background: #FBDDD9;
       color: #8f1d12
     }
 
@@ -1687,8 +1682,8 @@
     }
 
     .plan-item {
-      background: var(--cream);
-      border: 1px solid #eadcc3;
+      background: var(--canvas);
+      border: 1px solid #E1E8E6;
       border-radius: 12px;
       padding: 11px 13px
     }
@@ -1706,7 +1701,7 @@
     .plan-item strong {
       display: block;
       margin-top: 3px;
-      color: var(--plum-900);
+      color: var(--pine-900);
       font-family: var(--serif);
       font-size: 17px;
       line-height: 1.3
@@ -1723,14 +1718,14 @@
       display: inline-block;
       padding: 4px 10px;
       border-radius: 20px;
-      background: var(--plum-100);
-      color: var(--plum-700);
+      background: var(--pine-100);
+      color: var(--pine-700);
       font-size: 12px;
       font-weight: 700
     }
 
     .muted-chip {
-      background: #f3efe6;
+      background: #EFF3F2;
       color: var(--muted)
     }
 
@@ -1742,20 +1737,20 @@
     }
 
     .plan-link {
-      color: var(--plum-700);
+      color: var(--pine-700);
       font-weight: 800;
       text-decoration: underline;
       text-underline-offset: 2px
     }
 
     .plan-link:hover {
-      color: var(--plum-900)
+      color: var(--pine-900)
     }
 
     #upgradeModal .box {
       width: 440px;
       max-width: calc(100vw - 32px);
-      border-top: 5px solid var(--gold)
+      border-top: 5px solid var(--brass)
     }
 
     .upgrade-lock {
@@ -1765,10 +1760,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--plum-900);
-      color: var(--gold);
+      background: var(--pine-900);
+      color: var(--brass);
       margin-bottom: 13px;
-      box-shadow: 0 5px 14px rgba(45, 14, 55, .25)
+      box-shadow: 0 5px 14px rgba(15, 42, 37, .25)
     }
 
     .upgrade-lock svg {
@@ -1783,7 +1778,7 @@
 
     .upgrade-eyebrow {
       display: block;
-      color: var(--gold-deep);
+      color: var(--brass-deep);
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 1.1px;
@@ -1802,8 +1797,8 @@
       padding: 9px 12px;
       margin-bottom: 8px;
       border-radius: 10px;
-      background: var(--gold-100);
-      color: var(--gold-deep);
+      background: var(--brass-100);
+      color: var(--brass-deep);
       font-size: 12.5px;
       font-weight: 700;
       line-height: 1.45
@@ -1983,9 +1978,8 @@
         <div class="brand-text">
           <div class="brand-title-wrap">
             <b>Onzima Dawa</b>
-            <span class="brand-badge">Apothecary</span>
           </div>
-          <small>Kireka · Kampala</small>
+          <small>Apothecary · Kireka</small>
         </div>
         <button type="button" class="side-collapse-btn" onclick="toggleDesktopSidebar()"
           title="Collapse / Expand Sidebar" aria-label="Toggle Sidebar">
@@ -2000,7 +1994,7 @@
       <div class="sidebar-status-pill">
         <span class="live-pulse"></span>
         <span class="live-text">System Live</span>
-        <span class="live-ver">v2.2</span>
+        <span class="live-ver">v2.5</span>
       </div>
 
       <nav class="snav" id="sidebarNav">
@@ -2557,11 +2551,11 @@
             }
 
             .dstat {
-              background: var(--paper);
+              background: var(--surface);
               border-radius: 14px;
               padding: 13px 15px;
-              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
-              border: 1px solid #ecdfc8;
+              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
+              border: 1px solid #E2E9E7;
               border-top: 3px solid #2e7d4f
             }
 
@@ -2583,11 +2577,11 @@
             }
 
             .drug-form-panel {
-              background: var(--paper);
+              background: var(--surface);
               border-radius: 16px;
               padding: 20px;
               margin-bottom: 16px;
-              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
+              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
               border: 2px solid #a5d6b5;
               position: relative;
               overflow: hidden
@@ -2643,7 +2637,7 @@
             }
 
             .btn-red-sm {
-              background: linear-gradient(135deg, #b3261e, #e53935);
+              background: linear-gradient(135deg, #b3261e, #D92D20);
               color: #fff;
               border: 0;
               padding: 5px 11px;
@@ -2659,7 +2653,7 @@
             }
 
             .btn-edit-sm {
-              background: var(--plum-700);
+              background: var(--pine-700);
               color: #fff;
               border: 0;
               padding: 5px 11px;
@@ -2670,15 +2664,15 @@
             }
 
             .btn-edit-sm:hover {
-              background: var(--plum-900)
+              background: var(--pine-900)
             }
 
             .drug-table-panel {
-              background: var(--paper);
+              background: var(--surface);
               border-radius: 16px;
               padding: 18px;
-              box-shadow: 0 2px 8px rgba(51, 18, 63, .08);
-              border: 1px solid #ecdfc8;
+              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
+              border: 1px solid #E2E9E7;
               overflow-x: auto
             }
 
@@ -2713,7 +2707,7 @@
               border-radius: 20px;
               font-size: 11.5px;
               font-weight: 800;
-              background: #fbd9d5;
+              background: #FBDDD9;
               color: #8f1d12;
               border: 1px solid #f2b8ae
             }
@@ -2961,7 +2955,7 @@
                 <use href="#i-dash" />
               </svg>Login & Shift Activity <button class="btn ghost" onclick="loadActivity()">Refresh</button></h2>
             <div id="shiftBox"></div>
-            <h3 style="margin:10px 0 6px;font-family:var(--serif);color:var(--plum-900)">Recent Sign-ins</h3>
+            <h3 style="margin:10px 0 6px;font-family:var(--serif);color:var(--pine-900)">Recent Sign-ins</h3>
             <table>
               <thead>
                 <tr>

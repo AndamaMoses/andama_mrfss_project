@@ -4,22 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% if tender_only %}Sign In — Tender Copilot{% else %}Sign In — Onzima Dawa Apothecary{% endif %}</title>
+<meta name="description" content="{% if tender_only %}Secure staff sign-in for the Tender Copilot workspace.{% else %}Secure staff sign-in for Onzima Dawa pharmacy operations.{% endif %}">
+<meta name="theme-color" content="#0A1F1B">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+<link rel="apple-touch-icon" href="/static/img/favicon.svg">
+<link rel="manifest" href="/static/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --plum-950: #23092e;
-  --plum-900: #33123f;
-  --plum-700: #4d1e5e;
-  --plum-500: #7c3e94;
-  --gold: #f2a900;
-  --gold-deep: #b97a00;
-  --cream: #faf3e6;
-  --paper: #fffdf6;
-  --ink: #2c1a2e;
-  --muted: #857183;
+  --pine-950: #0A1F1B;
+  --pine-900: #123029;
+  --pine-700: #1B4D42;
+  --pine-500: #2F7A68;
+  --brass: #C9A227;
+  --brass-deep: #9A7715;
+  --canvas: #F4F7F6;
+  --surface: #FFFFFF;
+  --ink: #16221F;
+  --muted: #647773;
   --success: #2e7d4f;
   --danger: #b3261e;
-  --serif: Georgia, 'Palatino Linotype', serif;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Arial, sans-serif;
+  --serif: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -30,9 +39,9 @@ body {
   padding: 20px;
   font-family: var(--sans);
   color: var(--ink);
-  background: radial-gradient(900px 500px at 15% 10%, #5b256e 0%, transparent 60%),
-              radial-gradient(800px 500px at 90% 90%, #6b4a00 0%, transparent 55%),
-              var(--plum-950);
+  background: radial-gradient(1100px 620px at 12% 8%, rgba(47,122,104,.55) 0%, transparent 62%),
+              radial-gradient(900px 540px at 92% 94%, rgba(201,162,39,.16) 0%, transparent 60%),
+              linear-gradient(160deg, #081714 0%, var(--pine-950) 55%, #0C2621 100%);
 }
 .wrap {
   width: 900px;
@@ -42,11 +51,11 @@ body {
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 35px 90px rgba(0,0,0,0.55);
-  background: var(--paper);
+  background: var(--surface);
 }
 .brand {
-  background: linear-gradient(160deg, var(--plum-900), #1c071f);
-  color: #f3e6f7;
+  background: linear-gradient(160deg, var(--pine-900), #0A1C18);
+  color: #ECF4F1;
   padding: 38px 32px;
   display: flex;
   flex-direction: column;
@@ -56,17 +65,17 @@ body {
   width: 64px;
   height: 64px;
   border-radius: 18px;
-  background: var(--gold);
+  background: var(--brass);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(242,169,0,0.35);
+  box-shadow: 0 8px 20px rgba(201,162,39,0.35);
 }
 .brand .mark svg {
   width: 36px;
   height: 36px;
-  stroke: #3a1149;
+  stroke: #0A241F;
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
@@ -79,14 +88,14 @@ body {
   line-height: 1.15;
 }
 .brand h1 em {
-  color: var(--gold);
+  color: var(--brass);
   font-style: normal;
 }
 .brand p.sub {
   font-size: 13.5px;
   margin-top: 12px;
   line-height: 1.6;
-  color: #d9c6e2;
+  color: #C9DCD6;
 }
 .brand ul {
   list-style: none;
@@ -104,15 +113,15 @@ body {
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.08);
 }
-.brand ul b { color: var(--gold); }
+.brand ul b { color: var(--brass); }
 .brand .version-tag {
   font-size: 11.5px;
-  color: #a48eaf;
+  color: #8FA8A2;
   margin-top: 24px;
 }
 
 .form-area {
-  background: var(--paper);
+  background: var(--surface);
   padding: 38px 34px;
   display: flex;
   flex-direction: column;
@@ -121,7 +130,7 @@ body {
 .form-area h2 {
   font-family: var(--serif);
   font-size: 26px;
-  color: var(--plum-900);
+  color: var(--pine-900);
 }
 .form-area p.desc {
   font-size: 13px;
@@ -131,18 +140,18 @@ body {
 
 .cur-user-banner {
   display: none;
-  background: #fef3d6;
-  border: 1px solid #ebd090;
+  background: #E7F1EE;
+  border: 1px solid #C6D9D3;
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 13px;
   margin-bottom: 14px;
   justify-content: space-between;
   align-items: center;
-  color: #492c00;
+  color: #0F2A25;
 }
 .cur-user-banner a {
-  color: var(--plum-700);
+  color: var(--pine-700);
   font-weight: 800;
   text-decoration: none;
 }
@@ -167,31 +176,31 @@ body {
   padding: 2px;
 }
 .persona {
-  border: 2px solid #e7d6ae;
+  border: 2px solid #D7E1DE;
   border-radius: 14px;
   padding: 9px 12px;
   cursor: pointer;
   display: flex;
   gap: 12px;
   align-items: center;
-  background: #fffdf8;
+  background: #FBFDFC;
   transition: all 0.15s ease;
   position: relative;
 }
 .persona:hover {
-  border-color: var(--gold);
+  border-color: var(--brass);
   transform: translateY(-1px);
 }
 .persona.sel {
-  border-color: var(--plum-700);
-  background: #fdf3d3;
-  box-shadow: 0 0 0 3px rgba(242,169,0,0.25);
+  border-color: var(--pine-700);
+  background: #EDF5F2;
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.22);
 }
 .persona .avatar {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--plum-700);
+  background: var(--pine-700);
   color: #fff;
   font-family: var(--serif);
   font-weight: bold;
@@ -202,8 +211,8 @@ body {
   flex-shrink: 0;
 }
 .persona.sel .avatar {
-  background: var(--gold);
-  color: #3a1149;
+  background: var(--brass);
+  color: #0A241F;
 }
 .persona .info {
   flex: 1;
@@ -223,7 +232,7 @@ body {
   display: block;
 }
 .persona .quick-btn {
-  background: var(--plum-700);
+  background: var(--pine-700);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -235,8 +244,8 @@ body {
   white-space: nowrap;
 }
 .persona .quick-btn:hover {
-  background: var(--gold);
-  color: #23092e;
+  background: var(--brass);
+  color: #0A1F1B;
 }
 
 label {
@@ -254,18 +263,18 @@ label {
 }
 input {
   padding: 11px 14px;
-  border: 1.5px solid #d9c8a6;
+  border: 1.5px solid #CFDAD6;
   border-radius: 12px;
   font-size: 15px;
   width: 100%;
-  background: #fffdf8;
+  background: #FBFDFC;
   font-family: var(--sans);
   color: var(--ink);
   transition: border-color 0.15s, outline 0.15s;
 }
 input:focus {
-  outline: 2px solid var(--gold);
-  border-color: var(--gold);
+  outline: 2px solid var(--brass);
+  border-color: var(--brass);
 }
 .toggle-pwd {
   position: absolute;
@@ -282,7 +291,7 @@ input:focus {
   border-radius: 6px;
 }
 .toggle-pwd:hover {
-  color: var(--plum-700);
+  color: var(--pine-700);
   background: rgba(0,0,0,0.05);
 }
 
@@ -293,9 +302,9 @@ input:focus {
   margin: -4px 0 14px;
 }
 .chip {
-  background: #f7eddc;
-  border: 1px solid #e2cfb0;
-  color: var(--plum-900);
+  background: #EFF3F2;
+  border: 1px solid #D3DEDA;
+  color: var(--pine-900);
   border-radius: 16px;
   padding: 3px 9px;
   font-size: 11.5px;
@@ -304,13 +313,13 @@ input:focus {
   transition: all 0.15s;
 }
 .chip:hover {
-  background: var(--gold);
-  border-color: var(--gold-deep);
-  color: #23092e;
+  background: var(--brass);
+  border-color: var(--brass-deep);
+  color: #0A1F1B;
 }
 
 button.go {
-  background: var(--plum-700);
+  background: var(--pine-700);
   color: #fff;
   border: 0;
   padding: 13px;
@@ -320,9 +329,9 @@ button.go {
   font-weight: 800;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 4px 12px rgba(77,30,94,0.25);
+  box-shadow: 0 4px 12px rgba(27,77,66,0.25);
 }
-button.go:hover { background: var(--plum-900); }
+button.go:hover { background: var(--pine-900); }
 button.go:active { transform: scale(0.99); }
 button.go:disabled { background: var(--muted); cursor: not-allowed; }
 
@@ -350,10 +359,44 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
   line-height: 1.5;
 }
 .foot code {
-  background: #f0e6d6;
+  background: #E9EFED;
   padding: 2px 6px;
   border-radius: 4px;
-  color: var(--plum-900);
+  color: var(--pine-900);
+  font-weight: 700;
+}
+
+.caps-warn {
+  display: none;
+  margin: -6px 0 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #B7791F;
+}
+.caps-warn.show { display: block; }
+
+.help {
+  margin-top: 13px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.help summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--pine-700);
+  outline: none;
+}
+.help ul {
+  margin: 8px 0 0 16px;
+  display: grid;
+  gap: 5px;
+  line-height: 1.45;
+}
+.help code {
+  background: #E9EFED;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--pine-900);
   font-weight: 700;
 }
 
@@ -387,12 +430,12 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
         {% endif %}
       </ul>
     </div>
-    <div class="version-tag">{% if tender_only %}Communion Engineering · Jinja · Tender Copilot{% else %}Kireka &amp; Jinja Retail System · v2.4 Active{% endif %}</div>
+    <div class="version-tag">{% if tender_only %}Communion Engineering · Jinja · Tender Copilot{% else %}Kireka &amp; Jinja Retail System · v2.5 Active{% endif %}</div>
   </div>
 
   <div class="form-area">
     <h2>Staff Sign In</h2>
-    <p class="desc">Select your profile to fill your username, then enter your password.</p>
+    <p class="desc">Select your profile, or type your username / full name, then enter your password.</p>
     
     <div id="curBanner" class="cur-user-banner"></div>
 
@@ -411,13 +454,6 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
           <small>Shop Owner &middot; admin</small>
         </div>
       </div>
-      <div class="persona" id="p_andama" onclick="selectUser('andama')">
-        <div class="avatar">AM</div>
-        <div class="info">
-          <b>Andama Moses</b>
-          <small>Shop Owner &middot; andama</small>
-        </div>
-      </div>
       <div class="persona" id="p_grace" onclick="selectUser('grace')">
         <div class="avatar">SA</div>
         <div class="info">
@@ -431,19 +467,30 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
     <form id="loginForm" onsubmit="go(event)">
       <label for="uName">Username or Full Name</label>
       <div class="input-wrap">
-        <input id="uName" placeholder="e.g. admin, andama, or grace" oninput="onUserInput(this.value)" autocomplete="username" required>
+        <input id="uName" placeholder="e.g. admin or Sarah Achen" oninput="onUserInput(this.value)" autocomplete="username" required>
       </div>
 
       <label for="uPass">Password</label>
       <div class="input-wrap">
-        <input id="uPass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        <input id="uPass" type="password" placeholder="••••••••" autocomplete="current-password"
+               onkeyup="checkCaps(event)" onkeydown="checkCaps(event)" required>
         <button type="button" class="toggle-pwd" id="toggleBtn" onclick="togglePassword()">Show</button>
       </div>
+      <div class="caps-warn" id="capsWarn">⚠ Caps Lock is on</div>
 
       <button type="submit" class="go" id="submitBtn">Sign In →</button>
     </form>
 
     <div id="err"></div>
+
+    <details class="help">
+      <summary>Trouble signing in?</summary>
+      <ul>
+        <li>Usernames are <code>admin</code> and <code>grace</code>; full profile names and first names also work.</li>
+        <li>Passwords are case-sensitive — check Caps Lock and trailing spaces.</li>
+        <li>Still stuck? Ask a Shop Owner to reset it under <b>Team → Reset password</b>.</li>
+      </ul>
+    </details>
 
     <div class="foot">
       {% if tender_only %}Ask your account manager if you need login details.{% else %}Ask the shop owner if you need login details.{% endif %}
@@ -491,6 +538,11 @@ function togglePassword() {
     p.type = 'password';
     btn.textContent = 'Show';
   }
+}
+
+function checkCaps(event) {
+  const on = event.getModifierState && event.getModifierState('CapsLock');
+  document.getElementById('capsWarn').classList.toggle('show', !!on);
 }
 
 function clearError() {
@@ -583,7 +635,8 @@ async function go(event) {
       const nextUrl = params.get('next') || HOME_URL;
       location.href = nextUrl;
     } else {
-      showError(j.error || 'Invalid username or password.');
+      showError((j.error || 'Invalid username or password.') +
+        ' Check Caps Lock is off, then ask a Shop Owner for a password reset if it still fails.');
       btn.disabled = false;
       btn.textContent = 'Sign In →';
       document.getElementById('uPass').focus();

@@ -15,7 +15,7 @@ async function loadDrugCatalogue() {
       <div class="dstat"><h4>Total Drugs</h4><div class="dv">${total}</div></div>
       <div class="dstat"><h4>Stock On Hand</h4><div class="dv">${totalStock.toLocaleString()}</div></div>
       <div class="dstat" style="border-top-color:var(--blood)"><h4>Low Stock</h4><div class="dv" style="color:var(--blood)">${lowCt}</div></div>
-      <div class="dstat" style="border-top-color:var(--gold)"><h4>Stock Value (Cost)</h4><div class="dv" style="font-size:18px">${Math.round(totalVal).toLocaleString()}<small style="font-size:13px;font-weight:600"> UGX</small></div></div>
+      <div class="dstat" style="border-top-color:var(--brass)"><h4>Stock Value (Cost)</h4><div class="dv" style="font-size:18px">${Math.round(totalVal).toLocaleString()}<small style="font-size:13px;font-weight:600"> UGX</small></div></div>
     `;
     renderDrugTable(drugs);
   } catch (e) { }
