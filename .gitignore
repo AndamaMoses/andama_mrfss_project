@@ -1,7 +1,40 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
 .venv/
-instance/
+venv/
+
+# Test and lint caches
 .pytest_cache/
 .ruff_cache/
-*.egg-info/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data — never commit live shop data
+instance/
+uploads/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.log
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local scratch
+tmp/
+temp/
