@@ -40,7 +40,7 @@ full-time weeks including pilot hardening.
 | Bundles | 2 bundles + 1 add-on + Tender Copilot standalone |
 | Activation | Operator-run CLI; read-only plan panel for the customer |
 | Tender Copilot | Separate brand and go-to-market, shared codebase and auth |
-| Branding | Keep plum/gold; borrow Odoo's layout grammar, not assets |
+| Branding | Keep the pine/brass palette; borrow Odoo's layout grammar, not assets |
 | Device priority | Desktop-first at the counter; responsive for the owner |
 | First screens | POS, Inventory, Dashboard |
 | Expiry policy | Soft warning in v1; no hard lockout |
@@ -299,7 +299,7 @@ New file: `drugshop/static/js/core/apps.js`, loaded before `boot.js`.
 
 - New `#tab-apps` section with an app grid: icon, name, one-line description,
   lock badge for unentitled apps.
-- Styling uses existing plum/gold tokens; white tile cards, 16px radius, 56px
+- Styling uses the existing pine/brass tokens; white tile cards, 16px radius, 56px
   icon, responsive 2/3/4/6-column grid.
 - Reuse the existing SVG sprite (`i-dash`, `i-pos`, `i-stock`, `i-heart`,
   `i-coins`, `i-bell`, `i-hat`, plus a new `i-apps` and `i-lock`).
@@ -517,8 +517,8 @@ standalone with the same auth.
    conversation. Entitlement denials are logged at warning level and summarized
    by `scripts/pilot_metrics.py`.
 
-The executable checklist is [`docs/pilot-runbook.md`](docs/pilot-runbook.md);
-results go in [`docs/pilot-tracker.md`](docs/pilot-tracker.md).
+The executable checklist is [`pilot-runbook.md`](pilot-runbook.md);
+results go in [`pilot-tracker.md`](pilot-tracker.md).
 
 **Acceptance:** two weeks with no regressions; one upgrade demo completed.
 
@@ -586,8 +586,8 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1
 9. Record activation time and support contact in the customer sheet.
 10. Schedule a 30-day check-in and a renewal reminder 14 days before expiry.
 
-The executable version is [`docs/onboarding-runbook.md`](docs/onboarding-runbook.md).
-Rollback steps are in [`docs/rollback-runbook.md`](docs/rollback-runbook.md).
+The executable version is [`onboarding-runbook.md`](onboarding-runbook.md).
+Rollback steps are in [`rollback-runbook.md`](rollback-runbook.md).
 
 ---
 
@@ -781,4 +781,4 @@ schema. The global runner stays.
 | Upgrade demo → paid conversion | ≥ 1 in the first quarter |
 | Time to quote a bundle | < 5 minutes |
 
-Record the actuals in [`docs/pilot-tracker.md`](docs/pilot-tracker.md).
+Record the actuals in [`pilot-tracker.md`](pilot-tracker.md).

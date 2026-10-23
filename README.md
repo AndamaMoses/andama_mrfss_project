@@ -1,132 +1,220 @@
-S/N	BUSINESS NAME	                         CATEGORY	                    CONTACT	           ADDRESS
-1	COMMUNION ENGINEERING SERVICES LTD     	CONSULTANT AGENCY	           0776102744	         JINJA
-2	ONZIMA CHARLSE DRUG SHOP	                HEALTH CARE RETAIL		                         KIREKA
+<div align="center">
+  <img src="docs/assets/banner.svg" alt="Onzima Dawa — pharmacy operations and Tender Copilot" width="100%">
+  <h1>Onzima Dawa</h1>
+  <p><strong>Pharmacy operations and tender intelligence in one secure workspace.</strong></p>
+  <p>
+    <a href="https://github.com/AndamaMoses/andama_mrfss_project/actions/workflows/ci.yml"><img src="https://github.com/AndamaMoses/andama_mrfss_project/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+    <img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+">
+    <img src="https://img.shields.io/badge/Flask-3.x-000000?style=flat-square&logo=flask&logoColor=white" alt="Flask 3.x">
+    <img src="https://img.shields.io/badge/database-SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white" alt="SQLite">
+    <img src="https://img.shields.io/badge/status-pilot-f2a900?style=flat-square" alt="Pilot status">
+  </p>
+</div>
 
+---
 
+**Onzima Dawa** is a modular Flask application built for **Onzima Charles Drug Shop** (Kireka) and **Communion Engineering Services Ltd** (Jinja). It gives a pharmacy a fast point of sale, batch-level stock and expiry control, chronic-patient refill care, finance reconciliation, and stock alerts — and gives an engineering consultancy a structured **Tender Copilot** workspace for PPDA/UNRA opportunities.
 
+Both products ship from one repository, one database, and one deployment. What a customer can open is decided by installation-level **entitlements** and enforced on the server, so the same codebase can be sold as Core, Pro, Growth, Tender Copilot, or a combined installation.
 
+> **Pilot status:** Phase 6 observation is running from 2026-10-21 to 2026-11-04. See the [pilot runbook](docs/pilot-runbook.md) and [tracker](docs/pilot-tracker.md).
 
+## What it does
 
+| Workspace | Capabilities |
+|---|---|
+| **Point of Sale** | Multi-batch sales, cash / MTN MoMo / Airtel MoMo / credit, receipts, daily close, staff attribution |
+| **Inventory & Purchases** | Products, supplier invoices, batch receipts, expiry watchdog, reorder levels, drug catalogue |
+| **Refill Care** | Chronic-patient register and Day-25 refill reminders |
+| **Finance** | Credit ledger, cash and mobile-money reconciliation, expenses, profit reporting |
+| **Stock Alerts** | Low-stock and expiry SMS/WhatsApp alerts |
+| **Tender Copilot** | PPDA/UNRA tender analysis, compliance matrix, risk flags, technical methodology drafting |
+| **Apps & Plans** | Odoo-style launcher, server-side entitlement gate, plan-aware navigation and upgrade prompts |
+| **Mobile Shift View** | A focused phone view for sales, refills due, and stock alerts |
 
+## A look inside
 
+| Daily operations | Secure sign-in | Plan-aware access |
+|:---:|:---:|:---:|
+| ![Dashboard](docs/screenshots/dashboard.jpg) | ![Sign in](docs/screenshots/login.jpg) | ![Plan gate](docs/screenshots/plan-gate.jpg) |
+| Sales, expiries, refills, and stock value in one view | Staff profiles, roles, and password sign-in | Features are enforced by plan, not just hidden in the UI |
 
+The same workspace adapts to a phone for counter staff: [mobile shift view](docs/screenshots/staff-mobile.jpg).
 
-Challenges Facing Consultant Agencies Consultant agencies face several challenges that can affect their performance, profitability, and ability to satisfy clients. Some of the major challenges include:
-1.	High competition – Many consulting firms offer similar services, making it difficult to attract and retain clients.
-2.	Difficulty in attracting qualified consultants – Finding professionals with the right skills, experience, and expertise can be challenging.
-3.	Changing client needs – Clients' requirements change frequently, forcing consulting agencies to continuously adapt their services.
-4.	Limited financial resources – Small consulting agencies may struggle with limited capital, delayed client payments, and high operating costs.
-5.	Maintaining quality services – Agencies must consistently provide high-quality and reliable advice to maintain their reputation and client trust.
-6.	Client expectations – Some clients expect quick results at low costs, which can create pressure on consultants.
-7.	Technological changes – Rapid changes in technology require agencies to continuously learn, invest in new tools, and update their skills.
-8.	Regulatory and legal requirements – Changes in government regulations, licensing requirements, taxation, and professional standards can increase the cost and complexity of operations.
-9.	Difficulty in measuring results – It can sometimes be difficult to demonstrate the direct impact and value of consulting services to clients.
-10.	Dependence on clients – Losing a major client can significantly affect the agency's revenue, especially for small firms.
-11.	Time management – Consultants may have to handle several projects simultaneously, leading to workload pressure and missed deadlines.
-12.	Building client trust – New agencies may find it difficult to establish credibility and convince clients to hire them.
-13.	Confidentiality and data security – Consultants often handle sensitive business information, creating risks related to data loss, unauthorized access, or disclosure.
-14.	Economic instability – Inflation, economic downturns, and reduced business spending can cause organizations to cut consulting budgets.
-15.	Staff turnover – Experienced consultants may leave for better-paying jobs or start their own consulting businesses, resulting in loss of skills and clients.
+## Plans
 
-Solutions to Challenges Facing Consultant Agencies — From a Web Developer's Perspective Challenge Web-based solution
-1.	High competition Develop a professional, modern website that clearly presents the agency's services, previous projects, expertise, testimonials, and contact information.
-2.	Difficulty finding clients Build an online client-acquisition system with service pages, inquiry forms, appointment booking, SEO, and social-media integration.
-3.	Difficulty managing clients Create a Client Management System (CRM) where consultants can register clients, track projects, record communication, and monitor progress.
-4.	Poor project management Develop a project-management dashboard showing tasks, deadlines, assigned consultants, project status, and milestones.
-5.	Poor communication Add secure messaging, email notifications, contact forms, and automated updates so clients can communicate with consultants easily.
-6.	Delayed payments Integrate online invoicing and payment systems so clients can receive invoices, make payments, and receive payment confirmations electronically.
-7.	Difficulty measuring performance Create dashboards and reports showing revenue, completed projects, active clients, consultant performance, and customer satisfaction.
-8.	Maintaining quality services Build a client feedback and rating system. Management can use the feedback to identify weaknesses and improve services.
-9.	Poor record keeping Replace paper files with a secure digital database for client information, contracts, reports, invoices, and project documents.
-10.	Data security problems Implement secure login, role-based access, encrypted passwords, backups, audit logs, and controlled access to sensitive documents.
-11.	Changing client requirements Build a flexible system where services, project requirements, pricing, and client information can easily be updated.
-12.	Limited resources Automate repetitive activities such as invoices, reports, appointment reminders, emails, and project notifications to reduce administrative work.
-13.	Difficulty demonstrating results Create automated reports and visual dashboards that show clients project progress, completed work, costs, and measurable outcomes.
-14.	Staff turnover Store organizational knowledge, project records, procedures, and client history in a centralized system so work can continue when employees leave.
-15.	Lack of online presence Develop a responsive website that works on phones, tablets, and computers, allowing potential clients to find the agency 24/7.
+Entitlements are stored per installation and checked on every gated request. Revoking an app hides it and returns `403` at the API; it never deletes business data.
 
+| Plan | Included apps | Intended customer |
+|---|---|---|
+| **Core** | POS, Inventory | New pharmacy starter |
+| **Pro** | Core + Refill Care, Finance | Established pharmacy |
+| **Growth** | Pro + Stock Alerts | Pharmacy that wants proactive stock alerts |
+| **Tender Copilot** | Tender only | Consultancy or standalone workspace |
+| **Combined** | Pro + Tender add-on | Pharmacy that also bids for tenders |
+| **Legacy** | All apps | Onzima only — grandfathered, not sold |
 
-Challenges faced by consultants Agencies
-1.	Unstable cash flow – Payments from clients may be delayed, making it difficult to pay staff and operating expenses.
-2.	High competition – Many consultancy firms offer similar services, making it difficult to attract and retain clients.
-3.	Difficulty finding clients – New agencies often struggle to build a strong client base and reputation.
-4.	Client expectations – Clients may expect quick, inexpensive results even when the work requires significant time and expertise.
-5.	Limited skilled personnel – Finding consultants with the right technical skills and experience can be difficult.
-6.	Changing regulations – Changes in government policies, laws, and industry standards can require agencies to continually update their knowledge.
-7.	Scope creep – Clients may request additional work without agreeing to additional fees.
-8.	Delayed client decisions – Consultancy projects can be slowed when clients take too long to provide information, approvals, or feedback.
-9.	Maintaining quality – Delivering consistently high-quality work across multiple projects can be challenging.
-10.	Technology changes – Agencies must continually invest in new software, tools, and digital skills.
-11.	Reputation risks – A single unsuccessful project or dissatisfied client can negatively affect the agency's reputation.
-12.	Difficulty retaining consultants – Experienced employees may leave for better-paying jobs or competitors.
-13.	Poor project management – Weak planning, budgeting, or scheduling can cause projects to exceed their deadlines and budgets.
-14.	Economic uncertainty – When businesses reduce spending, consultancy services may be among the expenses they cut.
-15.	Data confidentiality and security – Consultants often handle sensitive client information and must protect it from unauthorized access.
+## Quick start
 
-
-## Running locally
+**Requirements:** Python 3.12+ and PowerShell (or any shell).
 
 ```powershell
+git clone https://github.com/AndamaMoses/andama_mrfss_project.git
+cd andama_mrfss_project
+
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 $env:PYTHONIOENCODING = "utf-8"
+
+python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
+
 python run.py
 ```
 
-Open `http://127.0.0.1:5000` for the drug shop and
-`http://127.0.0.1:5000/tender` for Tender Copilot. Tender Copilot can also be
-sold and hosted as a standalone workspace; see
-[`docs/tender-standalone.md`](docs/tender-standalone.md) for the optional
-separate-domain mapping, shared sign-in settings, and demo-hygiene rules.
+Open:
 
-## Packaging runbooks
+- **Pharmacy workspace** — <http://127.0.0.1:5000>
+- **Tender Copilot** — <http://127.0.0.1:5000/tender>
 
-- [Onboarding runbook](docs/onboarding-runbook.md) — backup, first boot, plan
-  activation, smoke checks, and handover.
-- [Rollback runbook](docs/rollback-runbook.md) — access, code, and database
-  rollback, plus the restore rehearsal.
-- [Pilot runbook](docs/pilot-runbook.md) — Onzima Legacy deployment, Core
-  staging rehearsal, owner walkthrough, and daily observation.
-- [Pilot tracker](docs/pilot-tracker.md) — baseline, daily metrics, support
-  tickets, and exit decision.
+On an empty database the first boot creates the bootstrap accounts and prints them to the console. **Change every bootstrap password before the app is reachable by anyone else.** Restarts never reset an existing password.
 
-The Phase 5 packaging dry run copies the real database, applies the additive
-migration, seeds a bundle, checks access, downgrades to Core, re-upgrades, and
-rehearses a restore. It never writes to the source database or backup:
+New installations should start on Core:
 
 ```powershell
-python scripts\dry_run_packaging.py --bundle legacy `
-    --restore-backup "instance\backups\drugshop-pre-packaging-20261021-161243.db"
+$env:DRUGSHOP_BUNDLE = "core"
+python run.py
 ```
 
-Use `--bundle pro` for the Pro acceptance path. The script prints a `PASS` line
-and leaves a temporary directory behind only when `--keep` is passed.
+Onzima's existing installation keeps the grandfathered `legacy` default. The full first-boot, backup, activation, and handover checklist is in the [onboarding runbook](docs/onboarding-runbook.md).
 
-## Tests and lint
+### Staff sign-in and recovery
+
+Staff can sign in with their username, full profile name, or first/last name —
+matching is case-insensitive. The sign-in form warns when Caps Lock is on.
+
+If someone forgets a password:
+
+1. A Shop Owner signs in and opens **Team → Staff accounts → Reset password**.
+2. If no admin can sign in, use the CLI from the project root:
+
+   ```powershell
+   .\.venv\Scripts\flask.exe --app run reset-password admin
+   ```
+
+   The command prompts for the new password twice and never prints it back.
+
+## Configuration
+
+All settings are environment variables read by [`config.py`](config.py). The app does **not** auto-load a `.env` file; export variables in your shell or set them in your process manager. See [`.env.example`](.env.example) for a starting point.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `SECRET_KEY` | Development key | Session signing key. **Required** by `ProdConfig`; use a long random value from a secret store. |
+| `DRUGSHOP_DB` | `instance/drugshop.db`, else `drugshop.db` | SQLite database path. |
+| `DRUGSHOP_UPLOADS` | `instance/uploads`, else `uploads` | Uploaded document directory. |
+| `DRUGSHOP_BUNDLE` | `legacy` | Bundle seeded on first boot: `core`, `pro`, `growth`, `tender`, or `legacy`. |
+| `SUPPORT_WHATSAPP` | empty | Support number shown on upgrade prompts. |
+| `SESSION_COOKIE_DOMAIN` | unset | Set only when Tender Copilot is served from a subdomain of the pharmacy install. |
+| `FLASK_DEBUG` | `0` | Set to `1` for local auto-reload. Never enable in production. |
+
+Deploy behind HTTPS, set a strong `SECRET_KEY`, and keep `instance/` (database, uploads, backups, logs) outside version control.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    B["Browser / mobile"] -->|HTTPS| F["Flask application factory"]
+    F --> AUTH["Auth guard"]
+    AUTH --> GATE["Entitlement gate"]
+    GATE --> P["Pharmacy apps"]
+    GATE --> T["Tender Copilot"]
+    P --> POS["POS"]
+    P --> INV["Inventory"]
+    P --> CARE["Refill Care"]
+    P --> FIN["Finance"]
+    P --> ALERT["Stock Alerts"]
+    P --> DB[("SQLite")]
+    T --> DB
+    F --> STATIC["Static assets"]
+```
+
+The app is a **modular monolith**: an application factory in `drugshop/__init__.py`, one blueprint per domain, one SQLite database, and a single forward-only migration stream. The entitlement catalog lives in `drugshop/apps/registry.py`; the request gate lives in `drugshop/apps/guards.py`.
+
+```text
+andama_mrfss_project/
+├── drugshop/
+│   ├── apps/          # Plan catalog, entitlements, server-side gate, launcher API
+│   ├── auth/          # Sign-in, roles, bootstrap users
+│   ├── sales/         # Point of sale and receipts
+│   ├── inventory/     # Products, batches, expiry, supplier invoices
+│   ├── patients/      # Refill care
+│   ├── finance/       # Reconciliation, credit, expenses
+│   ├── notifications/ # SMS / WhatsApp stock alerts
+│   ├── reporting/     # Dashboard, exports, backups
+│   ├── tender/        # Tender Copilot analysis and methodology
+│   ├── migrations/    # Forward-only SQL migrations
+│   ├── static/        # JavaScript, brand assets, web manifest
+│   └── templates/     # Workspace, sign-in, staff, Tender Copilot
+├── docs/              # Runbooks, plans, business context
+├── scripts/           # Smoke checks, dry run, pilot metrics
+├── tests/             # Pytest suite
+├── config.py          # Environment-overridable configuration
+└── run.py             # Single entry point
+```
+
+## Quality
 
 ```powershell
-python -m pytest -q
-python -m ruff check .
+python -m pytest -q          # 225 tests
+python -m ruff check .       # Lint (E, F, I, BLE, S rules)
 ```
 
-With the app running, execute the HTTP smoke checks:
+CI runs lint and the full test suite on every push and pull request. With the app running, the HTTP smoke script checks plan-aware access:
 
 ```powershell
 $env:SMOKE_PASSWORD = "the-admin-password"
 powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Plan core -Username admin
 ```
 
-The smoke script checks `/api/apps`, plan-aware POS/Patients access, the Tender
-redirect, and the always-on backup endpoint. Use
-`-Plan core|pro|growth|tender|legacy|unseeded` to assert a plan, or omit `-Plan`
-to detect it. `SMOKE_PASSWORD` keeps the password out of shell history; fresh
-installs fall back to `admin123`. Pass `-Username` if the admin username is not
-`admin`.
-
-During the pilot, collect activation, login, and 403-denial metrics without
-changing the database:
+The packaging dry run copies the database, applies the additive migration, seeds a bundle, checks access, downgrades, re-upgrades, and rehearses a restore — without writing to the source database:
 
 ```powershell
-python scripts\pilot_metrics.py --log instance\pilot\server.log
+python scripts\dry_run_packaging.py --bundle legacy `
+    --restore-backup "instance\backups\drugshop-pre-packaging-20261021-161243.db"
 ```
+
+## Operations
+
+| Document | Use it for |
+|---|---|
+| [Onboarding runbook](docs/onboarding-runbook.md) | Backup, first boot, plan activation, smoke checks, handover |
+| [Rollback runbook](docs/rollback-runbook.md) | Access, code, and database rollback; restore rehearsal |
+| [Pilot runbook](docs/pilot-runbook.md) | Onzima Legacy deployment and the two-week observation |
+| [Pilot tracker](docs/pilot-tracker.md) | Baseline, daily metrics, support tickets, exit decision |
+| [Tender standalone](docs/tender-standalone.md) | Separate-domain mapping, shared sign-in, demo hygiene |
+| [Packaging plan](docs/packaging-plan.md) | Entitlements, launcher, and phased delivery record |
+| [Business context](docs/business-context.md) | Customer research behind both products |
+| [Strategy playbook](docs/strategy-playbook.md) | Commercial rollout notes for the Kampala–Jinja corridor |
+
+## Security
+
+- Passwords are hashed with Werkzeug; default accounts are only created when the user table is empty.
+- Session cookies are `HttpOnly` and `SameSite=Lax`; production refuses to start without `SECRET_KEY`.
+- Responses deny framing, MIME sniffing, and search indexing by default.
+- Every gated endpoint is checked server-side, not just hidden in the UI.
+- SQL uses parameter binding; uploads and exports are scoped to the authenticated installation.
+- Backups are available from the admin surface and documented in the operations runbooks.
+
+Please do not open a public issue for a suspected vulnerability. Follow [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+Development setup, migration rules, and the review checklist are in [CONTRIBUTING.md](CONTRIBUTING.md). Commits follow a conventional style (`feat:`, `fix:`, `docs:`, `chore:`).
+
+## Contact
+
+**Andama Moses** — Communion Engineering Services Ltd, Jinja, Uganda<br>
+[andamamoses42@gmail.com](mailto:andamamoses42@gmail.com) · [GitHub](https://github.com/AndamaMoses)
+
+<sub>Built for the shop floor and the tender desk. © 2026 Communion Engineering Services Ltd.</sub>
