@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions track the
 product release shown on the sign-in screen.
 
+## [Unreleased]
+
+### Added
+
+- Production `wsgi.py` entry point with an idempotent schema, account, plan, and
+  demo-data bootstrap for Gunicorn.
+- Render Blueprint (`render.yaml`), `requirements-prod.txt`, and a deployment
+  guide for a free public demo with synthetic data.
+- `ADMIN_PASSWORD` / `STAFF_PASSWORD` first-boot overrides so hosted installs
+  never start with the documented development passwords.
+
+### Security
+
+- `ProdConfig` marks session cookies `Secure`; bootstrap logs no longer print
+  account passwords.
+
 ## [2.5.0] — 2026-10-21
 
 Sign-in recovery and the pine/brass palette.

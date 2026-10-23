@@ -12,6 +12,32 @@ def test_protected_endpoint_requires_login(client):
     assert r.status_code == 401
 
 
+def test_bootstrap_passwords_can_come_from_environment(tmp_path, monkeypatch):
+    from werkzeug.security import check_password_hash
+
+    from drugshop import db as dbm
+    from drugshop.auth.service import ensure_admin
+    from drugshop.db import init_db, q_one
+
+    monkeypatch.setattr(dbm, "_db_path", dbm._db_path)
+    monkeypatch.setattr(dbm, "_upload_dir", dbm._upload_dir)
+    monkeypatch.setenv("ADMIN_PASSWORD", "env-admin-pass")
+    monkeypatch.setenv("STAFF_PASSWORD", "env-staff-pass")
+
+    class Paths:
+        DATABASE = str(tmp_path / "bootstrap.db")
+        UPLOAD_DIR = str(tmp_path / "uploads")
+
+    dbm.init_app(Paths)
+    init_db()
+    ensure_admin()
+
+    admin = q_one("SELECT pass_hash FROM users WHERE username='admin'")
+    staff = q_one("SELECT pass_hash FROM users WHERE username='grace'")
+    assert check_password_hash(admin["pass_hash"], "env-admin-pass")
+    assert check_password_hash(staff["pass_hash"], "env-staff-pass")
+
+
 @pytest.mark.parametrize(
     "password",
     ["nope-not-a-password", "admin", "password", "Admin123", "andama123"],

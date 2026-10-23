@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: onzima-dawa
+    runtime: python
+    plan: free
+    buildCommand: python -m pip install -r requirements-prod.txt
+    startCommand: gunicorn --preload --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT wsgi:app
+    healthCheckPath: /login
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: STAFF_PASSWORD
+        sync: false
+      - key: DEMO_SEED
+        value: "1"
+      - key: DRUGSHOP_BUNDLE
+        value: core
+      - key: SUPPORT_WHATSAPP
+        sync: false

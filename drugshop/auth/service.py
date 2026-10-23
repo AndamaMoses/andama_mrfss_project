@@ -3,7 +3,12 @@
 Phase 6 security hardening: ``ensure_admin`` bootstraps the default users only
 when the users table is empty. It never updates an existing user's password, so
 restarting the server cannot resurrect default credentials.
+
+Hosted deployments set ``ADMIN_PASSWORD`` and ``STAFF_PASSWORD`` on first boot
+so the documented development passwords are never live on the internet.
 """
+import os
+
 from werkzeug.security import generate_password_hash
 
 from drugshop.db import execute, q_one
@@ -14,13 +19,20 @@ DEFAULT_USERS = (
     ("grace", "grace123", "attendant", "Sarah Achen"),
 )
 
+_PASSWORD_ENV = {"admin": "ADMIN_PASSWORD", "grace": "STAFF_PASSWORD"}
+
+
+def _bootstrap_password(username, fallback):
+    return os.environ.get(_PASSWORD_ENV.get(username, ""), "") or fallback
+
 
 def ensure_admin():
     if q_one("SELECT id FROM users LIMIT 1"):
         return
     for username, password, role, display_name in DEFAULT_USERS:
+        password = _bootstrap_password(username, password)
         execute(
             "INSERT INTO users(username,pass_hash,role,display_name) VALUES(?,?,?,?)",
             (username, generate_password_hash(password), role, display_name),
         )
-        print(f"** Bootstrap login created: {username} / {password} (change it immediately) **")
+        print(f"** Bootstrap login created: {username} (change the password immediately) **")

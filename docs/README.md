@@ -7,6 +7,7 @@ setup. The documents below cover operations, packaging, and business context.
 
 | Document | Audience | Purpose |
 |---|---|---|
+| [Render deployment](deployment-render.md) | Owner / demo | Free public demo, environment variables, persistent disk |
 | [Onboarding runbook](onboarding-runbook.md) | Installer / support | Backup, first boot, plan activation, smoke checks, handover |
 | [Rollback runbook](rollback-runbook.md) | Installer / support | Access, code, and database rollback, plus restore rehearsal |
 | [Pilot runbook](pilot-runbook.md) | Operator | Onzima Legacy deployment and the two-week Phase 6 observation |

@@ -77,7 +77,7 @@ Open:
 - **Pharmacy workspace** — <http://127.0.0.1:5000>
 - **Tender Copilot** — <http://127.0.0.1:5000/tender>
 
-On an empty database the first boot creates the bootstrap accounts and prints them to the console. **Change every bootstrap password before the app is reachable by anyone else.** Restarts never reset an existing password.
+On an empty database the first boot creates two accounts: `admin` / `admin123` (Shop Owner) and `grace` / `grace123` (Sales Agent). **Change both passwords before the app is reachable by anyone else.** Restarts never reset an existing password. Set `ADMIN_PASSWORD` and `STAFF_PASSWORD` before the first boot to choose the passwords instead of using the development defaults.
 
 New installations should start on Core:
 
@@ -87,6 +87,16 @@ python run.py
 ```
 
 Onzima's existing installation keeps the grandfathered `legacy` default. The full first-boot, backup, activation, and handover checklist is in the [onboarding runbook](docs/onboarding-runbook.md).
+
+### Deploy a public demo
+
+The repository includes a Render Blueprint that runs the app with synthetic demo data and a fresh SQLite database:
+
+1. Create a [Render Blueprint](https://dashboard.render.com/blueprints) from this repository.
+2. Select the branch containing `render.yaml`.
+3. Enter strong `ADMIN_PASSWORD` and `STAFF_PASSWORD` values when prompted.
+
+Render generates `SECRET_KEY`, seeds the Core plan, and starts Gunicorn. The free plan uses an ephemeral disk, so demo data resets on restart. See [Deploy on Render](docs/deployment-render.md) for the full guide, persistent-disk setup, and troubleshooting.
 
 ### Staff sign-in and recovery
 
@@ -114,6 +124,9 @@ All settings are environment variables read by [`config.py`](config.py). The app
 | `DRUGSHOP_DB` | `instance/drugshop.db`, else `drugshop.db` | SQLite database path. |
 | `DRUGSHOP_UPLOADS` | `instance/uploads`, else `uploads` | Uploaded document directory. |
 | `DRUGSHOP_BUNDLE` | `legacy` | Bundle seeded on first boot: `core`, `pro`, `growth`, `tender`, or `legacy`. |
+| `ADMIN_PASSWORD` | `admin123` | First-boot password for the `admin` account. Ignored once a user exists. |
+| `STAFF_PASSWORD` | `grace123` | First-boot password for the `grace` account. Ignored once a user exists. |
+| `DEMO_SEED` | `0` | Set to `1` to insert synthetic demo data on an empty database. Never use with real data. |
 | `SUPPORT_WHATSAPP` | empty | Support number shown on upgrade prompts. |
 | `SESSION_COOKIE_DOMAIN` | unset | Set only when Tender Copilot is served from a subdomain of the pharmacy install. |
 | `FLASK_DEBUG` | `0` | Set to `1` for local auto-reload. Never enable in production. |
@@ -160,7 +173,9 @@ andama_mrfss_project/
 ├── scripts/           # Smoke checks, dry run, pilot metrics
 ├── tests/             # Pytest suite
 ├── config.py          # Environment-overridable configuration
-└── run.py             # Single entry point
+├── render.yaml        # Render Blueprint for the public demo
+├── run.py             # Local entry point
+└── wsgi.py            # Production entry point (Gunicorn / Render)
 ```
 
 ## Quality

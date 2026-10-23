@@ -60,3 +60,6 @@ class ProdConfig(BaseConfig):
     DEBUG = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
     REQUIRE_SECRET_KEY = True
+    # Hosted deployments terminate TLS at the proxy; never send the session
+    # cookie over plain HTTP. Local development uses DevConfig instead.
+    SESSION_COOKIE_SECURE = True
