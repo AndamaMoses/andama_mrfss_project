@@ -1,9 +1,9 @@
 # Implementation Plan 2 — Packaging, Entitlements & App Launcher
 
 **Project:** andama_mrfss_project (Onzima Charles Drug Shop + Tender Copilot)
-**Date:** 2026-10-21
-**Status:** Phases 0–5 complete; Phase 6 pilot in progress (started 2026-10-21,
-ends 2026-11-04)
+**Date:** 2026-10-21 (initial); last updated 2026-10-26
+**Status:** Phases 0–5 complete; Phase 6 pilot in progress (re-baselined
+2026-10-26, ends 2026-11-09)
 **Companion document:** `modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
 ---
@@ -520,6 +520,12 @@ standalone with the same auth.
 The executable checklist is [`pilot-runbook.md`](pilot-runbook.md);
 results go in [`pilot-tracker.md`](pilot-tracker.md).
 
+**Re-baseline:** the live build changed after Day 0 (v2.5.0 / `eaeb2f8`), and
+the running server was not writing to the pilot log. The original 2026-10-21 to
+2026-11-04 window is superseded. The observation clock restarted on 2026-10-26
+and ends 2026-11-09; the tracker marks 2026-10-22 through 2026-10-25 as not
+captured rather than treating them as passed.
+
 **Acceptance:** two weeks with no regressions; one upgrade demo completed.
 
 ---
@@ -638,11 +644,11 @@ infrastructure cost. Optional icon design: UGX 300k–800k if not done in-house.
 - [x] Core blocks Patients/Finance/Alerts at the API and in the UI.
 - [x] Admin is not exempt from entitlement checks.
 - [x] Launcher renders in brand colors, responsive, keyboard accessible.
-- [x] No 403s during a normal Pro session; no 500s on downgrade.
+- [x] No 403s during a normal plan session; no 500s on downgrade.
 - [x] Plan panel is read-only and shows bundle, apps, expiry, support link.
 - [x] Tender hidden and blocked when unentitled; works standalone when entitled.
 - [x] CLI set/add/remove tested; audit events written.
-- [x] `pytest -q` green (212 tests after packaging).
+- [x] `pytest -q` green (231 tests on the current build).
 - [x] `ruff check .` clean.
 - [x] Smoke script includes packaging checks and passes.
 - [x] Onboarding and rollback runbooks exist.
@@ -697,7 +703,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 | 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
 | 5 — Hardening, docs, dry run | DONE | 212 tests, ruff clean, smoke green for Core, Pro, and Tender; dry-run `PASS` for legacy and pro | Live DB is the legacy root `drugshop.db` (110,592 bytes, SHA256 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`), byte-identical to the verified `instance/backups/drugshop-pre-packaging-20261021-161243.db`; backup `PRAGMA integrity_check = ok`. Added `scripts/dry_run_packaging.py` and `docs/onboarding-runbook.md` / `docs/rollback-runbook.md`; extended `scripts/smoke.ps1` with plan-aware `/api/apps`, POS/Patients, Tender redirect, and `-Username` / `SMOKE_PASSWORD`. Dry run applied `002_app_entitlements.sql`, preserved all 15 business table row counts, passed Legacy/Pro -> Core -> re-upgrade access matrix, restored the verified backup, and confirmed the live DB hash unchanged. `index.html` is 86,250 bytes / 3,061 lines; no redesign. |
-| 6 — Pilot | IN PROGRESS (Day 0 done; ends 2026-11-04) | 212 tests, ruff clean; live Legacy smoke 15/15; staging Core/Pro/Core smoke 15/15; business row counts unchanged | Corrected Phase 6 from Pro to **Legacy**. Deployed live at 2026-10-21 19:24:13 after a verified pre-pilot backup (`instance/backups/drugshop-pre-pilot-20261021-192335.db`, SHA256 `E2AEED56...A14542C`): migration `002` applied, six Legacy entitlements, users/products/sales/patients counts unchanged. Changed entitlement denials from INFO to WARNING so default logs capture them; `scripts/pilot_metrics.py` reports activation, logins, counts, and 403s without writing the DB. Added `/api/backup` to smoke. Created `instance/staging-core` and rehearsed Core -> Pro -> Core with smoke green and zero row loss. Owner walkthrough, upgrade demo, and the 14-day observation remain pending. |
+| 6 — Pilot | IN PROGRESS (re-baselined 2026-10-26; ends 2026-11-09) | 231 tests, ruff clean, node 16/16; live Legacy smoke 15/15; staging Core/Pro/Core 15/15 each on the current build; business row counts unchanged; fresh 403 log active | Re-baselined after v2.5.0 (`eaeb2f8`) changed the live build and the old log stopped at 2026-10-21 19:35. Live metrics 2026-10-26: Legacy, DB integrity ok, 91 logins, users 2, products 8, batches 7, sales 5, patients 3, tender_docs 5; 0 fresh 403s. Verified backup `drugshop-pre-restart-20261026-113319.db`, SHA256 `576235...A6A286E`. The initial 2026-10-21 to 2026-11-04 window is superseded; 2026-10-22 through 2026-10-25 are marked not captured. Owner walkthrough, upgrade demo, `andama` account confirmation, and the 14-day observation remain pending. |
 
 ---
 
@@ -775,7 +781,7 @@ schema. The global runner stays.
 | Metric | Target |
 |---|---|
 | Activation time per customer | < 15 minutes |
-| Unentitled 403s during normal Pro use | 0 |
+| Unentitled 403s during normal Legacy use | 0 |
 | Downgrade/upgrade data loss | 0 rows |
 | Support hours per customer per month | ≤ 2 |
 | Upgrade demo → paid conversion | ≥ 1 in the first quarter |

@@ -17,7 +17,7 @@
 
 Both products ship from one repository, one database, and one deployment. What a customer can open is decided by installation-level **entitlements** and enforced on the server, so the same codebase can be sold as Core, Pro, Growth, Tender Copilot, or a combined installation.
 
-> **Pilot status:** Phase 6 observation is running from 2026-10-21 to 2026-11-04. See the [pilot runbook](docs/pilot-runbook.md) and [tracker](docs/pilot-tracker.md).
+> **Pilot status:** Phase 6 observation was re-baselined on 2026-10-26 after the v2.5 build and runs through 2026-11-09. See the [pilot runbook](docs/pilot-runbook.md) and [tracker](docs/pilot-tracker.md).
 
 ## What it does
 

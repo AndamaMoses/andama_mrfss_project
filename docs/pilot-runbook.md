@@ -5,12 +5,18 @@ non-sellable **Legacy** plan (Pro + Alerts + Tender) for the whole pilot. Do not
 announce bundles, show a price sheet, or remove any feature during this period.
 
 - Pilot window: Day 0 + 14 days
+- Initial Day 0: 2026-10-21
+- Current observation: 2026-10-26 to 2026-11-09 (re-baselined after v2.5.0)
 - Owner: Charles Onzima
 - Operator: Andama
-- Release: `phase-5-hardening` or newer
+- Release: `v2.5.0` / code commit `eaeb2f8`
 - Rollback: [rollback-runbook.md](rollback-runbook.md)
 
 Record every step in [pilot-tracker.md](pilot-tracker.md).
+
+If the deployed code changes during the pilot, restart the observation clock,
+archive the old log, update the release and dates above, and update the tracker.
+Do not carry 403 counts or smoke evidence across builds.
 
 ## 1. Day 0 pre-flight
 
@@ -65,7 +71,20 @@ $env:DRUGSHOP_BUNDLE = "legacy"
 python run.py *>> instance\pilot\server.log
 ```
 
-Keep that terminal open: `run.py` is the server. In a second terminal, verify:
+Keep that terminal open: `run.py` is the server. If the server is restarted in
+the background, redirect both standard output and standard error to the pilot
+log, then prove the log is fresh by loading `/login` and checking that a new
+request line appears:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5000/login | Out-Null
+Get-Content instance\pilot\server.log -Tail 5
+```
+
+A log whose last request predates the current server process is stale and must
+not be used for 403 evidence.
+
+In a second terminal, verify:
 
 ```powershell
 flask --app run plan show
@@ -121,6 +140,10 @@ powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Base http://127.0.0.
 Confirm the staging row counts are unchanged after both changes. Load demo data
 once through `POST /api/seed` (admin only) if the Core demo needs sample
 products for the owner walkthrough.
+
+Run this rehearsal on the same release as the live pilot. Repeat it after a
+build change and record the new release in the tracker. Never treat a rehearsal
+from an older build as evidence for the current build.
 
 Stop the staging server when finished. Never point `DRUGSHOP_DB` at the
 production database while rehearsing a downgrade.
