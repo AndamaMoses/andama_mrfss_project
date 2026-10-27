@@ -1,6 +1,6 @@
 """Drug Shop + Tender Copilot application package.
 
-Modularization status (see modularization/IMPLEMENTATION_PLAN.md):
+Modularization status (see archive/modularization/IMPLEMENTATION_PLAN.md):
   Phase 1 - application factory + configuration (this file).
   Phase 4 - all route modules now live in this package as blueprints.
   Phase 5 - cut-over complete: ``run.py`` is the single entry point and the

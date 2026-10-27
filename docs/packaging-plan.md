@@ -4,7 +4,7 @@
 **Date:** 2026-10-21 (initial); last updated 2026-10-26
 **Status:** Phases 0–5 complete; Phase 6 pilot in progress (re-baselined
 2026-10-26, ends 2026-11-09)
-**Companion document:** `modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
+**Companion document:** `archive/modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
 ---
 
