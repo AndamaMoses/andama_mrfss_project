@@ -181,7 +181,7 @@ andama_mrfss_project/
 ## Quality
 
 ```powershell
-python -m pytest -q          # 225 tests
+python -m pytest -q          # Full test suite
 python -m ruff check .       # Lint (E, F, I, BLE, S rules)
 ```
 
@@ -191,6 +191,14 @@ CI runs lint and the full test suite on every push and pull request. With the ap
 $env:SMOKE_PASSWORD = "the-admin-password"
 powershell -ExecutionPolicy Bypass -File scripts\smoke.ps1 -Plan core -Username admin
 ```
+
+The persona QA runner creates its own scratch database, seeds synthetic data, and exercises a realistic user journey before writing a report:
+
+```powershell
+python scripts\qa_run.py --persona P2 --all
+```
+
+It exits `0` on a clean pass, `1` when the report contains product findings, and `2` on a harness or scenario error. Evidence is written under `instance/qa/run-*`.
 
 The packaging dry run copies the database, applies the additive migration, seeds a bundle, checks access, downgrades, re-upgrades, and rehearses a restore — without writing to the source database:
 

@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "personas": [
+    {
+      "id": "P1",
+      "name": "Charles Onzima",
+      "role": "admin",
+      "plan": "legacy",
+      "surface": "desktop workspace",
+      "username": "admin",
+      "context": "Owner of Onzima Charles Drug Shop in Kireka. Buys stock in Nakasero, extends credit to trusted families, reconciles cash at 8:30 PM, and watches daily margin.",
+      "job_to_be_done": "When the day ends, I want to reconcile the drawer and know my margin without a spreadsheet, so I can trust the business and decide what to restock.",
+      "constraints": [
+        "Works at a back-office laptop or counter desktop.",
+        "Needs the day's numbers to match the physical drawer.",
+        "Cannot afford a silent data loss or a broken backup."
+      ],
+      "pmf_hypothesis": "If Charles can reconcile the day and explain any variance in under five minutes, the owner workflow is viable for a paid plan.",
+      "success_metrics": [
+        "Login to saved reconciliation in under 5 minutes.",
+        "Discrepancy is explained, not just displayed.",
+        "Backup downloads and opens.",
+        "No unexpected 403s during normal Legacy use."
+      ],
+      "abandonment_triggers": [
+        "System total does not match counted cash and the cause is unclear.",
+        "Stock intake takes longer than the paper book.",
+        "Backup is missing or cannot be restored.",
+        "A staff mistake cannot be corrected without the developer."
+      ],
+      "shift": [
+        "Morning stock intake and batch entry.",
+        "Midday spot check on low stock and expiries.",
+        "Evening reconciliation, expenses, and margin review.",
+        "Backup and close."
+      ],
+      "scenarios": ["P1-J1", "P1-J2", "P1-N1"],
+      "implemented": false
+    },
+    {
+      "id": "P2",
+      "name": "Sarah Achen",
+      "role": "attendant",
+      "plan": "pro",
+      "surface": "counter tablet",
+      "username": "grace",
+      "context": "Frontline counter attendant serving 80+ customers a day. Needs fast search, correct stock, receipt printing, and no access to owner-only controls.",
+      "job_to_be_done": "When a customer asks for a drug, I want to find it, confirm price and stock, take payment, and hand over a receipt in under 30 seconds, so the queue keeps moving.",
+      "constraints": [
+        "Shared counter tablet, often used one-handed.",
+        "No training and no manual.",
+        "Interruptions and patchy connectivity.",
+        "Cannot see cost, profit, user management, or delete records."
+      ],
+      "pmf_hypothesis": "If Sarah can complete ten sales in a row without help, and never encounters an owner-only surface, the counter workflow is viable for a pilot.",
+      "success_metrics": [
+        "First sale within 30 seconds of login.",
+        "Two-item cash sale in 45 seconds and at most 8 user actions.",
+        "Receipt shows correct itemization, total, and shop identity.",
+        "Stock reduces by the sold quantity.",
+        "Zero unexpected 403s or console errors.",
+        "Cannot reach owner-only endpoints or actions."
+      ],
+      "abandonment_triggers": [
+        "Search takes more than 3 seconds.",
+        "Stock quantity or price is ambiguous.",
+        "Payment method or receipt step is unclear.",
+        "An error has no next action.",
+        "An admin screen appears or an owner-only action succeeds."
+      ],
+      "shift": [
+        "Sign in and confirm the counter is ready.",
+        "Serve a rush of mixed cash and mobile-money sales.",
+        "Answer stock queries without leaving the sale screen.",
+        "Reprint a receipt and check my sales total.",
+        "Sign out without exposing owner data."
+      ],
+      "scenarios": ["P2-J1", "P2-N1"],
+      "implemented": true
+    },
+    {
+      "id": "P3",
+      "name": "Kato Ronald",
+      "role": "admin",
+      "plan": "core",
+      "surface": "desktop workspace",
+      "username": "admin",
+      "context": "Single-counter owner on the Core plan. Bought POS and inventory only. Expects a clean first-run setup and a clear upgrade path, not a broken or empty shell.",
+      "job_to_be_done": "When I buy the starter plan, I want to be selling within fifteen minutes without training, so I do not lose a day setting up.",
+      "constraints": [
+        "No Refill Care, Finance, Alerts, or Tender.",
+        "Empty database on first login.",
+        "Cannot pay for an upgrade until the value is clear."
+      ],
+      "pmf_hypothesis": "If Kato can add stock and complete a first sale within fifteen minutes, and can explain what an upgrade unlocks, the Core plan can convert.",
+      "success_metrics": [
+        "First login to first completed sale under 15 minutes.",
+        "Locked apps explain what they do and which plan includes them.",
+        "No crashes, console 403s, or dead ends during first-run.",
+        "Upgrade prompt names the correct bundle and support contact."
+      ],
+      "abandonment_triggers": [
+        "Dashboard is empty with no next step.",
+        "A locked tile does nothing or gives no explanation.",
+        "Product setup needs developer help.",
+        "The upgrade path is unclear or pushes an irrelevant add-on."
+      ],
+      "shift": [
+        "First login on an empty Core install.",
+        "Add a product and a batch.",
+        "Complete the first sale.",
+        "Hit a locked feature.",
+        "Understand and demonstrate the upgrade path."
+      ],
+      "scenarios": ["P3-J1", "P3-N1"],
+      "implemented": false
+    },
+    {
+      "id": "P4",
+      "name": "Dr. Brenda Akello",
+      "role": "admin",
+      "plan": "growth",
+      "surface": "desktop and Android tablet",
+      "username": "admin",
+      "context": "Runs a high-volume dispensary with three staff, 150 chronic refill patients, credit lines, and stock alerts.",
+      "job_to_be_done": "When refills and credit are due, I want one list that tells me who to contact and what they owe, so I do not lose repeat customers.",
+      "constraints": [
+        "Three staff members using the same install.",
+        "Refill and credit work competes with counter service.",
+        "Stock alerts must be actionable, not noisy."
+      ],
+      "pmf_hypothesis": "If Brenda can clear the due-refill list and reconcile a credit payment in under five minutes, Growth provides enough recurring value to retain.",
+      "success_metrics": [
+        "Due and overdue refills visible with contact action.",
+        "Credit balance changes correctly after a partial payment.",
+        "Low-stock and expiry alerts are specific and logged.",
+        "No patient data leaks to unentitled plans or roles."
+      ],
+      "abandonment_triggers": [
+        "Refill list is wrong or misses a patient.",
+        "Credit balance is wrong after a payment.",
+        "Alert log is empty or not actionable.",
+        "Patient data appears in a Core install or to an attendant."
+      ],
+      "shift": [
+        "Review the refill due list.",
+        "Contact a due patient.",
+        "Sell on credit and record a partial payment.",
+        "Review low-stock and expiry alerts.",
+        "Verify the alert log."
+      ],
+      "scenarios": ["P4-J1", "P4-N1"],
+      "implemented": false
+    },
+    {
+      "id": "P5",
+      "name": "Eng. David Mukasa",
+      "role": "admin",
+      "plan": "tender",
+      "surface": "Tender Copilot standalone",
+      "username": "admin",
+      "context": "Lead engineer at Communion Engineering Services in Jinja. Uses Tender Copilot to decide whether PPDA/UNRA tenders are worth bidding.",
+      "job_to_be_done": "When a tender lands, I want to know if we qualify and what to fix before the deadline, so I do not waste bid effort.",
+      "constraints": [
+        "No pharmacy inventory or POS.",
+        "Tender deadlines are short.",
+        "Output must be defensible to a client or bid committee."
+      ],
+      "pmf_hypothesis": "If David can reach a defensible bid/no-bid decision in under fifteen minutes, Tender Copilot can be sold as a standalone workspace.",
+      "success_metrics": [
+        "Upload to qualification summary in under 15 minutes.",
+        "Compliance gaps and risks are specific and readable.",
+        "Methodology export is usable in a bid document.",
+        "No pharmacy navigation or branding in the standalone workspace."
+      ],
+      "abandonment_triggers": [
+        "Analysis is generic or unsupported by the document.",
+        "No clear bid/no-bid recommendation.",
+        "Pharmacy clutter appears in the standalone product.",
+        "Upload or analysis is too slow for the deadline."
+      ],
+      "shift": [
+        "Receive a tender document.",
+        "Upload and analyze it.",
+        "Review compliance and risk findings.",
+        "Make a bid/no-bid decision.",
+        "Export the methodology."
+      ],
+      "scenarios": ["P5-J1", "P5-N1"],
+      "implemented": false
+    }
+  ]
+}

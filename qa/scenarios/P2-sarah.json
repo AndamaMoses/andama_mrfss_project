@@ -1,0 +1,197 @@
+{
+  "persona": "P2",
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "P2-J1",
+      "name": "Rush-hour two-item cash sale with receipt",
+      "goal": "Sarah completes a two-item cash sale and hands over a readable receipt without leaving the counter.",
+      "seed": "pharmacy_day",
+      "plan": "pro",
+      "budget_seconds": 45,
+      "ux_actions": 7,
+      "budget_actions": 8,
+      "continue_on_failure": false,
+      "steps": [
+        {
+          "action": "login",
+          "label": "Sign in as Sarah"
+        },
+        {
+          "action": "lookup_product",
+          "name": "Paracetamol 500mg",
+          "label": "Find Paracetamol in the counter search"
+        },
+        {
+          "action": "lookup_product",
+          "name": "ORS Sachets",
+          "label": "Find ORS in the counter search"
+        },
+        {
+          "action": "db",
+          "sql": "SELECT COALESCE(SUM(qty_remaining),0) FROM batches WHERE product_id=(SELECT id FROM products WHERE name=?)",
+          "args": ["Paracetamol 500mg"],
+          "save": "paracetamol_stock_before",
+          "label": "Capture Paracetamol stock before the sale"
+        },
+        {
+          "action": "sell",
+          "items": [
+            {"product_name": "Paracetamol 500mg", "qty": 2},
+            {"product_name": "ORS Sachets", "qty": 1}
+          ],
+          "payment_method": "CASH",
+          "served_by": "grace",
+          "label": "Complete the two-item cash sale",
+          "expect_status": 201,
+          "save": {
+            "receipt_ref": "receipt_ref",
+            "sale_total": "total"
+          }
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/receipts/{receipt_ref}",
+          "expect_status": 200,
+          "label": "Open the receipt"
+        },
+        {
+          "action": "assert_json",
+          "path": "receipt_no",
+          "equals": "{receipt_ref}",
+          "label": "Receipt number matches the sale"
+        },
+        {
+          "action": "assert_json",
+          "path": "shop_name",
+          "contains": "Onzima",
+          "label": "Receipt carries the shop identity"
+        },
+        {
+          "action": "assert_json",
+          "path": "total",
+          "equals": 1400,
+          "label": "Receipt total is UGX 1,400"
+        },
+        {
+          "action": "assert_json",
+          "path": "lines",
+          "length": 2,
+          "label": "Receipt itemizes both products"
+        },
+        {
+          "action": "assert_json",
+          "path": "payment_method",
+          "equals": "CASH",
+          "label": "Payment method is cash"
+        },
+        {
+          "action": "assert_json",
+          "path": "served_by",
+          "equals": "grace",
+          "label": "Sale is attributed to Sarah"
+        },
+        {
+          "action": "db",
+          "sql": "SELECT COALESCE(SUM(qty_remaining),0) FROM batches WHERE product_id=(SELECT id FROM products WHERE name=?)",
+          "args": ["Paracetamol 500mg"],
+          "save": "paracetamol_stock_after",
+          "label": "Read Paracetamol stock after the sale"
+        },
+        {
+          "action": "assert_delta",
+          "left": "paracetamol_stock_before",
+          "right": "paracetamol_stock_after",
+          "equals": -2,
+          "label": "Stock reduced by exactly two units"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/my-sales",
+          "expect_status": 200,
+          "label": "Open Sarah's own sales view"
+        },
+        {
+          "action": "assert_json",
+          "path": "rows",
+          "length_gte": 1,
+          "label": "Sarah can see her own sales without shop-wide reports"
+        }
+      ]
+    },
+    {
+      "id": "P2-N1",
+      "name": "Attendant cannot reach owner-only controls",
+      "goal": "Sarah stays inside the counter role: owner-only endpoints return 403 and normal settings reads still work.",
+      "seed": "pharmacy_day",
+      "plan": "pro",
+      "budget_seconds": 20,
+      "ux_actions": 0,
+      "budget_actions": 0,
+      "continue_on_failure": true,
+      "steps": [
+        {
+          "action": "login",
+          "label": "Sign in as Sarah"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/settings",
+          "expect_status": 200,
+          "label": "Sarah can read the shop settings needed by the counter"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/users",
+          "expect_status": 403,
+          "label": "User management is owner-only"
+        },
+        {
+          "action": "http",
+          "method": "POST",
+          "path": "/api/users",
+          "json": {
+            "username": "qa-intruder",
+            "password": "intruder123",
+            "role": "admin"
+          },
+          "expect_status": 403,
+          "label": "Creating a user is owner-only"
+        },
+        {
+          "action": "http",
+          "method": "POST",
+          "path": "/api/settings",
+          "json": {"shop_name": "QA Intrusion"},
+          "expect_status": 403,
+          "label": "Changing shop settings is owner-only"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/staff-activity",
+          "expect_status": 403,
+          "label": "Shop-wide staff activity is owner-only"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/profit",
+          "expect_status": 403,
+          "label": "Profit analysis is hidden from the counter"
+        },
+        {
+          "action": "http",
+          "method": "GET",
+          "path": "/api/backup",
+          "expect_status": 403,
+          "label": "Database backup is owner-only"
+        }
+      ]
+    }
+  ]
+}
