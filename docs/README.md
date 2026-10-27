@@ -19,9 +19,10 @@ setup. The documents below cover operations, packaging, and business context.
 | Document | Purpose |
 |---|---|
 | [Packaging plan](packaging-plan.md) | Entitlements, launcher, gating, and the phased delivery record |
+| [User personas & testing](user-personas-testing.md) | Agent-executable persona journeys, PMF proxies, RBAC matrix, and QA scenarios |
 | [Business context](business-context.md) | Customer research behind Onzima Dawa and Tender Copilot |
 | [Strategy playbook](strategy-playbook.md) | Commercial rollout notes for the Kampala–Jinja corridor |
-| [Modularization plan](../modularization/IMPLEMENTATION_PLAN.md) | Internal record of the monolith-to-modules cut-over |
+| [Modularization plan (Archived)](../archive/modularization/IMPLEMENTATION_PLAN.md) | Internal record of the monolith-to-modules cut-over (Completed) |
 
 ## Brand and screenshots
 
