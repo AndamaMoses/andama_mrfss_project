@@ -18,6 +18,7 @@ setup. The documents below cover operations, packaging, and business context.
 
 | Document | Purpose |
 |---|---|
+| [Implementation status](implementation-status.md) | Consolidated status, evidence, open gaps, and next actions across workstreams |
 | [Packaging plan](packaging-plan.md) | Entitlements, launcher, gating, and the phased delivery record |
 | [User personas & testing](user-personas-testing.md) | Agent-executable persona journeys, PMF proxies, RBAC matrix, and QA scenarios |
 | [Business context](business-context.md) | Customer research behind Onzima Dawa and Tender Copilot |

@@ -215,6 +215,7 @@ python scripts\dry_run_packaging.py --bundle legacy `
 | [Rollback runbook](docs/rollback-runbook.md) | Access, code, and database rollback; restore rehearsal |
 | [Pilot runbook](docs/pilot-runbook.md) | Onzima Legacy deployment and the two-week observation |
 | [Pilot tracker](docs/pilot-tracker.md) | Baseline, daily metrics, support tickets, exit decision |
+| [Implementation status](docs/implementation-status.md) | Current workstream status, evidence, open gaps, and next actions |
 | [Tender standalone](docs/tender-standalone.md) | Separate-domain mapping, shared sign-in, demo hygiene |
 | [Packaging plan](docs/packaging-plan.md) | Entitlements, launcher, and phased delivery record |
 | [Business context](docs/business-context.md) | Customer research behind both products |
