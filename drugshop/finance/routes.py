@@ -97,6 +97,7 @@ def api_expense_del(eid):
 
 
 @bp.route("/api/profit")
+@admin_required
 def api_profit():
     day = request.args.get("date", today_str())
     rev = q_one("SELECT COALESCE(SUM(total),0) t FROM sales WHERE sale_date=? AND payment_method!='CREDIT'", (day,))["t"]

@@ -229,3 +229,9 @@ def test_backup_download(admin_client):
     assert r.headers["Content-Disposition"].startswith("attachment")
     with open(db_path(), "rb") as fh:
         assert r.data == fh.read()
+
+
+def test_backup_admin_only(admin_client, staff_client):
+    seed(admin_client)
+    assert staff_client.get("/api/backup").status_code == 403
+    assert admin_client.get("/api/backup").status_code == 200

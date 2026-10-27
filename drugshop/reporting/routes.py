@@ -75,6 +75,7 @@ def api_dashboard():
 
 # ---------- backup + CSV export ----------
 @bp.route("/api/backup")
+@admin_required
 def api_backup():
     return send_file(db_path(), as_attachment=True, download_name=f"drugshop-backup-{today_str()}.db")
 

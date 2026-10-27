@@ -160,6 +160,12 @@ def test_expenses_and_profit_formula(admin_client):
     assert p["profit_approx"] == 2800
 
 
+def test_profit_admin_only(admin_client, staff_client):
+    seed(admin_client)
+    assert staff_client.get("/api/profit").status_code == 403
+    assert admin_client.get("/api/profit").status_code == 200
+
+
 def test_expense_validation(admin_client):
     r = admin_client.post("/api/expenses", json={"description": "", "amount": -5})
     assert r.status_code == 400
