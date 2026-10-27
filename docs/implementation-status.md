@@ -23,6 +23,7 @@ status and points to the detailed records; it does not replace them.
 
 | Workstream | Status | Current position | Next action |
 |---|---|---|---|
+| Modularization foundation | **Done and archived** | 14-domain package, app factory, DB/migrations, auth guards, frontend split, tests/lint/CI | No active work; preserve as the platform baseline |
 | Packaging and entitlements | **Done through Phase 5** | Registry, entitlements, server-side gate, launcher, Tender packaging, dry run, and runbooks are complete | Finish Phase 6 pilot observation |
 | Phase 6 pilot | **In progress** | Re-baselined 2026-10-26; observation ends 2026-11-09 | Owner walkthrough, upgrade demo, final exit review |
 | Owner-only security guards | **Done** | `/api/profit` and `/api/backup` require admin; regression tests added | Extend the same guard pattern if new owner-only endpoints appear |
@@ -30,6 +31,25 @@ status and points to the detailed records; it does not replace them.
 | Browser/manual QA layer | **Not started** | Manual report template exists; Playwright is not built | Build the browser layer after the API-level scenarios stabilize |
 | QA CI integration | **Not wired** | Runner is manual | Add a CI job for the automated persona suites |
 | Known product gaps | **Open decisions** | Four gaps documented in the persona guide | Fix or explicitly accept each gap before a wider release |
+
+### Completed foundation: modularization
+
+Modularization is complete and archived. The original 1,356-line `app.py` was
+split into 14 domain packages under `drugshop/`, with a Flask application
+factory, SQLite database layer, versioned migrations, auth guards, a service
+layer, and a separate frontend module set.
+
+Phases 0–8 completed with a 154-test suite at the time, clean Ruff, 9/9 smoke,
+15 frontend JS modules, and the largest Python file at 237 lines. The work was
+later committed as the packaging baseline `3b085a9`; it is no longer active.
+The current suite has grown to 234 tests.
+
+The archived plan’s top status line says the work was uncommitted at the time of
+writing. That is historical: the archive record marks it completed on
+2026-10-19, and packaging is the active follow-up.
+
+- Archived plan: [`archive/modularization/IMPLEMENTATION_PLAN.md`](../archive/modularization/IMPLEMENTATION_PLAN.md)
+- Archive closure: [`archive/modularization/README.md`](../archive/modularization/README.md)
 
 ---
 

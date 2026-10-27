@@ -6,6 +6,12 @@
 2026-10-26, ends 2026-11-09)
 **Companion document:** `archive/modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
+> [!NOTE]
+> **Status banner — current plan.** Phases 0–5 are complete and Phase 6 is in
+> progress. For the consolidated cross-workstream view, see
+> [`implementation-status.md`](implementation-status.md). For live pilot
+> evidence, see [`pilot-tracker.md`](pilot-tracker.md).
+
 ---
 
 ## 1. Executive summary

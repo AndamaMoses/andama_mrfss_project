@@ -4,6 +4,13 @@
 **Date:** 2026-10-19
 **Status:** Phases 0-8 complete; all work is uncommitted on `refactor/modularization`.
 
+> [!NOTE]
+> **Status banner — archived record.** Modularization is complete and closed as
+> of 2026-10-19. The status line above is historical: the work was later
+> committed as the packaging baseline (`3b085a9`). For current platform status,
+> see [`docs/implementation-status.md`](../../docs/implementation-status.md) and
+> [`docs/packaging-plan.md`](../../docs/packaging-plan.md).
+
 ---
 
 ## 1. Executive summary
