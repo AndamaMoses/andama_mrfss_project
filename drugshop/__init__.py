@@ -47,6 +47,8 @@ def create_app(config=None):
     from drugshop.inventory.routes import bp as inventory_bp
     from drugshop.notifications.routes import bp as notifications_bp
     from drugshop.patients.routes import bp as patients_bp
+    from drugshop.payments.cli import register_cli as register_momo_cli
+    from drugshop.payments.routes import bp as payments_bp
     from drugshop.reporting.routes import bp as reporting_bp
     from drugshop.sales.routes import bp as sales_bp
     from drugshop.tender.routes import bp as tender_bp
@@ -59,6 +61,7 @@ def create_app(config=None):
     app.register_blueprint(inventory_bp)
     app.register_blueprint(sales_bp)
     app.register_blueprint(patients_bp)
+    app.register_blueprint(payments_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(credit_bp)
     app.register_blueprint(finance_bp)
@@ -73,6 +76,7 @@ def create_app(config=None):
     app_guards.register_gate(app)
     register_auth_cli(app)
     register_cli(app)
+    register_momo_cli(app)
 
     @app.after_request
     def security_headers(response):

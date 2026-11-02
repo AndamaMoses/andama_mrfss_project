@@ -144,6 +144,7 @@ PHARMACY_APP_IDS = ("pos", "inventory", "patients", "finance", "alerts")
 # gated. Kept here so the whole ownership map is visible in one place.
 BLUEPRINT_APPS = {
     "sales": "pos",
+    "payments": "pos",
     "inventory": "inventory",
     "patients": "patients",
     "credit": "finance",

@@ -148,9 +148,12 @@ def test_factory_accepts_config_object(tmp_path, keep_db_globals):
     assert app.config["SESSION_COOKIE_HTTPONLY"] is True
     assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
     assert Path(TestConfig.UPLOAD_DIR).is_dir()
-    assert len(list(app.url_map.iter_rules())) == 56
+    assert len(list(app.url_map.iter_rules())) == 60
 
     client = app.test_client()
     assert client.get("/api/me").status_code == 200
-    for page in ("/", "/login", "/staff", "/tender"):
+    # Anonymous visitors are redirected before a workspace shell is served.
+    assert client.get("/").status_code == 302
+    assert client.get("/staff").status_code == 302
+    for page in ("/login", "/tender"):
         assert client.get(page).status_code == 200, page

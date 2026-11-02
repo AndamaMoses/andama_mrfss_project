@@ -20,6 +20,33 @@ _LEGACY_UPLOADS = os.path.join(PROJECT_ROOT, "uploads")
 _INSTANCE_UPLOADS = os.path.join(INSTANCE_DIR, "uploads")
 
 
+def _load_dotenv(path=os.path.join(PROJECT_ROOT, ".env")):
+    """Load ``KEY=VALUE`` lines from ``.env`` into the process environment.
+
+    Values already exported in the real environment always win, so production
+    secret stores are never overridden by a stray file. Lines may be blank,
+    comments (``#``), or prefixed with ``export``. Quoted values are unquoted.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for raw in fh:
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                if line.startswith("export "):
+                    line = line[len("export "):].lstrip()
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = value
+    except FileNotFoundError:
+        pass
+
+
+_load_dotenv()
+
+
 def _legacy_uploads_present():
     try:
         with os.scandir(_LEGACY_UPLOADS) as entries:
@@ -50,6 +77,23 @@ class BaseConfig:
     # shown on upgrade prompts.
     DEFAULT_BUNDLE = os.environ.get("DRUGSHOP_BUNDLE", "legacy")
     SUPPORT_WHATSAPP = os.environ.get("SUPPORT_WHATSAPP", "")
+    # Show the synthetic-data banner on the public Render preview. Kept
+    # separate from the seeder so a shop can label a demo database without
+    # re-running the seed.
+    DEMO_MODE = os.environ.get("DEMO_SEED", "").strip().lower() in {"1", "true", "yes", "on"}
+    # MTN MoMo Collections (https://momodeveloper.mtn.com). The subscription
+    # key is issued per product subscription; the API user/key are created in
+    # the target environment once with `flask --app run momo provision`.
+    # Leave the key blank to keep MoMo disabled; the POS still records manual
+    # MTN_MOMO takings.
+    MOMO_SUBSCRIPTION_KEY = os.environ.get("MOMO_SUBSCRIPTION_KEY", "").strip()
+    MOMO_API_USER = os.environ.get("MOMO_API_USER", "").strip()
+    MOMO_API_KEY = os.environ.get("MOMO_API_KEY", "").strip()
+    MOMO_TARGET_ENVIRONMENT = os.environ.get("MOMO_TARGET_ENVIRONMENT", "sandbox").strip()
+    MOMO_BASE_URL = os.environ.get("MOMO_BASE_URL", "").strip()
+    MOMO_CURRENCY = os.environ.get("MOMO_CURRENCY", "UGX").strip().upper()
+    MOMO_CALLBACK_URL = os.environ.get("MOMO_CALLBACK_URL", "").strip()
+    MOMO_TIMEOUT = float(os.environ.get("MOMO_TIMEOUT", "20"))
 
 
 class DevConfig(BaseConfig):
