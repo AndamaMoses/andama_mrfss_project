@@ -8,9 +8,23 @@ syncSidebarState();
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') toggleMobileSidebar(false);
+  if (e.key === 'F2') {
+    e.preventDefault();
+    switchTab('pos');
+  }
 });
 
-setInterval(() => { $('clock').textContent = new Date().toLocaleString() }, 1000);
+function renderTopClock() {
+  const el = $('clock');
+  if (!el) return;
+  const now = new Date();
+  const date = now.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  el.textContent = date + ' · ' + time;
+}
+
+setInterval(renderTopClock, 1000);
+renderTopClock();
 if ($('salesDate')) $('salesDate').value = today();
 if ($('rDate')) $('rDate').value = today();
 if ($('expMonth')) $('expMonth').value = today().slice(0, 7);

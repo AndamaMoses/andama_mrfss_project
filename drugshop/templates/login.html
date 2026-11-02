@@ -5,480 +5,152 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% if tender_only %}Sign In — Tender Copilot{% else %}Sign In — Onzima Dawa Apothecary{% endif %}</title>
 <meta name="description" content="{% if tender_only %}Secure staff sign-in for the Tender Copilot workspace.{% else %}Secure staff sign-in for Onzima Dawa pharmacy operations.{% endif %}">
-<meta name="theme-color" content="#0A1F1B">
+<meta name="theme-color" content="#0E382B">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
 <link rel="apple-touch-icon" href="/static/img/favicon.svg">
 <link rel="manifest" href="/static/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --pine-950: #0A1F1B;
-  --pine-900: #123029;
-  --pine-700: #1B4D42;
-  --pine-500: #2F7A68;
-  --brass: #C9A227;
-  --brass-deep: #9A7715;
-  --canvas: #F4F7F6;
-  --surface: #FFFFFF;
-  --ink: #16221F;
-  --muted: #647773;
-  --success: #2e7d4f;
-  --danger: #b3261e;
-  --serif: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
-  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  font-family: var(--sans);
-  color: var(--ink);
-  background: radial-gradient(1100px 620px at 12% 8%, rgba(47,122,104,.55) 0%, transparent 62%),
-              radial-gradient(900px 540px at 92% 94%, rgba(201,162,39,.16) 0%, transparent 60%),
-              linear-gradient(160deg, #081714 0%, var(--pine-950) 55%, #0C2621 100%);
-}
-.wrap {
-  width: 900px;
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 35px 90px rgba(0,0,0,0.55);
-  background: var(--surface);
-}
-.brand {
-  background: linear-gradient(160deg, var(--pine-900), #0A1C18);
-  color: #ECF4F1;
-  padding: 38px 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.brand .mark {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: var(--brass);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(201,162,39,0.35);
-}
-.brand .mark svg {
-  width: 36px;
-  height: 36px;
-  stroke: #0A241F;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.brand h1 {
-  font-family: var(--serif);
-  font-size: 32px;
-  color: #fff;
-  line-height: 1.15;
-}
-.brand h1 em {
-  color: var(--brass);
-  font-style: normal;
-}
-.brand p.sub {
-  font-size: 13.5px;
-  margin-top: 12px;
-  line-height: 1.6;
-  color: #C9DCD6;
-}
-.brand ul {
-  list-style: none;
-  margin-top: 20px;
-  font-size: 13px;
-  display: grid;
-  gap: 10px;
-}
-.brand ul li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.06);
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-.brand ul b { color: var(--brass); }
-.brand .version-tag {
-  font-size: 11.5px;
-  color: #8FA8A2;
-  margin-top: 24px;
-}
-
-.form-area {
-  background: var(--surface);
-  padding: 38px 34px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.form-area h2 {
-  font-family: var(--serif);
-  font-size: 26px;
-  color: var(--pine-900);
-}
-.form-area p.desc {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 4px 0 16px;
-}
-
-.cur-user-banner {
-  display: none;
-  background: #E7F1EE;
-  border: 1px solid #C6D9D3;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 13px;
-  margin-bottom: 14px;
-  justify-content: space-between;
-  align-items: center;
-  color: #0F2A25;
-}
-.cur-user-banner a {
-  color: var(--pine-700);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.personas-label {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin-bottom: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.personas {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 16px;
-  max-height: 210px;
-  overflow-y: auto;
-  padding: 2px;
-}
-.persona {
-  border: 2px solid #D7E1DE;
-  border-radius: 14px;
-  padding: 9px 12px;
-  cursor: pointer;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  background: #FBFDFC;
-  transition: all 0.15s ease;
-  position: relative;
-}
-.persona:hover {
-  border-color: var(--brass);
-  transform: translateY(-1px);
-}
-.persona.sel {
-  border-color: var(--pine-700);
-  background: #EDF5F2;
-  box-shadow: 0 0 0 3px rgba(201,162,39,0.22);
-}
-.persona .avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--pine-700);
-  color: #fff;
-  font-family: var(--serif);
-  font-weight: bold;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.persona.sel .avatar {
-  background: var(--brass);
-  color: #0A241F;
-}
-.persona .info {
-  flex: 1;
-  min-width: 0;
-}
-.persona b {
-  font-size: 13.5px;
-  display: block;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.persona small {
-  color: var(--muted);
-  font-size: 11.5px;
-  display: block;
-}
-.persona .quick-btn {
-  background: var(--pine-700);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.persona .quick-btn:hover {
-  background: var(--brass);
-  color: #0A1F1B;
-}
-
-label {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  display: block;
-  margin-top: 4px;
-}
-.input-wrap {
-  position: relative;
-  margin: 5px 0 12px;
-}
-input {
-  padding: 11px 14px;
-  border: 1.5px solid #CFDAD6;
-  border-radius: 12px;
-  font-size: 15px;
-  width: 100%;
-  background: #FBFDFC;
-  font-family: var(--sans);
-  color: var(--ink);
-  transition: border-color 0.15s, outline 0.15s;
-}
-input:focus {
-  outline: 2px solid var(--brass);
-  border-color: var(--brass);
-}
-.toggle-pwd {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-.toggle-pwd:hover {
-  color: var(--pine-700);
-  background: rgba(0,0,0,0.05);
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: -4px 0 14px;
-}
-.chip {
-  background: #EFF3F2;
-  border: 1px solid #D3DEDA;
-  color: var(--pine-900);
-  border-radius: 16px;
-  padding: 3px 9px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.chip:hover {
-  background: var(--brass);
-  border-color: var(--brass-deep);
-  color: #0A1F1B;
-}
-
-button.go {
-  background: var(--pine-700);
-  color: #fff;
-  border: 0;
-  padding: 13px;
-  border-radius: 12px;
-  width: 100%;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 4px 12px rgba(27,77,66,0.25);
-}
-button.go:hover { background: var(--pine-900); }
-button.go:active { transform: scale(0.99); }
-button.go:disabled { background: var(--muted); cursor: not-allowed; }
-
-#err {
-  margin-top: 10px;
-  padding: 0;
-  border-radius: 10px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--danger);
-  min-height: 20px;
-  line-height: 1.4;
-}
-#err.show {
-  padding: 8px 12px;
-  background: #fdf0ee;
-  border: 1px solid #f2b8ae;
-}
-
-.foot {
-  margin-top: 14px;
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.5;
-}
-.foot code {
-  background: #E9EFED;
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: var(--pine-900);
-  font-weight: 700;
-}
-
-.caps-warn {
-  display: none;
-  margin: -6px 0 10px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #B7791F;
-}
-.caps-warn.show { display: block; }
-
-.help {
-  margin-top: 13px;
-  font-size: 12.5px;
-  color: var(--muted);
-}
-.help summary {
-  cursor: pointer;
-  font-weight: 700;
-  color: var(--pine-700);
-  outline: none;
-}
-.help ul {
-  margin: 8px 0 0 16px;
-  display: grid;
-  gap: 5px;
-  line-height: 1.45;
-}
-.help code {
-  background: #E9EFED;
-  padding: 1px 5px;
-  border-radius: 4px;
-  color: var(--pine-900);
-  font-weight: 700;
-}
-
-@media(max-width: 740px) {
-  .wrap { grid-template-columns: 1fr; }
-  .brand { padding: 26px; }
-  .form-area { padding: 26px; }
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/login.css">
 </head>
 <body>
 <div class="wrap">
   <div class="brand">
-    <div>
-      <div class="mark">
-        {% if tender_only %}
-        <svg viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M2.5 15h19v3h-19z"/><path d="M12 5v4"/></svg>
-        {% else %}
-        <svg viewBox="0 0 24 24"><path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z"/><path d="M13.5 3.5l5.5 5.5"/><path d="M7 21h10"/></svg>
-        {% endif %}
+    <div class="brand-top">
+      <div class="brand-head">
+        <div class="mark">
+          {% if tender_only %}
+          <svg viewBox="0 0 24 24"><path d="M10 4.5A6.5 6.5 0 0 1 16.7 9l1.8.6v3h-13v-3l1.8-.6z"/><path d="M3.5 15.5h17v2.5h-17z"/><path d="M10 4.5V2.8"/></svg>
+          {% else %}
+          <svg viewBox="0 0 24 24"><path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z"/><path d="M13.5 3.5l5.5 5.5"/><path d="M7 21h10"/></svg>
+          {% endif %}
+        </div>
+        <div>
+          <h1>{% if tender_only %}Tender <em>Copilot</em>{% else %}Onzima <em>Dawa</em>{% endif %}</h1>
+          <small class="kicker">{% if tender_only %}Engineering Consultancy Workspace{% else %}Apothecary &amp; Retail POS{% endif %}</small>
+        </div>
       </div>
-      <h1>{% if tender_only %}Tender <em>Copilot</em>{% else %}Onzima <em>Dawa</em>{% endif %}</h1>
-      <p class="sub">{% if tender_only %}Standalone PPDA &amp; UNRA tender analysis for engineering consultancies — same secure staff sign-in.{% else %}Kireka Apothecary &amp; Retail System — Expiry Watchdog, MoMo &amp; Cash Reconciliation, and patient refill care.{% endif %}</p>
+
+      <p class="sub">{% if tender_only %}Standalone PPDA &amp; UNRA tender analysis for engineering consultancies — same secure staff sign-in, no pharmacy data used.{% else %}Kireka Dispensary &amp; Inventory Suite — automated Expiry Watchdog, MoMo &amp; cash float reconciliation, and rapid repeat prescription fulfillment.{% endif %}</p>
+
       <ul>
         {% if tender_only %}
-        <li><b>Consultant</b> Analysis, compliance matrix, risk flags</li>
-        <li><b>Engineer</b> Technical methodology drafting</li>
+        <li>
+          <span class="dot amber"></span>
+          <div><b>Consultant <span class="mini-tag">Analysis</span></b><span>Compliance matrix, risk flags and methodology drafting.</span></div>
+        </li>
+        <li>
+          <span class="dot green"></span>
+          <div><b>Engineer <span class="mini-tag green">Technical</span></b><span>Technical methodology and site delivery planning.</span></div>
+        </li>
         {% else %}
-        <li><b>Owner (admin)</b> Financials, staff oversight, backups</li>
-        <li><b>Sales Agent</b> Fast POS sales, refill care, credit logs</li>
+        <li>
+          <span class="dot amber"></span>
+          <div><b>Owner (Admin) <span class="mini-tag">L-3 Cleared</span></b><span>Audit vault, ledger exports, pricing matrix &amp; database sync.</span></div>
+        </li>
+        <li>
+          <span class="dot green"></span>
+          <div><b>Sales Agent <span class="mini-tag green">Front Lane</span></b><span>High-speed barcode checkout, dose guidance &amp; MoMo till receipts.</span></div>
+        </li>
         {% endif %}
       </ul>
     </div>
-    <div class="version-tag">{% if tender_only %}Communion Engineering · Jinja · Tender Copilot{% else %}Kireka &amp; Jinja Retail System · v2.5 Active{% endif %}</div>
+
+    <div class="brand-bottom">
+      <div class="brand-status">
+        <span class="live"><span class="live-dot"></span> {% if tender_only %}Tender Terminal v2.5{% else %}Kireka &amp; Jinja Terminal v2.5{% endif %}</span>
+        <span class="online">Online · Cloud Link</span>
+      </div>
+      <div class="hardware">{% if tender_only %}Standalone workspace · PPDA/UNRA templates ready{% else %}Hardware Ready: Star Micronics &amp; Zebra Scanner connected{% endif %}</div>
+    </div>
   </div>
 
   <div class="form-area">
-    <h2>Staff Sign In</h2>
-    <p class="desc">Select your profile, or type your username / full name, then enter your password.</p>
-    
+    <div class="form-head">
+      <div>
+        <h2>Staff Sign In</h2>
+        <p class="desc">Select your assigned dispenser profile or authenticate via credentials.</p>
+      </div>
+      <span class="vault-chip">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.2a4 4 0 0 1 8 0V10"/><circle cx="12" cy="15.2" r="1.2"/></svg>
+        <span class="vault-txt"><b>AES-256</b><small>Vault</small></span>
+      </span>
+    </div>
+
     <div id="curBanner" class="cur-user-banner"></div>
 
     <div class="personas-label">
-      <span>Profiles</span>
-      <span style="font-weight: normal; color: var(--muted)">Click a card to fill your username</span>
+      <span>Active Lane Profiles</span>
+      <span class="hint">Click card to auto-fill</span>
     </div>
 
     <div class="personas" id="personaList">
       {% if not tender_only %}
-      <!-- Fallback static personas if API delayed -->
+      <!-- Fallback static personas if the API is delayed -->
       <div class="persona sel" id="p_admin" onclick="selectUser('admin')">
-        <div class="avatar">CO</div>
-        <div class="info">
-          <b>Charles Onzima</b>
-          <small>Shop Owner &middot; admin</small>
+        <div class="persona-top">
+          <div class="avatar">CO</div>
+          <div class="info">
+            <b>Charles Onzima <span class="role-pill owner">Owner</span></b>
+            <small>Shop Owner &middot; UID: admin</small>
+          </div>
+          <div class="persona-state">
+            <span class="selected-badge"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> Selected</span>
+            <span class="switch-hint">Switch <svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+        <div class="pin-row">
+          <span class="pin-left">
+            <svg class="ic" viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="M9 7h6M9 10.5h6M9 14h3"/></svg>
+            4-Digit Quick PIN:
+            <span class="pin-dots"><i></i><i></i><i></i><i class="empty"></i></span>
+          </span>
+          <button type="button" onclick="focusPassword(event)">Enter Keypad</button>
         </div>
       </div>
       <div class="persona" id="p_grace" onclick="selectUser('grace')">
-        <div class="avatar">SA</div>
-        <div class="info">
-          <b>Sarah Achen</b>
-          <small>Sales Agent &middot; grace</small>
+        <div class="persona-top">
+          <div class="avatar">SA</div>
+          <div class="info">
+            <b>Sarah Achen <span class="role-pill dispenser">Dispenser</span></b>
+            <small>Sales Agent &middot; UID: grace</small>
+          </div>
+          <div class="persona-state">
+            <span class="selected-badge"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> Selected</span>
+            <span class="switch-hint">Switch <svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>
+          </div>
         </div>
       </div>
       {% endif %}
     </div>
 
     <form id="loginForm" onsubmit="go(event)">
-      <label for="uName">Username or Full Name</label>
-      <div class="input-wrap">
-        <input id="uName" placeholder="e.g. admin or Sarah Achen" oninput="onUserInput(this.value)" autocomplete="username" required>
+      <label for="uName">Username or Staff Identifier</label>
+      <div class="field">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="8.5" cy="10" r="2"/><path d="M5.5 16a3.5 3.5 0 0 1 6 0M14 9.5h4M14 13h3"/></svg>
+        <input id="uName" value="admin" placeholder="e.g. admin or staff name" oninput="onUserInput(this.value)" autocomplete="username" required>
       </div>
 
-      <label for="uPass">Password</label>
-      <div class="input-wrap">
-        <input id="uPass" type="password" placeholder="••••••••" autocomplete="current-password"
+      <div class="label-row">
+        <label for="uPass">Password or Terminal PIN</label>
+        <button type="button" class="linkish" id="toggleBtn" onclick="togglePassword()">Show Password</button>
+      </div>
+      <div class="field">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.4"/><path d="M10.5 10.5L20 20M16.5 16.5l2-2M14 14l2-2"/></svg>
+        <input id="uPass" type="password" placeholder="Enter 4-digit PIN or master password" autocomplete="current-password"
                onkeyup="checkCaps(event)" onkeydown="checkCaps(event)" required>
-        <button type="button" class="toggle-pwd" id="toggleBtn" onclick="togglePassword()">Show</button>
+        <button type="button" class="trail" onclick="clearPassword()" title="Clear field" aria-label="Clear password">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z"/><path d="M13 9l5 6M18 9l-5 6"/></svg>
+        </button>
       </div>
       <div class="caps-warn" id="capsWarn">⚠ Caps Lock is on</div>
 
-      <button type="submit" class="go" id="submitBtn">Sign In →</button>
+      <button type="submit" class="go" id="submitBtn">
+        <span>Sign In to Counter</span>
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+      </button>
     </form>
 
     <div id="err"></div>
@@ -492,8 +164,16 @@ button.go:disabled { background: var(--muted); cursor: not-allowed; }
       </ul>
     </details>
 
-    <div class="foot">
-      {% if tender_only %}Ask your account manager if you need login details.{% else %}Ask the shop owner if you need login details.{% endif %}
+    <div class="form-foot">
+      <span class="help-note">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 17v-4M12 8.5v.5"/></svg>
+        Need credentials? Ask owner <strong>{% if tender_only %}your manager{% else %}Charles{% endif %}</strong>
+      </span>
+      <div class="meta-links">
+        <span><svg class="ic" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 9.5a3.5 3.5 0 0 1 0 7"/><path d="M3 21l18-18"/></svg> Offline Ledger</span>
+        <span class="sep">•</span>
+        <span><svg class="ic" viewBox="0 0 24 24"><path d="M4 10h16l-1.4 8.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M8.5 10L12 4.5 15.5 10"/></svg> Lane 02</span>
+      </div>
     </div>
   </div>
 </div>
@@ -533,11 +213,24 @@ function togglePassword() {
   const btn = document.getElementById('toggleBtn');
   if (p.type === 'password') {
     p.type = 'text';
-    btn.textContent = 'Hide';
+    btn.textContent = 'Hide Password';
   } else {
     p.type = 'password';
-    btn.textContent = 'Show';
+    btn.textContent = 'Show Password';
   }
+}
+
+function clearPassword() {
+  const p = document.getElementById('uPass');
+  p.value = '';
+  p.focus();
+}
+
+function focusPassword(event) {
+  if (event) event.stopPropagation();
+  const p = document.getElementById('uPass');
+  p.focus();
+  p.select();
 }
 
 function checkCaps(event) {
@@ -557,6 +250,39 @@ function showError(msg) {
   errEl.className = 'show';
 }
 
+function personaMarkup(p, isSel, idx) {
+  const u = p.username;
+  const isAdmin = p.role === 'admin';
+  const rolePill = isAdmin ? 'owner' : 'dispenser';
+  const roleLabel = isAdmin ? (TENDER_ONLY ? 'Owner' : 'Owner') : 'Dispenser';
+  const roleName = ROLE_NAMES[p.role] || p.role;
+  const pinRow = isAdmin ? `
+        <div class="pin-row">
+          <span class="pin-left">
+            <svg class="ic" viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="M9 7h6M9 10.5h6M9 14h3"/></svg>
+            4-Digit Quick PIN:
+            <span class="pin-dots"><i></i><i></i><i></i><i class="empty"></i></span>
+          </span>
+          <button type="button" onclick="focusPassword(event)">Enter Keypad</button>
+        </div>` : '';
+  return `
+    <div class="persona ${isSel ? 'sel' : ''}" id="p_${u}" onclick="selectUser('${u}')">
+      <div class="persona-top">
+        <div class="avatar">${initials(p.display_name || u)}</div>
+        <div class="info">
+          <b>${p.display_name || u} <span class="role-pill ${rolePill}">${roleLabel}</span></b>
+          <small>${roleName} &middot; UID: ${u}</small>
+        </div>
+        <div class="persona-state">
+          <span class="selected-badge"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> Selected</span>
+          <span class="switch-hint">Switch <svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+      ${pinRow}
+    </div>
+  `;
+}
+
 async function renderPersonas() {
   try {
     const res = await fetch('/api/personas');
@@ -566,19 +292,15 @@ async function renderPersonas() {
 
     const container = document.getElementById('personaList');
     const currentSelected = document.getElementById('uName').value.trim().toLowerCase();
+    const selected = currentSelected || (list[0] && list[0].username) || '';
+
+    if (!currentSelected && list[0]) {
+      document.getElementById('uName').value = list[0].username;
+    }
 
     container.innerHTML = list.map((p, idx) => {
-      const u = p.username.toLowerCase();
-      const isSel = currentSelected ? currentSelected === u : idx === 0;
-      return `
-        <div class="persona ${isSel ? 'sel' : ''}" id="p_${p.username}" onclick="selectUser('${p.username}')">
-          <div class="avatar">${initials(p.display_name || p.username)}</div>
-          <div class="info">
-            <b>${p.display_name || p.username}</b>
-            <small>${ROLE_NAMES[p.role] || p.role} &middot; ${p.username}</small>
-          </div>
-        </div>
-      `;
+      const isSel = selected === String(p.username).toLowerCase();
+      return personaMarkup(p, isSel, idx);
     }).join('');
   } catch (e) {
     console.warn('Could not load persona list', e);
@@ -596,7 +318,7 @@ async function checkCurrentSession() {
         <a href="${HOME_URL}">Open ${TENDER_ONLY ? 'Tender Copilot' : 'App'} &rarr;</a>
       `;
     }
-  } catch(e) {}
+  } catch (e) { /* not signed in */ }
 }
 
 async function go(event) {
@@ -605,6 +327,7 @@ async function go(event) {
   const username = document.getElementById('uName').value.trim();
   const password = document.getElementById('uPass').value;
   const btn = document.getElementById('submitBtn');
+  const originalHTML = btn.innerHTML;
 
   clearError();
 
@@ -620,7 +343,7 @@ async function go(event) {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Signing In...';
+  btn.innerHTML = '<span>Signing in…</span>';
 
   try {
     const r = await fetch('/api/login', {
@@ -630,7 +353,6 @@ async function go(event) {
     });
     const j = await r.json().catch(() => ({}));
     if (r.ok) {
-      // Check for redirect param ?next=
       const params = new URLSearchParams(window.location.search);
       const nextUrl = params.get('next') || HOME_URL;
       location.href = nextUrl;
@@ -638,13 +360,13 @@ async function go(event) {
       showError((j.error || 'Invalid username or password.') +
         ' Check Caps Lock is off, then ask a Shop Owner for a password reset if it still fails.');
       btn.disabled = false;
-      btn.textContent = 'Sign In →';
+      btn.innerHTML = originalHTML;
       document.getElementById('uPass').focus();
     }
   } catch (e) {
     showError('Network error — please verify the server is running at http://127.0.0.1:5000');
     btn.disabled = false;
-    btn.textContent = 'Sign In →';
+    btn.innerHTML = originalHTML;
   }
 }
 

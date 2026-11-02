@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Onzima Dawa — Kireka Apothecary System</title>
   <meta name="description" content="Onzima Dawa pharmacy operations: point of sale, batch and expiry-aware inventory, refill care, finance and stock alerts.">
-  <meta name="theme-color" content="#0F2A25">
+  <meta name="theme-color" content="#09261D">
   <meta name="robots" content="noindex, nofollow">
   <meta name="application-name" content="Onzima Dawa">
   <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
@@ -15,1846 +15,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <style>
-    :root {
-      --pine-950: #081714;
-      --pine-900: #0F2A25;
-      --pine-700: #1B4D42;
-      --pine-500: #2F7A68;
-      --pine-100: #E7F1EE;
-      --brass: #C9A227;
-      --brass-deep: #9A7715;
-      --brass-100: #F6EDD2;
-      --canvas: #F4F7F6;
-      --surface: #FFFFFF;
-      --ink: #16221F;
-      --muted: #647773;
-      --terra: #B7791F;
-      --leaf: #2e7d4f;
-      --blood: #b3261e;
-      --serif: 'Playfair Display', Georgia, 'Palatino Linotype', serif;
-      --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    body {
-      background: var(--canvas);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-size: 15px
-    }
-
-    h1,
-    h2,
-    h3,
-    .serif {
-      font-family: var(--serif)
-    }
-
-    .app {
-      display: flex;
-      min-height: 100vh
-    }
-
-    /* ---------- Modern Glassmorphic Sidebar ---------- */
-    .side {
-      width: 260px;
-      min-width: 260px;
-      background: linear-gradient(180deg, #071512 0%, #0C2621 35%, #0A1C18 70%, #06120F 100%);
-      color: #EAF2EF;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      flex-shrink: 0;
-      transition: width .28s cubic-bezier(.2, .8, .2, 1), transform .28s cubic-bezier(.2, .8, .2, 1);
-      z-index: 100;
-      border-right: 1px solid rgba(201, 162, 39, .15);
-      box-shadow: 2px 0 28px rgba(6, 18, 15, .4);
-      user-select: none;
-    }
-
-    .brand {
-      padding: 16px 14px 12px;
-      display: flex;
-      gap: 11px;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, .07);
-      position: relative;
-      background: rgba(255, 255, 255, .015);
-    }
-
-    .brand .mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #E8CE7A 0%, #C9A227 65%, #8F6E14 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(201, 162, 39, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
-      border: 1px solid rgba(255, 255, 255, .3);
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    .brand .mark:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(201, 162, 39, .5)
-    }
-
-    .brand .mark svg {
-      width: 24px;
-      height: 24px;
-      stroke: #071C17;
-      stroke-width: 2.1
-    }
-
-    .brand-text {
-      min-width: 0;
-      flex: 1
-    }
-
-    .brand-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 6px
-    }
-
-    .brand b {
-      font-family: var(--serif);
-      font-size: 17.5px;
-      color: #fff;
-      letter-spacing: .2px;
-      display: block;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, .4);
-    }
-
-    .brand small {
-      color: rgba(236, 244, 241, .65);
-      font-size: 10.5px;
-      letter-spacing: 1.1px;
-      text-transform: uppercase;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
-
-    .side-close-btn {
-      display: none;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .16);
-      color: #EAF2EF;
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      margin-left: auto;
-      transition: all .18s ease;
-    }
-
-    .side-close-btn:hover {
-      background: rgba(201, 162, 39, .22);
-      border-color: var(--brass);
-      color: var(--brass)
-    }
-
-    /* Sidebar Live Status Pill */
-    .sidebar-status-pill {
-      margin: 9px 12px 3px;
-      padding: 4px 9px;
-      background: rgba(255, 255, 255, .035);
-      border: 1px solid rgba(255, 255, 255, .06);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      color: #B9CFC9;
-    }
-
-    .live-pulse {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, .7);
-      animation: pulse-green 2s infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes pulse-green {
-      0% {
-        transform: scale(.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, .7)
-      }
-
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0)
-      }
-
-      100% {
-        transform: scale(.95);
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0)
-      }
-    }
-
-    .live-text {
-      font-weight: 600;
-      letter-spacing: .3px;
-      flex: 1
-    }
-
-    .live-ver {
-      font-size: 9.5px;
-      font-weight: 700;
-      color: var(--brass);
-      background: rgba(201, 162, 39, .12);
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-
-    /* Sidebar Navigation */
-    .snav {
-      padding: 6px 9px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      flex: 1;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(201, 162, 39, .25) transparent;
-    }
-
-    .snav::-webkit-scrollbar {
-      width: 4px
-    }
-
-    .snav::-webkit-scrollbar-thumb {
-      background: rgba(201, 162, 39, .25);
-      border-radius: 4px
-    }
-
-    .snav-section-title {
-      padding: 11px 9px 3px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      color: rgba(214, 232, 227, .4);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-transform: uppercase;
-      user-select: none;
-    }
-
-    .snav-section-title::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(255, 255, 255, .06);
-    }
-
-    .snav button,
-    .snav a.tender {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: #C7DAD4;
-      padding: 8px 9px;
-      border-radius: 11px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: left;
-      width: 100%;
-      text-decoration: none;
-      transition: all .18s cubic-bezier(.2, .8, .2, 1);
-    }
-
-    .snav button:hover,
-    .snav a.tender:hover {
-      background: rgba(255, 255, 255, .06);
-      border-color: rgba(255, 255, 255, .08);
-      color: #fff;
-      transform: translateX(3px);
-    }
-
-    .snav button.active {
-      background: linear-gradient(90deg, rgba(201, 162, 39, .22) 0%, rgba(201, 162, 39, .06) 100%);
-      border: 1px solid rgba(201, 162, 39, .35);
-      border-left: 3.5px solid var(--brass);
-      color: #fff;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, .25);
-    }
-
-    .snav button.active .lbl {
-      color: #fff;
-      font-weight: 700
-    }
-
-    .snav button.active .ic-wrap {
-      background: rgba(201, 162, 39, .25);
-      color: var(--brass);
-      box-shadow: 0 0 10px rgba(201, 162, 39, .3);
-      border-color: rgba(201, 162, 39, .4);
-    }
-
-    .ic-wrap {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: rgba(255, 255, 255, .05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #C2D6D0;
-      transition: all .18s ease;
-      border: 1px solid rgba(255, 255, 255, .06);
-    }
-
-    .snav button:hover .ic-wrap,
-    .snav a.tender:hover .ic-wrap {
-      background: rgba(201, 162, 39, .16);
-      color: var(--brass);
-      border-color: rgba(201, 162, 39, .25);
-    }
-
-    .ic-wrap .ic {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .drug-ic-wrap {
-      color: #4ade80 !important
-    }
-
-    .tender-ic {
-      color: #fbbf24 !important
-    }
-
-    .staff-ic {
-      color: #3B82F6 !important
-    }
-
-    .snav button .lbl,
-    .snav a.tender .lbl {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: .15px;
-    }
-
-    /* Micro Alert Badges */
-    .nav-badge {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 12px;
-      line-height: 1;
-      letter-spacing: .3px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
-      animation: pop-in .25s ease;
-    }
-
-    @keyframes pop-in {
-      from {
-        transform: scale(.6);
-        opacity: 0
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1
-      }
-    }
-
-    .nav-badge.alert {
-      background: #D92D20;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, .25)
-    }
-
-    .nav-badge.warn {
-      background: #B7791F;
-      color: #fff
-    }
-
-    .nav-badge.gold {
-      background: var(--brass);
-      color: #0A241F;
-      font-weight: 900
-    }
-
-    .ext-badge {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .8px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      background: rgba(201, 162, 39, .15);
-      color: var(--brass);
-      border: 1px solid rgba(201, 162, 39, .3);
-    }
-
-    .ext-badge.mobile {
-      background: rgba(59, 130, 246, .15);
-      color: #93c5fd;
-      border-color: rgba(59, 130, 246, .3)
-    }
-
-    .snav a.tender {
-      background: rgba(201, 162, 39, .05);
-      border: 1px dashed rgba(201, 162, 39, .35);
-      margin-top: 3px;
-    }
-
-    .snav a.tender:hover {
-      background: rgba(201, 162, 39, .14);
-      border-color: var(--brass)
-    }
-
-    .snav a.staff-link {
-      background: rgba(59, 130, 246, .05);
-      border: 1px dashed rgba(59, 130, 246, .3);
-      margin-top: 3px;
-    }
-
-    .snav a.staff-link:hover {
-      background: rgba(59, 130, 246, .14);
-      border-color: #3B82F6
-    }
-
-    /* Persona User Card */
-    .persona {
-      margin: 10px 10px 12px;
-      background: rgba(255, 255, 255, .04);
-      border: 1px solid rgba(255, 255, 255, .08);
-      border-radius: 15px;
-      padding: 10px 11px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 16px rgba(7, 21, 18, .35);
-    }
-
-    .avatar-wrap {
-      position: relative;
-      flex-shrink: 0
-    }
-
-    .avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #E0C55F, #C9A227);
-      color: #071C17;
-      font-family: var(--serif);
-      font-weight: 800;
-      font-size: 14.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, .35), inset 0 1px 1px rgba(255, 255, 255, .6);
-      border: 1.5px solid rgba(255, 255, 255, .25);
-    }
-
-    .avatar-status-dot {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #10b981;
-      border: 2px solid #0C2621;
-    }
-
-    .persona .who {
-      min-width: 0;
-      flex: 1
-    }
-
-    .persona .who b {
-      display: block;
-      font-size: 13px;
-      color: #fff;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .rolebadge {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-top: 2px;
-    }
-
-    .rolebadge.admin {
-      background: var(--brass);
-      color: #071C17
-    }
-
-    .rolebadge.attendant {
-      background: rgba(47, 122, 104, .8);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, .15)
-    }
-
-    .persona .acts {
-      display: flex;
-      flex-direction: column;
-      gap: 3px
-    }
-
-    .mini {
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(255, 255, 255, .12);
-      color: #D8E7E2;
-      border-radius: 7px;
-      padding: 3px 8px;
-      font-size: 10.5px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all .15s ease;
-    }
-
-    .mini:hover {
-      background: rgba(201, 162, 39, .22);
-      border-color: rgba(201, 162, 39, .45);
-      color: var(--brass)
-    }
-
-    .mini.danger:hover {
-      background: rgba(217, 45, 32, .25);
-      border-color: rgba(217, 45, 32, .45);
-      color: #fda4af
-    }
-
-    .side-collapse-btn {
-      background: rgba(255, 255, 255, .07);
-      border: 1px solid rgba(255, 255, 255, .14);
-      color: #EAF2EF;
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: auto;
-      transition: all .18s ease;
-      flex-shrink: 0;
-    }
-
-    .side-collapse-btn:hover {
-      background: rgba(201, 162, 39, .22);
-      border-color: var(--brass);
-      color: var(--brass);
-    }
-
-    .side-collapse-btn svg {
-      width: 16px;
-      height: 16px;
-      stroke: currentColor;
-      fill: none;
-      transition: transform .25s ease
-    }
-
-    /* Desktop Collapsed Sidebar (Only applies on screens > 900px) */
-    @media(min-width:901px) {
-      .app.side-collapsed .side {
-        width: 74px;
-        min-width: 74px
-      }
-
-      .app.side-collapsed .brand {
-        padding: 14px 6px;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        justify-content: center
-      }
-
-      .app.side-collapsed .brand .brand-text,
-      .app.side-collapsed .sidebar-status-pill {
-        display: none !important
-      }
-
-      .app.side-collapsed .side-collapse-btn {
-        margin: 0 auto;
-        width: 28px;
-        height: 28px
-      }
-
-      .app.side-collapsed .side-collapse-btn svg {
-        transform: rotate(180deg)
-      }
-
-      .app.side-collapsed .snav {
-        padding: 8px 6px;
-        align-items: center
-      }
-
-      .app.side-collapsed .snav-section-title {
-        padding: 10px 0 6px;
-        justify-content: center;
-        width: 100%
-      }
-
-      .app.side-collapsed .snav-section-title span {
-        display: none
-      }
-
-      .app.side-collapsed .snav-section-title::after {
-        content: "•";
-        color: rgba(255, 255, 255, .2);
-        font-size: 14px;
-        height: auto;
-        background: none;
-        text-align: center;
-      }
-
-      .app.side-collapsed .snav button,
-      .app.side-collapsed .snav a.tender {
-        justify-content: center;
-        padding: 8px 0;
-        width: 48px;
-        margin: 2px auto;
-        border-left: 1px solid transparent;
-      }
-
-      .app.side-collapsed .snav button.active {
-        border: 1px solid rgba(201, 162, 39, .4);
-        background: rgba(201, 162, 39, .2);
-      }
-
-      .app.side-collapsed .snav button .lbl,
-      .app.side-collapsed .snav a.tender .lbl,
-      .app.side-collapsed .ext-badge {
-        display: none !important
-      }
-
-      .app.side-collapsed .nav-badge {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        padding: 2px 4px;
-        font-size: 9px;
-        min-width: 14px;
-        text-align: center;
-      }
-
-      .app.side-collapsed .persona {
-        margin: 10px 6px;
-        padding: 8px 0;
-        justify-content: center
-      }
-
-      .app.side-collapsed .persona .who,
-      .app.side-collapsed .persona .acts {
-        display: none !important
-      }
-
-      /* Tooltips when collapsed */
-      .app.side-collapsed .snav button[data-title],
-      .app.side-collapsed .snav a.tender[data-title] {
-        position: relative
-      }
-
-      .app.side-collapsed .snav button[data-title]:hover::after,
-      .app.side-collapsed .snav a.tender[data-title]:hover::after {
-        content: attr(data-title);
-        position: absolute;
-        left: calc(100% + 12px);
-        top: 50%;
-        transform: translateY(-50%);
-        background: #071512;
-        color: #fff;
-        padding: 7px 13px;
-        border-radius: 9px;
-        font-size: 12px;
-        font-weight: 600;
-        white-space: nowrap;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, .6);
-        border: 1px solid rgba(201, 162, 39, .35);
-        z-index: 9999;
-        pointer-events: none;
-        animation: tip-in .16s ease forwards;
-      }
-
-      .app.side-collapsed .snav button[data-title]:hover::before,
-      .app.side-collapsed .snav a.tender[data-title]:hover::before {
-        content: "";
-        position: absolute;
-        left: calc(100% + 6px);
-        top: 50%;
-        transform: translateY(-50%);
-        border-width: 5px 6px 5px 0;
-        border-style: solid;
-        border-color: transparent #071512 transparent transparent;
-        z-index: 10000;
-        pointer-events: none;
-      }
-    }
-
-    @keyframes tip-in {
-      from {
-        opacity: 0;
-        transform: translate(-4px, -50%)
-      }
-
-      to {
-        opacity: 1;
-        transform: translate(0, -50%)
-      }
-    }
-
-    /* ---------- main ---------- */
-    .main {
-      flex: 1;
-      min-width: 0;
-      padding: 22px 24px;
-      max-width: 1220px;
-      transition: padding .2s ease
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px
-    }
-
-    .desk-toggle-btn {
-      background: var(--surface);
-      border: 1.5px solid #CFDAD6;
-      border-radius: 10px;
-      width: 38px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--pine-700);
-      cursor: pointer;
-      transition: all .15s ease;
-      box-shadow: 0 2px 6px rgba(18, 48, 41, .06)
-    }
-
-    .desk-toggle-btn:hover {
-      background: var(--pine-100);
-      border-color: var(--brass);
-      color: var(--pine-900)
-    }
-
-    .desk-toggle-btn svg {
-      width: 20px;
-      height: 20px
-    }
-
-    .topbar h1 {
-      font-size: 26px;
-      color: var(--pine-900);
-      line-height: 1.2
-    }
-
-    .topbar h1 em {
-      color: var(--brass-deep);
-      font-style: normal
-    }
-
-    .topbar .clock {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 600
-    }
-
-    section.tab {
-      display: none
-    }
-
-    section.tab.active {
-      display: block;
-      animation: fade .25s ease
-    }
-
-    @keyframes fade {
-      from {
-        opacity: 0;
-        transform: translateY(4px)
-      }
-
-      to {
-        opacity: 1
-      }
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px
-    }
-
-    .card {
-      background: var(--surface);
-      border-radius: 16px;
-      padding: 15px 16px;
-      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-      border: 1px solid #E2E9E7;
-      border-top: 4px solid var(--pine-500)
-    }
-
-    .card h3 {
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-family: var(--sans);
-      font-weight: 800
-    }
-
-    .card .v {
-      font-family: var(--serif);
-      font-size: 27px;
-      font-weight: bold;
-      color: var(--pine-900);
-      margin-top: 5px
-    }
-
-    .card small {
-      color: var(--muted)
-    }
-
-    .card.gold {
-      border-top-color: var(--brass)
-    }
-
-    .card.danger {
-      border-top-color: var(--blood)
-    }
-
-    .card.warn {
-      border-top-color: var(--terra)
-    }
-
-    .panel {
-      background: var(--surface);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-      border: 1px solid #E2E9E7;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch
-    }
-
-    .panel>h2 {
-      font-size: 19px;
-      margin-bottom: 12px;
-      color: var(--pine-900);
-      display: flex;
-      align-items: center;
-      gap: 9px
-    }
-
-    .panel>h2 .ic {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      stroke: var(--brass-deep)
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px
-    }
-
-    th,
-    td {
-      padding: 9px 8px;
-      border-bottom: 1px solid #E8EEEC;
-      text-align: left
-    }
-
-    th {
-      color: var(--pine-700);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      border-bottom: 2px solid var(--brass)
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 11px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800
-    }
-
-    .b-expired {
-      background: #FBDDD9;
-      color: #8f1d12
-    }
-
-    .b-critical {
-      background: #FBE7C2;
-      color: #8a4a00
-    }
-
-    .b-warning {
-      background: #F9E2CB;
-      color: #8f3c10
-    }
-
-    .b-ok {
-      background: #D8EDE2;
-      color: #155c33
-    }
-
-    .b-low {
-      background: #FBDDD9;
-      color: #8f1d12
-    }
-
-    .btn {
-      background: var(--pine-700);
-      color: #fff;
-      border: 0;
-      padding: 9px 16px;
-      border-radius: 11px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 13.5px
-    }
-
-    .btn:hover {
-      background: var(--pine-900)
-    }
-
-    .btn.gold {
-      background: var(--brass);
-      color: #0A241F
-    }
-
-    .btn.gold:hover {
-      background: var(--brass-deep);
-      color: #fff
-    }
-
-    .btn.ghost {
-      background: transparent;
-      color: var(--pine-700);
-      border: 1.5px solid var(--pine-500)
-    }
-
-    .btn.wa {
-      background: var(--leaf)
-    }
-
-    input,
-    select,
-    textarea {
-      padding: 9px 11px;
-      border: 1.5px solid #CFDAD6;
-      border-radius: 10px;
-      font-size: 14px;
-      width: 100%;
-      background: #FBFDFC;
-      font-family: var(--sans)
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid var(--brass);
-      border-color: var(--brass)
-    }
-
-    form.grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      align-items: end
-    }
-
-    .alert {
-      padding: 11px 14px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      font-size: 14px
-    }
-
-    .alert.red {
-      background: #fdf0ee;
-      border: 1px solid #f2b8ae
-    }
-
-    .alert.amber {
-      background: #fdf6e3;
-      border: 1px solid #ecd27a
-    }
-
-    .alert.green {
-      background: #edf7f0;
-      border: 1px solid #a9d8bc
-    }
-
-    .flex {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center
-    }
-
-    /* modal */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 31, 27, .6);
-      z-index: 55;
-      align-items: center;
-      justify-content: center;
-      padding: 16px
-    }
-
-    .modal.show {
-      display: flex
-    }
-
-    .modal .box {
-      background: var(--surface);
-      border-radius: 18px;
-      padding: 24px;
-      width: 380px;
-      border-top: 5px solid var(--brass)
-    }
-
-    .modal .box h2 {
-      color: var(--pine-900);
-      margin-bottom: 12px
-    }
-
-    .modal label {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--muted)
-    }
-
-    .modal input {
-      margin: 4px 0 10px
-    }
-
-    /* receipt */
-    #receiptArea {
-      display: none
-    }
-
-    .receipt {
-      width: 280px;
-      margin: auto;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      color: #000;
-      background: #fff;
-      padding: 10px
-    }
-
-    .receipt h3,
-    .receipt p {
-      text-align: center;
-      margin: 2px 0
-    }
-
-    .receipt table {
-      font-size: 12px
-    }
-
-    .receipt td {
-      border: 0;
-      padding: 2px
-    }
-
-    @media print {
-      body * {
-        visibility: hidden
-      }
-
-      #receiptArea,
-      #receiptArea * {
-        visibility: visible
-      }
-
-      #receiptArea {
-        display: block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%
-      }
-    }
-
-    body[data-role="attendant"] [data-admin] {
-      display: none !important
-    }
-
-    /* Mobile Topbar & Bottom Nav elements hidden by default on desktop */
-    .mobile-topbar {
-      display: none
-    }
-
-    .side-backdrop {
-      display: none
-    }
-
-    .mobile-bottom-nav {
-      display: none
-    }
-
-    /* ---------- Responsive Media Queries ---------- */
-    @media(max-width:900px) {
-      .desk-toggle-btn {
-        display: none
-      }
-
-      .app {
-        display: block;
-        min-height: 100vh
-      }
-
-      /* Sticky Mobile Header */
-      .mobile-topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 58px;
-        padding: 0 14px;
-        background: linear-gradient(135deg, var(--pine-950), var(--pine-900));
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 900;
-        box-shadow: 0 3px 14px rgba(10, 31, 27, .45)
-      }
-
-      .mob-menu-btn {
-        background: rgba(255, 255, 255, .1);
-        border: 1px solid rgba(255, 255, 255, .18);
-        color: #fff;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        padding: 0
-      }
-
-      .mob-menu-btn:active {
-        background: rgba(201, 162, 39, .25)
-      }
-
-      .mob-menu-btn svg {
-        width: 22px;
-        height: 22px;
-        stroke: var(--brass)
-      }
-
-      .mob-brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-family: var(--serif);
-        font-size: 17px;
-        color: #fff
-      }
-
-      .mob-brand .mark-sm {
-        width: 32px;
-        height: 32px;
-        border-radius: 9px;
-        background: var(--brass);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0
-      }
-
-      .mob-brand .mark-sm svg {
-        width: 18px;
-        height: 18px;
-        stroke: #0A241F
-      }
-
-      .mob-avatar-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0
-      }
-
-      .avatar-sm {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: var(--brass);
-        color: #0A241F;
-        font-family: var(--serif);
-        font-weight: bold;
-        font-size: 13.5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .3)
-      }
-
-      /* Off-canvas Mobile Drawer Sidebar */
-      .side {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 290px;
-        max-width: 85vw;
-        height: 100vh;
-        height: 100dvh;
-        min-width: 0 !important;
-        z-index: 1000;
-        transform: translateX(-100%);
-        box-shadow: none;
-        transition: transform .28s cubic-bezier(.2, .8, .2, 1);
-      }
-
-      .side.open {
-        transform: translateX(0);
-        box-shadow: 8px 0 40px rgba(0, 0, 0, .75)
-      }
-
-      .side-collapse-btn {
-        display: none !important
-      }
-
-      .side-close-btn {
-        display: flex !important
-      }
-
-      .snav {
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch
-      }
-
-      .snav button,
-      .snav a.tender {
-        white-space: normal;
-        padding: 10px 12px;
-        transform: none !important;
-        width: 100% !important
-      }
-
-      .snav button span.lbl,
-      .snav a.tender span.lbl {
-        display: inline !important
-      }
-
-      .persona {
-        margin: 10px 12px
-      }
-
-      .persona .who,
-      .persona .acts {
-        display: flex !important
-      }
-
-      /* Backdrop Dimming */
-      .side-backdrop {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(8, 23, 20, .68);
-        backdrop-filter: blur(3px);
-        z-index: 995;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .25s ease
-      }
-
-      .side-backdrop.active {
-        opacity: 1;
-        pointer-events: auto
-      }
-
-      /* Thumb-friendly Mobile Bottom Bar */
-      .mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 58px;
-        background: var(--pine-950);
-        border-top: 1px solid rgba(201, 162, 39, .22);
-        z-index: 900;
-        padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
-        box-shadow: 0 -3px 14px rgba(0, 0, 0, .35)
-      }
-
-      .mobile-bottom-nav button {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        background: none;
-        border: none;
-        color: #B9CFC9;
-        font-size: 10.5px;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 4px 2px;
-        border-radius: 8px;
-        transition: color .15s, background .15s
-      }
-
-      .mobile-bottom-nav button .ic {
-        width: 20px;
-        height: 20px
-      }
-
-      .mobile-bottom-nav button.active {
-        color: var(--brass);
-        background: rgba(201, 162, 39, .14)
-      }
-
-      /* Content Spacing on Mobile */
-      .main {
-        padding: 14px 12px calc(74px + env(safe-area-inset-bottom)) 12px;
-        max-width: 100%
-      }
-
-      .topbar {
-        margin-bottom: 12px
-      }
-
-      .topbar h1 {
-        font-size: 22px
-      }
-
-      .panel {
-        padding: 14px
-      }
-
-      table {
-        min-width: 480px
-      }
-    }
-
-    /* ---------- App launcher + entitlement UI ---------- */
-    .app-hidden {
-      display: none !important
-    }
-
-    .apps-hero {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      background: linear-gradient(135deg, var(--pine-950), var(--pine-700) 68%, #8A6A1F);
-      color: #fff;
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(15, 42, 37, .22)
-    }
-
-    .apps-hero::after {
-      content: "";
-      position: absolute;
-      width: 230px;
-      height: 230px;
-      right: -70px;
-      top: -110px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(201, 162, 39, .3), transparent 68%);
-      pointer-events: none
-    }
-
-    .apps-hero-copy {
-      position: relative;
-      z-index: 1;
-      max-width: 590px
-    }
-
-    .apps-eyebrow {
-      display: inline-block;
-      color: var(--brass);
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      margin-bottom: 7px
-    }
-
-    .apps-hero h2 {
-      font-family: var(--serif);
-      font-size: 30px;
-      line-height: 1.12;
-      color: #fff
-    }
-
-    .apps-hero h2 em {
-      color: var(--brass);
-      font-style: italic
-    }
-
-    .apps-hero p {
-      color: rgba(255, 255, 255, .74);
-      font-size: 13.5px;
-      line-height: 1.55;
-      margin-top: 7px
-    }
-
-    .apps-plan {
-      position: relative;
-      z-index: 1;
-      min-width: 205px;
-      text-align: right;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid rgba(201, 162, 39, .38);
-      border-radius: 14px;
-      padding: 12px 15px;
-      backdrop-filter: blur(4px)
-    }
-
-    .apps-plan>span {
-      display: block;
-      color: rgba(255, 255, 255, .55);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase
-    }
-
-    .apps-plan strong {
-      display: block;
-      color: var(--brass);
-      font-family: var(--serif);
-      font-size: 20px;
-      line-height: 1.25;
-      margin: 2px 0 5px
-    }
-
-    .apps-plan small {
-      color: rgba(255, 255, 255, .66);
-      font-size: 11.5px;
-      line-height: 1.7
-    }
-
-    .apps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 14px;
-      margin-bottom: 14px
-    }
-
-    .app-card {
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      gap: 13px;
-      width: 100%;
-      min-height: 104px;
-      padding: 16px;
-      text-align: left;
-      font-family: var(--sans);
-      color: var(--ink);
-      background: var(--surface);
-      border: 1px solid #E2E9E7;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-      cursor: pointer;
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease
-    }
-
-    .app-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--brass);
-      box-shadow: 0 8px 20px rgba(18, 48, 41, .13)
-    }
-
-    .app-card:focus-visible {
-      outline: 3px solid var(--brass);
-      outline-offset: 2px
-    }
-
-    .app-card .app-ic {
-      width: 46px;
-      height: 46px;
-      flex-shrink: 0;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--pine-100);
-      color: var(--pine-700);
-      border: 1px solid rgba(47, 122, 104, .12)
-    }
-
-    .app-card .app-ic svg {
-      width: 24px;
-      height: 24px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round
-    }
-
-    .app-card .app-body {
-      flex: 1;
-      min-width: 0;
-      padding-right: 17px
-    }
-
-    .app-card .app-body b {
-      display: block;
-      font-family: var(--serif);
-      font-size: 17px;
-      line-height: 1.25;
-      color: var(--pine-900)
-    }
-
-    .app-card .app-body small {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 12.5px;
-      line-height: 1.45
-    }
-
-    .app-badge {
-      display: inline-block;
-      margin-top: 9px;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: var(--brass-100);
-      color: var(--brass-deep);
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .65px;
-      text-transform: uppercase
-    }
-
-    .app-card.locked {
-      background: #F7FAF9;
-      border-style: dashed;
-      box-shadow: none
-    }
-
-    .app-card.locked .app-body b {
-      color: var(--muted)
-    }
-
-    .app-card.locked .app-ic {
-      background: #EDF1F0;
-      color: #7C8A86
-    }
-
-    .app-lock {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 27px;
-      height: 27px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--brass);
-      background: var(--pine-900);
-      box-shadow: 0 2px 7px rgba(15, 42, 37, .25)
-    }
-
-    .app-lock svg {
-      width: 14px;
-      height: 14px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.9;
-      stroke-linecap: round;
-      stroke-linejoin: round
-    }
-
-    .apps-empty {
-      grid-column: 1 / -1;
-      padding: 28px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px dashed #CFDAD6;
-      border-radius: 16px
-    }
-
-    .apps-note {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.55;
-      margin: 0 2px 14px
-    }
-
-    .plan-status {
-      display: inline-block;
-      padding: 3px 9px;
-      border-radius: 20px;
-      background: #D8EDE2;
-      color: #155c33;
-      font-family: var(--sans);
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: .7px;
-      text-transform: uppercase;
-      vertical-align: middle
-    }
-
-    .plan-status.inactive {
-      background: #FBDDD9;
-      color: #8f1d12
-    }
-
-    .plan-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin: 4px 0 14px
-    }
-
-    .plan-item {
-      background: var(--canvas);
-      border: 1px solid #E1E8E6;
-      border-radius: 12px;
-      padding: 11px 13px
-    }
-
-    .plan-item span,
-    .plan-label {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .9px;
-      text-transform: uppercase
-    }
-
-    .plan-item strong {
-      display: block;
-      margin-top: 3px;
-      color: var(--pine-900);
-      font-family: var(--serif);
-      font-size: 17px;
-      line-height: 1.3
-    }
-
-    .plan-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 7px
-    }
-
-    .plan-chip {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--pine-100);
-      color: var(--pine-700);
-      font-size: 12px;
-      font-weight: 700
-    }
-
-    .muted-chip {
-      background: #EFF3F2;
-      color: var(--muted)
-    }
-
-    .plan-note {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 12.5px;
-      line-height: 1.55
-    }
-
-    .plan-link {
-      color: var(--pine-700);
-      font-weight: 800;
-      text-decoration: underline;
-      text-underline-offset: 2px
-    }
-
-    .plan-link:hover {
-      color: var(--pine-900)
-    }
-
-    #upgradeModal .box {
-      width: 440px;
-      max-width: calc(100vw - 32px);
-      border-top: 5px solid var(--brass)
-    }
-
-    .upgrade-lock {
-      width: 52px;
-      height: 52px;
-      border-radius: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--pine-900);
-      color: var(--brass);
-      margin-bottom: 13px;
-      box-shadow: 0 5px 14px rgba(15, 42, 37, .25)
-    }
-
-    .upgrade-lock svg {
-      width: 25px;
-      height: 25px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round
-    }
-
-    .upgrade-eyebrow {
-      display: block;
-      color: var(--brass-deep);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.1px;
-      text-transform: uppercase;
-      margin-bottom: 5px
-    }
-
-    .upgrade-copy {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
-      margin: 7px 0 11px
-    }
-
-    .upgrade-bundle {
-      padding: 9px 12px;
-      margin-bottom: 8px;
-      border-radius: 10px;
-      background: var(--brass-100);
-      color: var(--brass-deep);
-      font-size: 12.5px;
-      font-weight: 700;
-      line-height: 1.45
-    }
-
-    .upgrade-bundle:empty {
-      display: none
-    }
-
-    #upgradeModal .btn {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center
-    }
-
-    #upgradeModal .btn[hidden] {
-      display: none !important
-    }
-
-    @media(max-width:900px) {
-      .apps-hero {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 20px
-      }
-
-      .apps-plan {
-        width: 100%;
-        min-width: 0;
-        text-align: left
-      }
-
-      .apps-grid {
-        grid-template-columns: repeat(auto-fill, minmax(225px, 1fr))
-      }
-    }
-
-    @media(max-width:480px) {
-      .apps-hero h2 {
-        font-size: 25px
-      }
-
-      .apps-grid {
-        grid-template-columns: 1fr
-      }
-
-      .app-card {
-        min-height: 96px;
-        padding: 14px
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/app.css">
 </head>
 
 <body data-role="">
+{% if demo_mode %}
+<div role="status" style="position:sticky;top:0;z-index:60;background:#C9A227;color:#0A241F;padding:8px 14px;font:700 13px/1.4 'Plus Jakarta Sans',sans-serif;text-align:center">Demo data — every patient, product, and sale here is synthetic.</div>
+{% endif %}
   <svg width="0" height="0" style="position:absolute">
     <symbol id="i-mark" viewBox="0 0 24 24">
       <path d="M4 13h16c0 4.2-3.6 7.5-8 7.5S4 17.2 4 13z" />
@@ -1946,6 +115,58 @@
       <path d="M10.5 2.5l-8 8a4.24 4.24 0 0 0 6 6l8-8a4.24 4.24 0 0 0-6-6z" />
       <line x1="7" y1="12" x2="12" y2="7" />
     </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16 16l4.5 4.5" />
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 1.8" />
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M12 3.5L21 20H3z" />
+      <path d="M12 9v4.5" />
+      <circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none" />
+    </symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24">
+      <rect x="2.5" y="6" width="19" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2.6" />
+      <path d="M6 9.5v5M18 9.5v5" />
+    </symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24">
+      <path d="M3 17l5.5-5.5 3.5 3.5L21 6" />
+      <path d="M15.5 6H21v5.5" />
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+    </symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path d="M20.5 11.6A8.4 8.4 0 0 1 7.8 19L3.5 20.5l1.6-4.2A8.4 8.4 0 1 1 20.5 11.6z" />
+      <path d="M9 8.2c.4 2.8 2 4.4 4.8 4.8l1-1.3 1.8.8-.4 1.4c-.2.6-1.6 1-2.6.8-3.1-.6-5.5-3-6.1-6.1-.2-1 .2-2.4.8-2.6l1.4-.4.8 1.8z" />
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24">
+      <path d="M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 5.6 5.6l1.4-2 4 1.5v3c0 1.4-1.1 2.5-2.5 2.5A15.5 15.5 0 0 1 4 6c0-1.4 1.1-2.5 2.5-2.5z" />
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24">
+      <path d="M4 12h16M14 6l6 6-6 6" />
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M4.5 12.5l5 5 10-11" />
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M20 11a8 8 0 0 0-13.8-5L3 9" />
+      <path d="M3 4v5h5" />
+      <path d="M4 13a8 8 0 0 0 13.8 5L21 15" />
+      <path d="M21 20v-5h-5" />
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="M9 5l7 7-7 7" />
+    </symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24">
+      <path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" />
+      <path d="M4 12h16" />
+    </symbol>
   </svg>
 
   <!-- Mobile Top Header Bar -->
@@ -1959,7 +180,7 @@
       <div class="mark-sm"><svg>
           <use href="#i-mark" />
         </svg></div>
-      <b>Onzima Dawa</b>
+      <b>Onzima <span style="color:#FBBF24">Dawa</span></b>
     </div>
     <button type="button" class="mob-avatar-btn" onclick="openProfile()" aria-label="My Profile">
       <div class="avatar-sm" id="mobAvatar">?</div>
@@ -1977,7 +198,7 @@
           </svg></div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <b>Onzima Dawa</b>
+            <b>Onzima <span>Dawa</span></b>
           </div>
           <small>Apothecary · Kireka</small>
         </div>
@@ -1995,6 +216,7 @@
         <span class="live-pulse"></span>
         <span class="live-text">System Live</span>
         <span class="live-ver">v2.5</span>
+        <span class="live-ok">OK</span>
       </div>
 
       <nav class="snav" id="sidebarNav">
@@ -2019,6 +241,7 @@
               <use href="#i-pos" />
             </svg></span>
           <span class="lbl">Sell / POS</span>
+          <span class="nav-badge lane">LANE 1</span>
         </button>
 
         <button data-tab="stock" data-app="inventory" data-title="Stock & Expiry" onclick="switchTab('stock')">
@@ -2114,24 +337,49 @@
           <span class="rolebadge attendant" id="whoRole">…</span>
         </div>
         <div class="acts">
-          <button class="mini" onclick="openProfile()" title="My Profile">Profile</button>
-          <button class="mini" onclick="switchUser()" title="Switch user account">Switch</button>
-          <button class="mini danger" onclick="logout()" title="Logout">Exit</button>
+          <button class="mini icon" onclick="openProfile()" title="My Profile" aria-label="My Profile">
+            <svg class="ic"><use href="#i-user" /></svg>
+          </button>
+          <button class="mini icon" onclick="switchUser()" title="Switch user account" aria-label="Switch user account">
+            <svg class="ic"><use href="#i-refresh" /></svg>
+          </button>
+          <button class="mini icon danger" onclick="logout()" title="Logout" aria-label="Logout">
+            <svg class="ic"><use href="#i-out" /></svg>
+          </button>
         </div>
       </div>
     </aside>
     <div class="main">
       <div class="topbar">
         <div class="topbar-left">
-          <button type="button" class="desk-toggle-btn" onclick="toggleDesktopSidebar()"
-            title="Collapse / Expand Sidebar (Toggle)">
-            <svg class="ic">
-              <use href="#i-collapse" />
-            </svg>
-          </button>
-          <h1 id="pageTitle">Dukani <em>Dashboard</em></h1>
+          <span class="topbar-cal" aria-hidden="true">
+            <svg class="ic"><use href="#i-calendar" /></svg>
+          </span>
+          <div class="crumb">
+            <span class="crumb-shop">Kireka Central</span>
+            <span class="crumb-sep">/</span>
+            <h1 id="pageTitle">Dispense <em>Terminal A</em></h1>
+          </div>
         </div>
-        <span class="clock" id="clock"></span>
+        <div class="topbar-right">
+          <span class="top-chip">
+            <svg class="ic"><use href="#i-clock" /></svg>
+            <span class="clock" id="clock"></span>
+          </span>
+          <span class="top-chip">
+            <svg class="ic"><use href="#i-cash" /></svg>
+            UGX <small>Ugandan Shilling</small>
+          </span>
+          <button type="button" class="top-search" onclick="switchTab('pos')" title="Search or scan a barcode">
+            <svg class="ic"><use href="#i-search" /></svg>
+            <span>⌘K / Barcode</span>
+          </button>
+          <button type="button" class="top-icon-btn" onclick="switchTab('alerts')" title="Stock alerts"
+            aria-label="Stock alerts">
+            <svg class="ic"><use href="#i-bell" /></svg>
+            <span class="dot"></span>
+          </button>
+        </div>
       </div>
       <main>
         <section id="tab-apps" class="tab">
@@ -2155,18 +403,96 @@
         </section>
 
         <section id="tab-dash" class="tab active">
-          <div class="cards" id="kpis"></div>
-          <div class="panel">
-            <h2><svg class="ic">
-                <use href="#i-bell" />
-              </svg>Expiry Watchdog</h2>
-            <div id="watch"></div>
+          <div class="dash-hero">
+            <div class="dash-hero-main">
+              <div class="dash-hero-mark"><svg class="ic"><use href="#i-dash" /></svg></div>
+              <div>
+                <div class="dash-title-wrap">
+                  <h1>Dukani Dashboard</h1>
+                  <span class="shift-chip">Shift 01</span>
+                </div>
+                <p>Operational summary &amp; urgent clinical apothecary alerts</p>
+              </div>
+            </div>
+            <div class="dash-hero-actions">
+              <div class="hero-chips">
+                <span class="hero-chip"><svg class="ic"><use href="#i-calendar" /></svg> Today: <b
+                    id="dashDate">…</b></span>
+                <span class="hero-chip ok"><span class="live-pulse"></span> Lane 01 Active</span>
+              </div>
+              <button type="button" class="btn" onclick="printDayReport()">
+                <svg class="ic"><use href="#i-print" /></svg> Export Day Report
+              </button>
+            </div>
           </div>
-          <div class="panel" data-app="patients">
-            <h2><svg class="ic">
-                <use href="#i-heart" />
-              </svg>Refills Due — Day-25 Rule</h2>
-            <div id="dashRefill"></div>
+
+          <div class="kpi-grid" id="kpis"></div>
+
+          <div class="dash-grid">
+            <div class="dash-col-main">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-ic red"><svg class="ic"><use href="#i-bell" /></svg></div>
+                  <div class="panel-head-copy">
+                    <div class="panel-title">Expiry Watchdog <span class="tag neutral">FEFO Compliance</span></div>
+                    <p class="panel-sub">Automated shelf surveillance for batches near and beyond safety windows</p>
+                  </div>
+                  <div class="seg" id="watchFilter" role="tablist" aria-label="Filter expiry batches">
+                    <button type="button" class="active" onclick="filterWatch(this,'all')">All</button>
+                    <button type="button" onclick="filterWatch(this,'expired')">Expired</button>
+                    <button type="button" onclick="filterWatch(this,'critical')">≤30 Days</button>
+                  </div>
+                </div>
+                <div id="watch"></div>
+              </div>
+
+              <div class="panel" data-app="patients">
+                <div class="panel-head">
+                  <div class="panel-ic green"><svg class="ic"><use href="#i-heart" /></svg></div>
+                  <div class="panel-head-copy">
+                    <div class="panel-title">Patient Chronic Refills Due <span class="tag neutral">Day-25
+                        Protocol</span></div>
+                    <p class="panel-sub">Proactive refill outreach at day 25 of 30-day chronic regimens</p>
+                  </div>
+                  <span class="tag critical" id="refillDueChip">Today</span>
+                </div>
+                <div id="dashRefill"></div>
+              </div>
+            </div>
+
+            <aside class="dash-col-side">
+              <div class="panel drawer-panel">
+                <div class="panel-head">
+                  <div class="panel-ic"><svg class="ic"><use href="#i-scale" /></svg></div>
+                  <div class="panel-head-copy">
+                    <div class="panel-title">Shift Drawer Reconciliation</div>
+                    <p class="panel-sub">Live till audit &amp; balance checking</p>
+                  </div>
+                  <span class="tag neutral" id="drawerStatus">Live</span>
+                </div>
+                <div id="dashDrawer"></div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="panel-head-copy">
+                    <div class="panel-title">Today's Dispensary Workload</div>
+                  </div>
+                  <span class="tag neutral">Target: 40 Rx</span>
+                </div>
+                <div id="dashWorkload"></div>
+              </div>
+
+              <div class="pos-cta">
+                <span class="eyebrow"><svg class="ic"><use href="#i-pos" /></svg> Fast POS Shortcut</span>
+                <h3>Need to dispense urgently?</h3>
+                <p>Jump directly to POS Lane 01 with hotkeys or initiate the barcode scanner.</p>
+                <div class="pos-cta-actions">
+                  <button type="button" class="btn white" onclick="switchTab('pos')">Open POS Lane</button>
+                  <span class="kbd">Press [F2]</span>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -2234,11 +560,13 @@
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Receipt</th>
                   <th>Product</th>
                   <th>Qty</th>
                   <th>Total</th>
                   <th>Method</th>
                   <th>Customer</th>
+                  <th>Served by</th>
                   <th></th>
                 </tr>
               </thead>
@@ -2281,6 +609,22 @@
               <button class="btn">Save Batch</button>
             </form>
           </div>
+          <div class="panel" data-admin>
+            <h2>Stock Adjustment / Write-off</h2>
+            <form class="grid" onsubmit="writeOff(event)">
+              <select id="woBatch" required></select>
+              <input id="woQty" type="number" min="1" required placeholder="Qty to remove">
+              <select id="woReason">
+                <option value="DAMAGED">DAMAGED</option>
+                <option value="EXPIRED">EXPIRED</option>
+                <option value="COUNT_CORRECTION">COUNT CORRECTION</option>
+                <option value="OTHER">OTHER</option>
+              </select>
+              <input id="woNote" placeholder="Note (optional)">
+              <button class="btn">Remove from Stock</button>
+            </form>
+            <p id="woMsg" style="font-size:13px;margin-top:6px"></p>
+          </div>
           <div class="panel">
             <h2>Stock Levels</h2>
             <table>
@@ -2306,6 +650,7 @@
                   <th>Left</th>
                   <th>Expiry</th>
                   <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="batchRows"></tbody>
@@ -2344,6 +689,18 @@
               </thead>
               <tbody id="invRows"></tbody>
             </table>
+          </div>
+          <div class="panel">
+            <h2>Post Invoice to Stock</h2>
+            <p id="piHint" style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose an invoice's "Post to Stock" button above.</p>
+            <form class="grid" onsubmit="postInv(event)">
+              <select id="piProd" required></select>
+              <input id="piQty" type="number" min="1" required placeholder="Qty received">
+              <input id="piExp" type="date" required>
+              <input id="piBatch" placeholder="Batch no">
+              <button class="btn">Post to Stock</button>
+            </form>
+            <p id="piMsg" style="font-size:13px;margin-top:6px"></p>
           </div>
         </section>
 
@@ -2493,232 +850,6 @@
 
         <!-- ===== DRUG CATALOGUE TAB (Admin Only) ===== -->
         <section id="tab-drugs" class="tab" data-admin>
-          <style>
-            .drug-hero {
-              background: linear-gradient(135deg, #1a4d2e 0%, #2e7d4f 60%, #3da06a 100%);
-              border-radius: 18px;
-              padding: 22px 24px;
-              margin-bottom: 18px;
-              color: #fff;
-              display: flex;
-              align-items: center;
-              gap: 18px
-            }
-
-            .drug-hero .dh-icon {
-              width: 56px;
-              height: 56px;
-              border-radius: 16px;
-              background: rgba(255, 255, 255, .15);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
-              font-size: 28px
-            }
-
-            .drug-hero h2 {
-              color: #fff;
-              font-size: 22px;
-              margin: 0 0 4px;
-              font-family: var(--serif)
-            }
-
-            .drug-hero p {
-              color: rgba(255, 255, 255, .82);
-              font-size: 13px;
-              margin: 0
-            }
-
-            .drug-lock {
-              display: inline-block;
-              background: rgba(255, 255, 255, .18);
-              border: 1px solid rgba(255, 255, 255, .3);
-              padding: 3px 12px;
-              border-radius: 20px;
-              font-size: 11px;
-              font-weight: 800;
-              letter-spacing: .8px;
-              text-transform: uppercase;
-              margin-top: 8px
-            }
-
-            .drug-stats-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-              gap: 10px;
-              margin-bottom: 18px
-            }
-
-            .dstat {
-              background: var(--surface);
-              border-radius: 14px;
-              padding: 13px 15px;
-              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-              border: 1px solid #E2E9E7;
-              border-top: 3px solid #2e7d4f
-            }
-
-            .dstat h4 {
-              font-size: 11px;
-              color: var(--muted);
-              text-transform: uppercase;
-              letter-spacing: .9px;
-              font-family: var(--sans);
-              font-weight: 800;
-              margin-bottom: 4px
-            }
-
-            .dstat .dv {
-              font-family: var(--serif);
-              font-size: 24px;
-              font-weight: bold;
-              color: #1a4d2e
-            }
-
-            .drug-form-panel {
-              background: var(--surface);
-              border-radius: 16px;
-              padding: 20px;
-              margin-bottom: 16px;
-              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-              border: 2px solid #a5d6b5;
-              position: relative;
-              overflow: hidden
-            }
-
-            .drug-form-panel::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              height: 4px;
-              background: linear-gradient(90deg, #2e7d4f, #3da06a)
-            }
-
-            .drug-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-              gap: 10px;
-              align-items: end
-            }
-
-            .drug-grid label {
-              font-size: 11.5px;
-              font-weight: 800;
-              color: var(--muted);
-              display: block;
-              margin-bottom: 3px;
-              text-transform: uppercase;
-              letter-spacing: .5px
-            }
-
-            .drug-grid input {
-              margin: 0
-            }
-
-            .btn-green {
-              background: linear-gradient(135deg, #2e7d4f, #3da06a);
-              color: #fff;
-              border: 0;
-              padding: 10px 18px;
-              border-radius: 11px;
-              cursor: pointer;
-              font-weight: 800;
-              font-size: 13.5px;
-              transition: opacity .15s;
-              white-space: nowrap;
-              width: 100%
-            }
-
-            .btn-green:hover {
-              opacity: .88
-            }
-
-            .btn-red-sm {
-              background: linear-gradient(135deg, #b3261e, #D92D20);
-              color: #fff;
-              border: 0;
-              padding: 5px 11px;
-              border-radius: 9px;
-              cursor: pointer;
-              font-weight: 700;
-              font-size: 12px;
-              transition: opacity .15s
-            }
-
-            .btn-red-sm:hover {
-              opacity: .85
-            }
-
-            .btn-edit-sm {
-              background: var(--pine-700);
-              color: #fff;
-              border: 0;
-              padding: 5px 11px;
-              border-radius: 9px;
-              cursor: pointer;
-              font-weight: 700;
-              font-size: 12px
-            }
-
-            .btn-edit-sm:hover {
-              background: var(--pine-900)
-            }
-
-            .drug-table-panel {
-              background: var(--surface);
-              border-radius: 16px;
-              padding: 18px;
-              box-shadow: 0 2px 8px rgba(18, 48, 41, .08);
-              border: 1px solid #E2E9E7;
-              overflow-x: auto
-            }
-
-            .drug-table-panel h2 {
-              color: #1a4d2e;
-              margin-bottom: 10px;
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              flex-wrap: wrap
-            }
-
-            #drugTable th {
-              color: #1a4d2e;
-              border-bottom: 2px solid #2e7d4f
-            }
-
-            .pill-ok {
-              display: inline-block;
-              padding: 2px 10px;
-              border-radius: 20px;
-              font-size: 11.5px;
-              font-weight: 800;
-              background: #e8f5ed;
-              color: #1a4d2e;
-              border: 1px solid #a5d6b5
-            }
-
-            .pill-low {
-              display: inline-block;
-              padding: 2px 10px;
-              border-radius: 20px;
-              font-size: 11.5px;
-              font-weight: 800;
-              background: #FBDDD9;
-              color: #8f1d12;
-              border: 1px solid #f2b8ae
-            }
-
-            .drug-empty {
-              text-align: center;
-              padding: 40px;
-              color: var(--muted);
-              font-size: 15px
-            }
-          </style>
 
           <div class="drug-hero">
             <div class="dh-icon">💊</div>
@@ -2905,6 +1036,7 @@
               </svg>Shop Settings</h2>
             <form class="grid" onsubmit="saveSettings(event)">
               <input id="setShop" placeholder="Shop name">
+              <input id="setBranch" placeholder="Branch (shown on receipts)">
               <input id="setPhone" placeholder="Shop phone">
               <input id="setMgr" placeholder="Manager phone for SMS (e.g. 077...)">
               <input id="setFooter" placeholder="Receipt footer">

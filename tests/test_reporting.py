@@ -24,6 +24,28 @@ def test_dashboard_aggregates(admin_client):
     assert d["refill"]["due_count"] >= 2
 
 
+def test_dashboard_lists_critical_and_warning_expiries(admin_client):
+    """The watchdog panel needs named batches, including the 31-60 day band."""
+    from datetime import date, timedelta
+
+    pid = admin_client.post("/api/products", json={
+        "name": "Watchdog Drug", "price_buy": 10, "price_sell": 20,
+    }).get_json()["id"]
+    admin_client.post("/api/batches", json={
+        "product_id": pid, "qty_received": 5, "batch_no": "W45",
+        "expiry_date": (date.today() + timedelta(days=45)).isoformat(),
+    })
+    admin_client.post("/api/batches", json={
+        "product_id": pid, "qty_received": 5, "batch_no": "W10",
+        "expiry_date": (date.today() + timedelta(days=10)).isoformat(),
+    })
+
+    d = admin_client.get("/api/dashboard").get_json()
+    assert isinstance(d["expiry_critical"], list)
+    assert any(b["batch_no"] == "W10" for b in d["expiry_critical"])
+    assert any(b["batch_no"] == "W45" for b in d["expiry_warning"])
+
+
 def test_my_sales_filtered_by_staff(admin_client):
     seed(admin_client)
     assert admin_client.get("/api/my-sales").get_json()["count"] == 0
@@ -33,6 +55,14 @@ def test_my_sales_filtered_by_staff(admin_client):
         "served_by": "Charles Onzima",
     })
     assert admin_client.get("/api/my-sales").get_json()["count"] == 1
+
+    # A two-line basket is one sale for the attendant too.
+    admin_client.post("/api/sales/cart", json={
+        "items": [{"product_id": prods[0]["id"], "qty": 1},
+                  {"product_id": prods[1]["id"], "qty": 1}],
+        "payment_method": "CASH", "served_by": "Charles Onzima",
+    })
+    assert admin_client.get("/api/my-sales").get_json()["count"] == 2
 
 
 def test_staff_activity_admin_only(admin_client, staff_client):

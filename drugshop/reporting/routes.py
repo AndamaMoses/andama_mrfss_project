@@ -10,9 +10,11 @@ unchanged.
 """
 import csv
 import io
+from datetime import date, timedelta
 
 from flask import Blueprint, Response, jsonify, request, send_file
 
+from drugshop.apps.service import is_entitled
 from drugshop.auth.guards import admin_required, current_user
 from drugshop.core.utils import today_str
 from drugshop.db import db_path, q_all, q_one
@@ -33,7 +35,8 @@ def api_my_sales():
                     JOIN products p ON p.id=s.product_id
                     WHERE s.sale_date=? AND (s.served_by=? OR s.served_by=?)
                     ORDER BY s.id DESC""", (day, me.get("display_name") or "", me["username"]))
-    return jsonify({"date": day, "count": len(rows),
+    receipts = {r.get("receipt_ref") or f"sale-{r['id']}" for r in rows}
+    return jsonify({"date": day, "count": len(receipts),
                     "total": sum(r["total"] for r in rows), "rows": rows})
 
 
@@ -41,9 +44,12 @@ def api_my_sales():
 @admin_required
 def api_staff_activity():
     day = request.args.get("date", today_str())
-    sales = q_all("""SELECT COALESCE(NULLIF(served_by,''),'(unrecorded)') as staff,
-                     COUNT(*) as sales, COALESCE(SUM(total),0) as revenue
-                     FROM sales WHERE sale_date=? GROUP BY staff ORDER BY revenue DESC""", (day,))
+    sales = q_all("""SELECT COALESCE(NULLIF(s.served_by,''),'(unrecorded)') as staff,
+                     COUNT(DISTINCT CASE
+                         WHEN s.receipt_ref IS NULL OR s.receipt_ref='' THEN 'sale-' || s.id
+                         ELSE s.receipt_ref END) as sales,
+                     COALESCE(SUM(s.total),0) as revenue
+                     FROM sales s WHERE s.sale_date=? GROUP BY staff ORDER BY revenue DESC""", (day,))
     logins = q_all("""SELECT l.username, COALESCE(u.display_name,l.username) as name, l.login_at, l.ip
                       FROM login_events l LEFT JOIN users u ON u.id=l.user_id
                       ORDER BY l.id DESC LIMIT 20""")
@@ -53,21 +59,35 @@ def api_staff_activity():
 @bp.route("/api/dashboard")
 def api_dashboard():
     day = request.args.get("date", today_str())
+    try:
+        prev_day = (date.fromisoformat(day) - timedelta(days=1)).isoformat()
+    except ValueError:
+        prev_day = day
     exp = expiry_report()
     stock = stock_levels()
-    refill = refill_due()
-    owed = q_one("""SELECT COALESCE(SUM(CASE WHEN bal > 0.005 THEN bal ELSE 0 END),0) t FROM (
-                      SELECT s.total - COALESCE((SELECT SUM(amount) FROM credit_payments WHERE sale_id=s.id),0) as bal
-                      FROM sales s WHERE s.payment_method='CREDIT'
-                    )""")["t"]
+    # Core has no Refill Care or Finance. Return the same shape with empty
+    # values instead of computing (and leaking) Pro data; the UI already hides
+    # the corresponding cards from the app catalog.
+    show_patients = is_entitled("patients")
+    show_finance = is_entitled("finance")
+    refill = refill_due() if show_patients else {"due": []}
+    owed = 0
+    if show_finance:
+        owed = q_one("""SELECT COALESCE(SUM(CASE WHEN bal > 0.005 THEN bal ELSE 0 END),0) t FROM (
+                          SELECT s.total - COALESCE((SELECT SUM(amount) FROM credit_payments WHERE sale_id=s.id),0) as bal
+                          FROM sales s WHERE s.payment_method='CREDIT'
+                        )""")["t"]
     return jsonify({
         "date": day,
         "sales_today": sales_summary(day),
+        "sales_yesterday": sales_summary(prev_day),
         "credit_owed_total": round(owed, 2),
         "stock": stock,
         "low_stock_count": sum(1 for s in stock if s["low_stock"]),
         "expiry_counts": {k: len(v) for k, v in exp.items()},
+        # Lists (not a count) so the dashboard can name the batches.
         "expiry_critical": exp["expired"] + exp["critical_30"],
+        "expiry_warning": exp["warning_60"],
         "refill": {"due_count": len(refill["due"]), "due": refill["due"][:10]},
         "stock_value": sum(s["stock_on_hand"] * (s["price_buy"] or 0) for s in stock),
     })
@@ -95,6 +115,13 @@ def api_export(which):
         for r in stock_levels():
             w.writerow([r["name"], r["stock_on_hand"], r["reorder_level"], r["price_buy"], r["price_sell"]])
     elif which == "patients":
+        if not is_entitled("patients"):
+            return jsonify({
+                "error": "app not entitled",
+                "app": "patients",
+                "message": "Refill Care is not included in your plan.",
+                "upgrade": {"bundle": "pro"},
+            }), 403
         rows = q_all("SELECT * FROM patients ORDER BY name")
         w = csv.writer(buf)
         w.writerow(["name", "phone", "last_refill", "cycle_days", "notes"])
