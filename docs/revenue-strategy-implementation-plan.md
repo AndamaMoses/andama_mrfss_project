@@ -151,15 +151,24 @@ prove the current suite is green before touching code.
 
 ### Review gate
 
-- [ ] Prices and discount policy signed off.
-- [ ] Invoice/payment scope signed off.
-- [ ] Baseline suite green.
-- [ ] Backup verified with `PRAGMA integrity_check = ok`.
-- [ ] No live plan or feature change made.
+- [x] Prices and discount policy signed off.
+- [x] Invoice/payment scope signed off.
+- [x] Baseline suite green.
+- [x] Backup verified with `PRAGMA integrity_check = ok`.
+- [x] No live plan or feature change made.
+
+**Sign-off:** Product owner, 2026-11-05. Baseline: 445 tests passed, Ruff clean,
+17 JS files parsed. Backup: `instance/backups/drugshop-pre-revenue-ops-20261105-101640.db`
+(SHA256 `646288bd062b135023af88987c6a8e08f2898c75db568fed4a890f466388c94d`,
+integrity `ok`). The pending `006_payment_reconciliation.sql` migration was
+rehearsed on a backup copy, then applied live; plan remained Legacy and all
+existing business row counts were unchanged.
 
 ### Rollback
 
-None; docs and branch only.
+None for the revenue build; docs and branch only. The independent additive
+`006_payment_reconciliation.sql` migration can be left in place and does not
+change the plan.
 
 ---
 
@@ -873,7 +882,7 @@ No write endpoints in v1. Commercial writes remain operator CLI actions.
 
 | Phase | Status | Started | Gate signed | Notes |
 |---|---|---|---|---|
-| 0 — Decisions and baseline | Not started | | | |
+| 0 — Decisions and baseline | **Approved** | 2026-11-05 | 2026-11-05 | 445 tests passed; dry-run fix; backup verified; live 006 applied; plan unchanged; branch `feature/revenue-ops` |
 | 1 — Price book and quote engine | Not started | | | |
 | 2 — Subscription ledger and activation | Not started | | | |
 | 3 — Invoices, payments, renewals | Not started | | | |
