@@ -1,6 +1,8 @@
 /* Stock tab: drug catalogue, products, batches, supplier invoices. */
 let _allDrugs = [];
 let _editingDrugId = null;
+let _postingInvId = null;
+var PRODUCTS = []; // shared price/stock cache for the POS forms
 
 async function loadDrugCatalogue() {
   if (ME.role !== 'admin') return;
@@ -172,14 +174,44 @@ async function loadStock() {
   const s = await api('/api/products');
   $('stockRows').innerHTML = s.map(x => `<tr><td>${x.name}</td><td>${x.stock_on_hand}</td><td>${x.reorder_level}</td><td>${x.price_sell}</td><td>${x.low_stock ? '<span class="badge b-low">LOW</span>' : '<span class="badge b-ok">OK</span>'}</td></tr>`).join('');
   const b = await api('/api/batches');
-  $('batchRows').innerHTML = b.map(x => `<tr><td>${x.product_name}</td><td>${x.batch_no}</td><td>${x.qty_remaining}</td><td>${x.expiry_date}</td><td>${badge(x.status)}</td></tr>`).join('');
+  $('batchRows').innerHTML = b.map(x => `<tr><td>${x.product_name}</td><td>${x.batch_no}</td><td>${x.qty_remaining}</td><td>${x.expiry_date}</td><td>${badge(x.status)}</td><td>${x.qty_remaining > 0 && ME.role === 'admin' ? `<button class="btn ghost" onclick="pickWriteOff(${x.id})">Write off</button>` : ''}</td></tr>`).join('');
+  if ($('woBatch')) {
+    $('woBatch').innerHTML = b.filter(x => x.qty_remaining > 0).map(x => `<option value="${x.id}">${x.product_name} — ${x.batch_no || 'no batch'} (${x.qty_remaining} left, exp ${x.expiry_date})</option>`).join('');
+  }
+}
+
+function pickWriteOff(id) {
+  if (!$('woBatch')) return;
+  $('woBatch').value = String(id);
+  $('woQty').focus();
+  $('woMsg').textContent = '';
+}
+
+async function writeOff(e) {
+  e.preventDefault();
+  try {
+    const r = await api('/api/stock/adjustments', 'POST', {
+      batch_id: +$('woBatch').value,
+      qty: +$('woQty').value,
+      reason: $('woReason').value,
+      note: $('woNote').value,
+    });
+    $('woMsg').innerHTML = `<span style="color:#2e7d4f">✓ Removed ${r.qty} — ${r.remaining} left in the batch.</span>`;
+    $('woQty').value = '';
+    $('woNote').value = '';
+    loadStock(); loadProducts(); loadDash(); loadManage();
+  } catch (err) {
+    $('woMsg').innerHTML = `<span style="color:var(--blood)">❌ ${err.message}</span>`;
+  }
 }
 
 async function loadProducts() {
   const p = await api('/api/products');
+  PRODUCTS = p;
   const opts = p.map(x => `<option value="${x.id}">${x.name} (${x.stock_on_hand} ${x.unit}) — UGX ${x.price_sell}</option>`).join('');
   $('sProd').innerHTML = opts;
   $('bProd').innerHTML = p.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+  if ($('piProd')) $('piProd').innerHTML = p.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
   $('ptDrug').innerHTML = opts;
 }
 
@@ -198,17 +230,37 @@ async function uploadInvoice(e) {
 
 async function loadInvoices() {
   const rows = await api('/api/invoices');
-  $('invRows').innerHTML = rows.map(r => `<tr><td>${r.id}</td><td>${r.invoice_no}</td><td>${r.supplier}</td><td>${r.image_name ? `<a target="_blank" href="/uploads/${r.image_name}">photo</a>` : ''}</td><td>${r.status}</td><td><button class="btn ghost" onclick="postInv(${r.id})">Post to Stock</button></td></tr>`).join('');
+  $('invRows').innerHTML = rows.map(r => `<tr><td>${r.id}</td><td>${r.invoice_no}</td><td>${r.supplier}</td><td>${r.image_name ? `<a target="_blank" href="/uploads/${r.image_name}">photo</a>` : ''}</td><td>${r.status}</td><td><button class="btn ghost" onclick="chooseInvoice(${r.id})">Post to Stock</button></td></tr>`).join('');
 }
 
-async function postInv(id) {
-  const pid = prompt('Enter product_id to post this invoice to (see Stock tab for ids). For multi-item, use API.');
-  if (!pid) return;
-  const q = prompt('Qty received?');
-  const exp = prompt('Expiry date YYYY-MM-DD?');
-  const bn = prompt('Batch no?') || '';
-  await api('/api/invoices/' + id + '/post', 'POST', { items: [{ product_id: +pid, qty_received: +q, expiry_date: exp, batch_no: bn }] });
-  loadInvoices(); loadStock(); loadDash();
+function chooseInvoice(id) {
+  _postingInvId = id;
+  $('piHint').textContent = 'Posting invoice #' + id + ' — fill in one stock line.';
+  $('piMsg').textContent = '';
+  $('piProd').focus();
+}
+
+async function postInv(e) {
+  e.preventDefault();
+  if (!_postingInvId) {
+    $('piMsg').innerHTML = '<span style="color:var(--blood)">Choose an invoice above first.</span>';
+    return;
+  }
+  try {
+    const r = await api('/api/invoices/' + _postingInvId + '/post', 'POST', { items: [{
+      product_id: +$('piProd').value,
+      qty_received: +$('piQty').value,
+      expiry_date: $('piExp').value,
+      batch_no: $('piBatch').value,
+    }] });
+    $('piMsg').innerHTML = `<span style="color:#2e7d4f">✓ Posted ${r.posted} stock line.</span>`;
+    _postingInvId = null;
+    $('piQty').value = ''; $('piExp').value = ''; $('piBatch').value = '';
+    $('piHint').textContent = 'Choose an invoice\'s "Post to Stock" button above.';
+    loadInvoices(); loadStock(); loadDash(); loadManage();
+  } catch (err) {
+    $('piMsg').innerHTML = `<span style="color:var(--blood)">❌ ${err.message}</span>`;
+  }
 }
 
 async function delInvoice2(id) {

@@ -18,17 +18,22 @@ setup. The documents below cover operations, packaging, and business context.
 
 | Document | Purpose |
 |---|---|
+| [Mobile money implementation](momo-implementation.md) | Setup, payment lifecycle, API reference, sale guards, and troubleshooting for MTN MoMo and Airtel Money Collections |
 | [Implementation status](implementation-status.md) | Consolidated status, evidence, open gaps, and next actions across workstreams |
 | [Packaging plan](packaging-plan.md) | Entitlements, launcher, gating, and the phased delivery record |
 | [User personas & testing](user-personas-testing.md) | Agent-executable persona journeys, PMF proxies, RBAC matrix, and QA scenarios |
 | [Business context](business-context.md) | Customer research behind Onzima Dawa and Tender Copilot |
 | [Strategy playbook](strategy-playbook.md) | Commercial rollout notes for the Kampala–Jinja corridor |
+| [Revenue strategy](revenue-strategy.md) | Bundles, draft pricing, unit economics, sales motion, and open commercial decisions |
+| [Revenue implementation plan](revenue-strategy-implementation-plan.md) | Phased pricing, subscription, invoicing, renewal, UI, and rollout plan with review/test gates |
 | [Modularization plan (Archived)](../archive/modularization/IMPLEMENTATION_PLAN.md) | Internal record of the monolith-to-modules cut-over (Completed) |
 
 ## Brand and screenshots
 
 | Asset | Use |
 |---|---|
+| [Design system](design-system.md) | Dawa Ledger v1.0 — identity, tokens, components, patterns, adoption |
+| [UI kit specimen](design/ui-kit.html) | Reviewable HTML kit; open directly in a browser |
 | [Banner](assets/banner.svg) | README and presentation header |
 | [Favicon](../drugshop/static/img/favicon.svg) | Browser tab, home-screen icon |
 | [Web manifest](../drugshop/static/site.webmanifest) | Installable web app metadata |

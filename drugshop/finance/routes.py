@@ -7,15 +7,39 @@ for all methods, so behavior is unchanged. The ``ON CONFLICT(rec_date) DO
 UPDATE`` upsert is preserved.
 """
 import math
+from datetime import datetime
 
 from flask import Blueprint, jsonify, request
 
-from drugshop.auth.guards import admin_required
+from drugshop.auth.guards import admin_required, current_user
 from drugshop.core.utils import today_str
 from drugshop.db import execute, get_db, q_all, q_one
+from drugshop.payments import reconciliation
 from drugshop.sales.service import sales_summary
 
 bp = Blueprint("finance", __name__)
+
+
+def _json_object():
+    """Return a JSON object, ``{}`` for an empty body, or ``None`` if invalid."""
+    data = request.get_json(silent=True)
+    if data is None:
+        return {}
+    return data if isinstance(data, dict) else None
+
+
+def _valid_day(value):
+    """Return a strict ``YYYY-MM-DD`` day, or ``None`` when it is malformed.
+
+    Python's ``strptime`` accepts single-digit months/days, so the round-trip
+    check is what keeps ``2026-11-5`` from creating a separate ledger day.
+    """
+    day = str(value or today_str()).strip()
+    try:
+        parsed = datetime.strptime(day, "%Y-%m-%d")
+    except ValueError:
+        return None
+    return day if parsed.strftime("%Y-%m-%d") == day else None
 
 
 # reconciliation
@@ -28,7 +52,9 @@ def api_rec_del(rec_date):
 
 @bp.route("/api/reconciliation/calculate")
 def api_rec_calc():
-    day = request.args.get("date", today_str())
+    day = _valid_day(request.args.get("date", today_str()))
+    if not day:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
     s = sales_summary(day)
     saved = q_one("SELECT * FROM reconciliations WHERE rec_date=?", (day,))
     return jsonify({
@@ -38,15 +64,153 @@ def api_rec_calc():
         "expected_airtel": s["by_method"]["AIRTEL_MOMO"],
         "expected_credit": s["by_method"]["CREDIT"],
         "saved": saved,
+        "payments": reconciliation.payment_summary(day),
     })
+
+
+@bp.route("/api/reconciliation/daily-summary")
+def api_rec_daily_summary():
+    """Expected sales by channel plus the live mobile-money variance view."""
+    day = _valid_day(request.args.get("date", today_str()))
+    if not day:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
+    s = sales_summary(day)
+    saved = q_one("SELECT * FROM reconciliations WHERE rec_date=?", (day,))
+    return jsonify({
+        "ok": True,
+        "date": day,
+        "summary": {
+            "expected_cash": s["by_method"]["CASH"],
+            "expected_mtn": s["by_method"]["MTN_MOMO"],
+            "expected_airtel": s["by_method"]["AIRTEL_MOMO"],
+            "expected_credit": s["by_method"]["CREDIT"],
+            "total_sales_count": s["count"],
+            "total": s["total"],
+        },
+        "existing_reconciliation": saved,
+        "payments": reconciliation.payment_summary(day),
+    })
+
+
+@bp.route("/api/reconciliation/payments")
+def api_rec_payments():
+    """Live payment variance plus any snapshots saved when the shift closed."""
+    day = _valid_day(request.args.get("date", today_str()))
+    if not day:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
+    return jsonify(reconciliation.payment_reconciliation_report(day))
+
+
+@bp.route("/api/reconciliation/sweep", methods=["POST"])
+def api_rec_sweep():
+    """Re-query stale pending/unknown prompts; bounded and dry-run capable."""
+    d = _json_object()
+    if d is None:
+        return jsonify({"error": "JSON object required"}), 400
+    dry_run = str(d.get("dry_run", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    try:
+        result = reconciliation.sweep_stale(
+            provider=d.get("provider"),
+            older_than_minutes=d.get(
+                "older_than_minutes", reconciliation.DEFAULT_STALE_MINUTES
+            ),
+            limit=d.get("limit", 50),
+            actor=(current_user() or {}).get("username", ""),
+            dry_run=dry_run,
+        )
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@bp.route("/api/reconciliation/close-shift", methods=["POST"])
+def api_rec_close_shift():
+    """Record counted balances, close the day, and snapshot payment variance."""
+    d = _json_object()
+    if d is None:
+        return jsonify({"error": "JSON object required"}), 400
+    day = _valid_day(d.get("date") or d.get("rec_date") or today_str())
+    if not day:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
+    s = sales_summary(day)
+    ec, em, ea = (
+        s["by_method"]["CASH"],
+        s["by_method"]["MTN_MOMO"],
+        s["by_method"]["AIRTEL_MOMO"],
+    )
+    try:
+        cc = float(d.get("counted_cash", 0))
+        cm = float(d.get("counted_mtn", 0))
+        ca = float(d.get("counted_airtel", 0))
+    except (TypeError, ValueError):
+        return jsonify({"error": "counted amounts must be numbers"}), 400
+    if not all(math.isfinite(x) for x in (cc, cm, ca)):
+        return jsonify({"error": "counted amounts must be numbers"}), 400
+
+    variances = {
+        "cash": round(cc - ec, 2),
+        "mtn": round(cm - em, 2),
+        "airtel": round(ca - ea, 2),
+    }
+    db = get_db()
+    try:
+        db.execute(
+            """INSERT INTO reconciliations(
+                   rec_date, expected_cash, counted_cash, expected_mtn,
+                   counted_mtn, expected_airtel, counted_airtel, notes, status)
+               VALUES(?,?,?,?,?,?,?,?,'CLOSED')
+               ON CONFLICT(rec_date) DO UPDATE SET
+                   expected_cash=excluded.expected_cash,
+                   counted_cash=excluded.counted_cash,
+                   expected_mtn=excluded.expected_mtn,
+                   counted_mtn=excluded.counted_mtn,
+                   expected_airtel=excluded.expected_airtel,
+                   counted_airtel=excluded.counted_airtel,
+                   notes=excluded.notes,
+                   status='CLOSED'""",
+            (
+                day,
+                ec,
+                cc,
+                em,
+                cm,
+                ea,
+                ca,
+                d.get("notes", ""),
+            ),
+        )
+        db.commit()
+    finally:
+        db.close()
+
+    payments = reconciliation.snapshot_payment_reconciliation(
+        day, actor=(current_user() or {}).get("username", "")
+    )
+    return jsonify({
+        "ok": True,
+        "date": day,
+        "status": "CLOSED",
+        "difference": round(sum(variances.values()), 2),
+        "variances": variances,
+        "payments": payments,
+    }), 201
 
 
 @bp.route("/api/reconciliation", methods=["GET", "POST"])
 def api_rec():
     if request.method == "GET":
         return jsonify(q_all("SELECT * FROM reconciliations ORDER BY rec_date DESC LIMIT 60"))
-    d = request.json or {}
-    day = d.get("rec_date") or today_str()
+    d = _json_object()
+    if d is None:
+        return jsonify({"error": "JSON object required"}), 400
+    day = _valid_day(d.get("rec_date") or today_str())
+    if not day:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
     s = sales_summary(day)
     ec, em, ea = s["by_method"]["CASH"], s["by_method"]["MTN_MOMO"], s["by_method"]["AIRTEL_MOMO"]
     try:

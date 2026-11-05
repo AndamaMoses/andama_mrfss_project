@@ -54,7 +54,38 @@ def app_under_test(tmp_path, fast_password_hashing):
     dbm.init_db()
     auth_service.ensure_admin()
     apps_service.ensure_entitlements("pro")
-    app.config.update(TESTING=True, SECRET_KEY="test-secret")
+    # Never inherit live MoMo credentials from the developer's .env: a test
+    # that forgets to stub the client must fail offline, not move real money.
+    app.config.update(
+        TESTING=True,
+        SECRET_KEY="test-secret",
+        MOMO_SUBSCRIPTION_KEY="",
+        MOMO_API_USER="",
+        MOMO_API_KEY="",
+        MOMO_BASE_URL="",
+        MOMO_TARGET_ENVIRONMENT="sandbox",
+        MOMO_CURRENCY="",
+        MOMO_CALLBACK_URL="",
+        MOMO_CALLBACK_SECRET="",
+        MOMO_TIMEOUT=20,
+        MOMO_VERIFY_SALES=False,
+        AIRTEL_CLIENT_ID="",
+        AIRTEL_CLIENT_SECRET="",
+        AIRTEL_BASE_URL="",
+        AIRTEL_CURRENCY="",
+        AIRTEL_COUNTRY="UG",
+        AIRTEL_TIMEOUT=20,
+        AIRTEL_VERIFY_SALES=False,
+        AIRTEL_CALLBACK_URL="",
+        AIRTEL_CALLBACK_SECRET="",
+    )
+    from drugshop.payments import routes as payment_routes
+    from drugshop.payments import service as payment_service
+
+    payment_routes._CLIENTS.clear()
+    payment_routes._AIRTEL_CLIENTS.clear()
+    payment_routes.reset_rate_limits()
+    payment_service.reset_clients()
     return app
 
 

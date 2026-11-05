@@ -513,7 +513,7 @@
               <input id="sBy" placeholder="Served by">
               <input id="sCust" placeholder="Customer name">
               <input id="sPhone" placeholder="Customer phone">
-              <button class="btn">Sell</button>
+              <button class="btn" id="saleBtn">Sell</button>
               <button type="button" class="btn ghost" onclick="addToBasket()">+ Basket</button>
             </form>
             <p id="saleMsg" style="margin-top:8px"></p>
@@ -547,9 +547,28 @@
                 <option value="CREDIT" data-app="finance">CREDIT</option>
               </select>
               <input id="bBy" placeholder="Served by" style="max-width:160px">
-              <button class="btn gold" onclick="completeBasket()">Complete Sale + Print</button>
+              <button class="btn gold" id="basketBtn" onclick="completeBasket()">Complete Sale + Print</button>
               <button class="btn ghost" onclick="clearBasket()">Clear</button>
             </div>
+          </div>
+          <div class="panel momo-panel" id="momoBox" hidden>
+            <h2><svg class="ic">
+                <use href="#i-phone" />
+              </svg><span id="momoTitle">Mobile Money</span> <span class="momo-env" id="momoEnv"></span></h2>
+            <p class="momo-copy">Send a payment prompt to the customer's phone. The sale is recorded only after the carrier
+              confirms the payment.</p>
+            <label class="momo-toggle">
+              <input type="checkbox" id="momoRequest" checked onchange="syncMomoUi()">
+              <span>Request payment on the customer's phone <em>(uncheck to record a payment already made)</em></span>
+            </label>
+            <div id="momoManualWrap" hidden>
+              <input id="momoManualRef" placeholder="Mobile-money reference / SMS transaction ID" autocomplete="off">
+              <p class="momo-copy" id="momoManualHint" style="margin:6px 0 0">Enter the reference from the customer's SMS or receipt. It is recorded against this sale once and cannot be reused.</p>
+            </div>
+            <div class="momo-state" id="momoState" data-tone="idle">
+              <span class="momo-dot"></span><span id="momoStateText">Ready</span>
+            </div>
+            <button type="button" class="btn ghost" id="momoCancel" onclick="cancelMomo()" hidden>Cancel request</button>
           </div>
           <div class="panel">
             <h2><svg class="ic">
@@ -711,14 +730,18 @@
               </svg>End-of-Day MoMo & Cash Check</h2>
             <div class="flex"><input type="date" id="rDate" style="max-width:200px">
               <button class="btn ghost" onclick="calcRec()">Calculate Expected</button>
+              <button class="btn ghost" id="recPendingBtn" onclick="checkPending()">Check Pending</button>
             </div>
             <div id="recExp" style="margin:10px 0"></div>
+            <div id="recPay" style="margin:0 0 10px"></div>
+            <div id="recAttention" style="margin:0 0 10px"></div>
             <form class="grid" onsubmit="saveRec(event)">
               <input id="cCash" type="number" value="0" placeholder="Counted CASH">
               <input id="cMtn" type="number" value="0" placeholder="Counted MTN MoMo">
               <input id="cAirtel" type="number" value="0" placeholder="Counted Airtel MoMo">
               <input id="rNotes" placeholder="Notes">
               <button class="btn">Save Reconciliation</button>
+              <button class="btn ghost" type="button" id="recCloseBtn" onclick="closeShift()">Close Shift &amp; Snapshot</button>
             </form>
             <p id="recMsg"></p>
           </div>
@@ -1170,6 +1193,7 @@
   <script src="/static/js/core/format.js"></script>
   <script src="/static/js/core/ui.js"></script>
   <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/momo.js"></script>
   <script src="/static/js/pos.js"></script>
   <script src="/static/js/stock.js"></script>
   <script src="/static/js/patients.js"></script>

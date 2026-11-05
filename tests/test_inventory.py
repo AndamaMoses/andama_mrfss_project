@@ -75,6 +75,57 @@ def test_delete_product_blocked_when_batches_or_sales_exist(admin_client):
     assert admin_client.delete(f"/api/products/{pid}").status_code == 400
 
 
+def test_stock_write_off_reduces_batch_and_records_reason(admin_client):
+    from drugshop.db import q_one
+
+    seed(admin_client)
+    batch = next(b for b in admin_client.get("/api/batches").get_json()
+                 if b["qty_remaining"] >= 5)
+    before = batch["qty_remaining"]
+
+    r = admin_client.post("/api/stock/adjustments", json={
+        "batch_id": batch["id"], "qty": 3, "reason": "DAMAGED", "note": "torn strip",
+    })
+    assert r.status_code == 200
+    assert r.get_json()["remaining"] == before - 3
+
+    after = next(b for b in admin_client.get("/api/batches").get_json()
+                 if b["id"] == batch["id"])
+    assert after["qty_remaining"] == before - 3
+
+    row = q_one("SELECT * FROM stock_adjustments WHERE batch_id=?", (batch["id"],))
+    assert row["qty"] == 3
+    assert row["reason"] == "DAMAGED"
+    assert row["note"] == "torn strip"
+
+
+def test_stock_write_off_rejects_more_than_remaining(admin_client):
+    seed(admin_client)
+    batch = next(b for b in admin_client.get("/api/batches").get_json()
+                 if b["qty_remaining"] > 0)
+    before = batch["qty_remaining"]
+
+    r = admin_client.post("/api/stock/adjustments", json={
+        "batch_id": batch["id"], "qty": before + 1, "reason": "EXPIRED",
+    })
+    assert r.status_code == 400
+
+    after = next(b for b in admin_client.get("/api/batches").get_json()
+                 if b["id"] == batch["id"])
+    assert after["qty_remaining"] == before
+
+
+def test_stock_write_off_is_admin_only(admin_client, staff_client):
+    seed(admin_client)
+    batch = next(b for b in admin_client.get("/api/batches").get_json()
+                 if b["qty_remaining"] > 0)
+
+    r = staff_client.post("/api/stock/adjustments", json={
+        "batch_id": batch["id"], "qty": 1, "reason": "OTHER",
+    })
+    assert r.status_code == 403
+
+
 def test_invoice_create_post_to_stock(admin_client):
     seed(admin_client)
     prod = admin_client.get("/api/products").get_json()[0]

@@ -14,7 +14,18 @@ from drugshop.db import q_one
 
 # /api/personas stays public so the login page can render profile cards; it
 # exposes only id/username/role/display_name (never password material).
-OPEN_API = {"/api/login", "/api/logout", "/api/me", "/api/personas"}
+OPEN_API = {
+    "/api/login",
+    "/api/logout",
+    "/api/me",
+    "/api/personas",
+    # MTN cannot send a session cookie; this route authenticates with the
+    # shared MOMO_CALLBACK_SECRET instead.
+    "/api/momo/callback",
+    # Airtel cannot send a session cookie either; this route authenticates
+    # with AIRTEL_CALLBACK_SECRET and re-queries the status endpoint.
+    "/api/payments/airtel/callback",
+}
 
 
 def current_user():

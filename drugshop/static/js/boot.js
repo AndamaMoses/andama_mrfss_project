@@ -45,7 +45,7 @@ async function loadAll() {
   loadDash(); loadProducts(); loadSales(); loadStock(); loadInvoices();
   calcRec(); loadRec(); loadPatients(); loadAlerts(); loadSettings();
   loadSmsLog(); loadCredit(); loadExpenses(); loadProfit(); loadTeam();
-  loadManage(); loadCustomers(); loadDrugCatalogue();
+  loadManage(); loadCustomers(); loadDrugCatalogue(); loadMomo();
 }
 
 /* Load only the endpoint groups this installation is entitled to. This is
@@ -53,7 +53,10 @@ async function loadAll() {
 function loadEntitledData() {
   loadDash();
 
-  if (isAppEntitled('pos')) loadSales();
+  if (isAppEntitled('pos')) {
+    loadSales();
+    loadMomo();
+  }
 
   if (isAppEntitled('inventory')) {
     loadProducts(); loadStock(); loadInvoices(); loadDrugCatalogue();

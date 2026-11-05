@@ -22,7 +22,9 @@ def test_demo_data_appears_on_the_dashboard(admin_client):
 
     seed_demo()
     body = admin_client.get("/api/dashboard").get_json()
-    assert body["sales_today"]["count"] == 6
+    # Today has three receipts (the demo writes two line items per receipt).
+    assert body["sales_today"]["count"] == 3
+    assert body["sales_today"]["line_count"] == 6
     assert body["sales_today"]["total"] == 6200
     assert body["credit_owed_total"] == 1300
     assert body["low_stock_count"] == 2

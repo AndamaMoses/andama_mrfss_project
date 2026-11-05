@@ -10,6 +10,7 @@ cookies are HttpOnly + SameSite=Lax, and ``ProdConfig`` refuses to start
 without ``SECRET_KEY``. Deploy behind HTTPS so cookies are not sent in clear
 text; set ``SECRET_KEY`` from a secret store in production.
 """
+import math
 import os
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -45,6 +46,23 @@ def _load_dotenv(path=os.path.join(PROJECT_ROOT, ".env")):
 
 
 _load_dotenv()
+
+
+def _env_float(name, default):
+    """Read a positive float from the environment, falling back safely.
+
+    A blank or malformed value (for example ``MOMO_TIMEOUT=``) must not stop
+    the app from starting: operators edit ``.env`` by hand, so a bad value is
+    treated as "use the default" rather than a fatal configuration error.
+    """
+    raw = os.environ.get(name, "").strip()
+    try:
+        value = float(raw)
+    except ValueError:
+        return float(default)
+    if not math.isfinite(value) or value <= 0:
+        return float(default)
+    return value
 
 
 def _legacy_uploads_present():
@@ -91,9 +109,46 @@ class BaseConfig:
     MOMO_API_KEY = os.environ.get("MOMO_API_KEY", "").strip()
     MOMO_TARGET_ENVIRONMENT = os.environ.get("MOMO_TARGET_ENVIRONMENT", "sandbox").strip()
     MOMO_BASE_URL = os.environ.get("MOMO_BASE_URL", "").strip()
-    MOMO_CURRENCY = os.environ.get("MOMO_CURRENCY", "UGX").strip().upper()
+    # Blank means: EUR on the MTN sandbox (its only supported currency) and
+    # UGX on production environments. Set it explicitly for other markets.
+    MOMO_CURRENCY = os.environ.get("MOMO_CURRENCY", "").strip().upper()
     MOMO_CALLBACK_URL = os.environ.get("MOMO_CALLBACK_URL", "").strip()
-    MOMO_TIMEOUT = float(os.environ.get("MOMO_TIMEOUT", "20"))
+    # MTN cannot send a session cookie, so the callback is authenticated with a
+    # shared secret carried in the URL (or X-Callback-Token). Blank disables
+    # the callback route; polling still works.
+    MOMO_CALLBACK_SECRET = os.environ.get("MOMO_CALLBACK_SECRET", "").strip()
+    MOMO_TIMEOUT = _env_float("MOMO_TIMEOUT", 20)
+    # Re-check the MTN reference when a sale is recorded (default on). Set
+    # MOMO_VERIFY_SALES=0 only for a monitored rollout that records manually.
+    MOMO_VERIFY_SALES = os.environ.get("MOMO_VERIFY_SALES", "1").strip().lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }
+    # Airtel Money OpenAPI (https://developers.airtel.africa). The client uses
+    # OAuth2 client credentials and the Uganda collection/status endpoints.
+    # Leave the client id/secret blank to keep Airtel disabled; the POS still
+    # records manual AIRTEL_MOMO takings.
+    AIRTEL_BASE_URL = os.environ.get(
+        "AIRTEL_BASE_URL", "https://openapiuat.airtel.africa"
+    ).strip()
+    AIRTEL_CLIENT_ID = os.environ.get("AIRTEL_CLIENT_ID", "").strip()
+    AIRTEL_CLIENT_SECRET = os.environ.get("AIRTEL_CLIENT_SECRET", "").strip()
+    AIRTEL_CURRENCY = os.environ.get("AIRTEL_CURRENCY", "UGX").strip().upper() or "UGX"
+    AIRTEL_COUNTRY = os.environ.get("AIRTEL_COUNTRY", "UG").strip().upper() or "UG"
+    AIRTEL_TIMEOUT = _env_float("AIRTEL_TIMEOUT", 20)
+    # Re-check an Airtel reference when a sale is recorded (default on). Set
+    # AIRTEL_VERIFY_SALES=0 only for a monitored rollout that records manually.
+    AIRTEL_VERIFY_SALES = os.environ.get(
+        "AIRTEL_VERIFY_SALES", "1"
+    ).strip().lower() not in {"0", "false", "no", "off"}
+    # Airtel cannot send a session cookie, so the callback is authenticated
+    # with a shared secret carried in the URL, X-Callback-Token, or
+    # Authorization header. Blank disables the callback route; polling and the
+    # reconciliation sweep still work.
+    AIRTEL_CALLBACK_URL = os.environ.get("AIRTEL_CALLBACK_URL", "").strip()
+    AIRTEL_CALLBACK_SECRET = os.environ.get("AIRTEL_CALLBACK_SECRET", "").strip()
 
 
 class DevConfig(BaseConfig):

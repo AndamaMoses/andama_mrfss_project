@@ -74,6 +74,53 @@ def api_batch_del(bid):
     return jsonify({"ok": True})
 
 
+ADJUSTMENT_REASONS = ("DAMAGED", "EXPIRED", "COUNT_CORRECTION", "OTHER")
+
+
+@bp.route("/api/stock/adjustments", methods=["POST"])
+@admin_required
+def api_stock_adjustment():
+    """Remove damaged/expired stock from a batch and keep an audit row."""
+    d = request.json or {}
+    try:
+        batch_id = int(d["batch_id"])
+        qty = int(d["qty"])
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return jsonify({"error": "batch_id and qty required"}), 400
+    if qty <= 0:
+        return jsonify({"error": "qty must be positive"}), 400
+    reason = (d.get("reason") or "OTHER").upper()
+    if reason not in ADJUSTMENT_REASONS:
+        return jsonify({"error": f"reason must be one of {', '.join(ADJUSTMENT_REASONS)}"}), 400
+
+    batch = q_one("SELECT * FROM batches WHERE id=?", (batch_id,))
+    if not batch:
+        return jsonify({"error": "batch not found"}), 404
+
+    me = current_user() or {}
+    db = get_db()
+    try:
+        cur = db.execute(
+            "UPDATE batches SET qty_remaining=qty_remaining-? "
+            "WHERE id=? AND qty_remaining>=?",
+            (qty, batch_id, qty),
+        )
+        if cur.rowcount != 1:
+            db.rollback()
+            return jsonify({"error": "qty exceeds the batch's remaining stock"}), 400
+        db.execute(
+            "INSERT INTO stock_adjustments(batch_id,product_id,qty,reason,note,adjusted_by)"
+            " VALUES(?,?,?,?,?,?)",
+            (batch_id, batch["product_id"], qty, reason,
+             (d.get("note") or "").strip(), me.get("display_name") or me.get("username", "")),
+        )
+        db.commit()
+        remaining = q_one("SELECT qty_remaining FROM batches WHERE id=?", (batch_id,))["qty_remaining"]
+    finally:
+        db.close()
+    return jsonify({"ok": True, "batch_id": batch_id, "qty": qty, "remaining": remaining})
+
+
 @bp.route("/api/invoices/<int:iid>", methods=["DELETE"])
 @admin_required
 def api_invoice_del(iid):

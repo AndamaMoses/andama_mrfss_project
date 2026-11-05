@@ -18,9 +18,18 @@ async function api(u, m, b) {
     if (typeof openUpgrade === 'function') openUpgrade(j.app);
     const err = new Error(j.message || 'This app is not included in your plan');
     err.appNotEntitled = true;
+    err.status = r.status;
+    err.data = j;
     throw err;
   }
-  if (!r.ok) throw new Error(j.error || 'Error');
+  if (!r.ok) {
+    const err = new Error(j.error || j.message || 'Error');
+    // Keep the response body and status so callers can recover from an
+    // ambiguous MoMo outcome (the route still returns a pollable reference).
+    err.status = r.status;
+    err.data = j;
+    throw err;
+  }
   return j;
 }
 

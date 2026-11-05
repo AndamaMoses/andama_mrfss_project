@@ -31,13 +31,65 @@ CREATE TABLE IF NOT EXISTS sales (
     receipt_ref TEXT DEFAULT '',
     customer_name TEXT DEFAULT '',
     created_at TEXT DEFAULT '',
-    customer_phone TEXT DEFAULT ''
+    customer_phone TEXT DEFAULT '',
+    momo_ref TEXT DEFAULT ''
 );
 CREATE TABLE IF NOT EXISTS sale_batches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sale_id INTEGER NOT NULL REFERENCES sales(id),
     batch_id INTEGER NOT NULL REFERENCES batches(id),
     qty INTEGER NOT NULL DEFAULT 0
+);
+-- One row per mobile-money reference. The ledger is the anti-replay source of
+-- truth: a sale claim is a conditional UPDATE, so two concurrent checkouts
+-- cannot both consume the same payment. Rows are never deleted on void.
+CREATE TABLE IF NOT EXISTS momo_collections (
+    reference TEXT COLLATE NOCASE PRIMARY KEY,
+    idempotency_key TEXT COLLATE NOCASE NOT NULL UNIQUE,
+    external_id TEXT DEFAULT '',
+    amount REAL NOT NULL DEFAULT 0,
+    currency TEXT DEFAULT '',
+    phone TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING','SUCCESSFUL','FAILED','REJECTED','TIMEOUT','UNKNOWN','CONSUMED','VOIDED')),
+    source TEXT NOT NULL DEFAULT 'API'
+        CHECK (source IN ('API','MANUAL','LEGACY')),
+    provider TEXT NOT NULL DEFAULT 'MTN'
+        CHECK (provider IN ('MTN','AIRTEL')),
+    mtn_status TEXT DEFAULT '',
+    mtn_amount REAL,
+    mtn_currency TEXT DEFAULT '',
+    financial_txn_id TEXT DEFAULT '',
+    sale_id INTEGER,
+    sale_receipt_ref TEXT DEFAULT '',
+    last_error TEXT DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    checked_at TEXT DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_momo_collections_status ON momo_collections(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_momo_collections_receipt ON momo_collections(sale_receipt_ref);
+-- idx_momo_collections_provider_status is created by migration 005 (and by
+-- db._ensure_momo_provider_column) so schema.sql can still run against a
+-- Phase 1 table that has no provider column yet.
+CREATE TABLE IF NOT EXISTS momo_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference TEXT DEFAULT '',
+    event TEXT NOT NULL,
+    actor TEXT DEFAULT '',
+    detail TEXT DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_momo_events_reference ON momo_events(reference, created_at);
+CREATE TABLE IF NOT EXISTS stock_adjustments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    batch_id INTEGER NOT NULL REFERENCES batches(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    qty INTEGER NOT NULL,
+    reason TEXT NOT NULL DEFAULT 'OTHER',
+    note TEXT DEFAULT '',
+    adjusted_by TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now','localtime'))
 );
 CREATE TABLE IF NOT EXISTS patients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,6 +113,30 @@ CREATE TABLE IF NOT EXISTS reconciliations (
     status TEXT DEFAULT 'OPEN',
     created_at TEXT DEFAULT (datetime('now','localtime'))
 );
+-- Phase 3: one persisted payment-variance snapshot per provider and day. The
+-- live view is computed from sales + momo_collections; this table keeps what
+-- the books said when the shift was closed.
+CREATE TABLE IF NOT EXISTS payment_reconciliations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rec_date TEXT NOT NULL,
+    provider TEXT NOT NULL CHECK (provider IN ('MTN','AIRTEL')),
+    expected_amount REAL NOT NULL DEFAULT 0,
+    consumed_amount REAL NOT NULL DEFAULT 0,
+    successful_amount REAL NOT NULL DEFAULT 0,
+    pending_amount REAL NOT NULL DEFAULT 0,
+    unknown_amount REAL NOT NULL DEFAULT 0,
+    orphaned_amount REAL NOT NULL DEFAULT 0,
+    unresolved_count INTEGER NOT NULL DEFAULT 0,
+    orphaned_count INTEGER NOT NULL DEFAULT 0,
+    variance REAL NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'OPEN',
+    snapshot TEXT DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(rec_date, provider)
+);
+CREATE INDEX IF NOT EXISTS idx_payment_reconciliations_date
+    ON payment_reconciliations(rec_date);
 CREATE TABLE IF NOT EXISTS invoices (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     invoice_no TEXT DEFAULT '',

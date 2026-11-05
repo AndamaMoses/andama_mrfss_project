@@ -199,6 +199,34 @@ def test_day_report_summary(admin_client):
     assert d["summary"]["count"] == 2
 
 
+def test_cart_counts_as_one_receipt_not_one_row(admin_client):
+    """A two-line basket is one sale on the dashboard and the Z-report."""
+    seed(admin_client)
+    prods = admin_client.get("/api/products").get_json()
+    r = admin_client.post("/api/sales/cart", json={
+        "items": [{"product_id": prods[0]["id"], "qty": 1},
+                  {"product_id": prods[1]["id"], "qty": 1}],
+        "payment_method": "CASH", "served_by": "admin",
+    })
+    assert r.status_code == 201
+
+    d = admin_client.get("/api/sales/day-report").get_json()
+    # Two seeded single-row sales + one two-line basket.
+    assert d["summary"]["count"] == 3
+    assert d["summary"]["line_count"] == 4
+
+
+def test_single_item_credit_requires_customer_name(admin_client):
+    seed(admin_client)
+    prod = admin_client.get("/api/products").get_json()[0]
+    payload = {"product_id": prod["id"], "qty": 1, "payment_method": "CREDIT",
+               "served_by": "admin"}
+
+    assert admin_client.post("/api/sales", json=payload).status_code == 400
+    payload["customer_name"] = "Demo Customer"
+    assert admin_client.post("/api/sales", json=payload).status_code == 201
+
+
 def test_receipt_by_ref_not_found(admin_client):
     assert admin_client.get("/api/receipts/R-00000000-9999").status_code == 404
 

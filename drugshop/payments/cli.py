@@ -5,14 +5,17 @@ flask --app run momo status --check
 flask --app run momo provision --save
 flask --app run momo collect --amount 5000 --phone 0772123456 --external-id SALE-12
 flask --app run momo request <reference-id>
+flask --app run momo reconcile --dry-run
 """
 
 import os
 
 import click
 from flask import current_app
+from flask.cli import with_appcontext
 
 from config import PROJECT_ROOT
+from drugshop.payments import reconciliation
 from drugshop.payments.momo import (
     MomoClient,
     MomoError,
@@ -150,6 +153,87 @@ def momo_request(reference_id):
         raise click.ClickException(str(exc)) from exc
     for key, value in (data or {}).items():
         click.echo(f"{key:<20} {value}")
+
+
+@momo_group.command("reconcile")
+@click.option("--provider", default="ALL", show_default=True, help="MTN, AIRTEL, or ALL.")
+@click.option(
+    "--older-than",
+    "older_than",
+    default=reconciliation.DEFAULT_STALE_MINUTES,
+    show_default=True,
+    type=int,
+    help="Only rows not checked for this many minutes.",
+)
+@click.option(
+    "--limit",
+    default=50,
+    show_default=True,
+    type=int,
+    help=f"Maximum rows to check (1-{reconciliation.MAX_SWEEP_LIMIT}).",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="List stale rows without calling the carriers.",
+)
+@with_appcontext
+def momo_reconcile(provider, older_than, limit, dry_run):
+    """Re-query stale pending/unknown prompts and update the ledger.
+
+    This only reads the carrier status endpoint. It never creates a new prompt
+    and never frees a consumed reference.
+    """
+    try:
+        result = reconciliation.sweep_stale(
+            provider=provider,
+            older_than_minutes=older_than,
+            limit=limit,
+            actor="cli",
+            dry_run=dry_run,
+        )
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(f"provider             {result['provider']}")
+    click.echo(f"older_than_minutes   {result['older_than_minutes']}")
+    click.echo(f"limit                {result['limit']}")
+    click.echo(f"dry_run              {result['dry_run']}")
+    click.echo(f"checked              {result['checked']}")
+    click.echo(f"updated              {result['updated']}")
+    click.echo(f"unchanged            {result['unchanged']}")
+    click.echo(f"errors               {result['errors']}")
+    click.echo(f"skipped              {result['skipped']}")
+    click.echo(f"would_check          {result['would_check']}")
+
+    for row in result["results"]:
+        outcome = row["outcome"]
+        reference = row.get("reference", "")
+        row_provider = row.get("provider", "")
+        if outcome == "updated":
+            click.echo(
+                f"UPDATED   {row_provider} {reference} "
+                f"{row.get('old_status')} -> {row.get('new_status')}"
+            )
+        elif outcome == "unchanged":
+            click.echo(f"UNCHANGED {row_provider} {reference} {row.get('new_status')}")
+        elif outcome == "would_check":
+            click.echo(
+                f"WOULD     {row_provider} {reference} {row.get('old_status')} "
+                f"{row.get('amount')} {row.get('currency')}"
+            )
+        elif outcome == "error":
+            click.echo(f"ERROR     {row_provider} {reference} {row.get('error')}")
+        else:
+            click.echo(
+                f"SKIPPED   {row_provider} {reference} {row.get('reason', '')}"
+            )
+
+    if result["errors"]:
+        raise click.ClickException(
+            f"{result['errors']} stale payment(s) could not be checked; "
+            "the rows were left unresolved for the next run"
+        )
 
 
 def register_cli(app):

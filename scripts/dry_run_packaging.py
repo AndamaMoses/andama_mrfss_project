@@ -81,8 +81,24 @@ def snapshot(path):
         conn.close()
 
 
-def business_counts(snap):
-    return {key: value for key, value in snap["counts"].items() if key not in IGNORED_TABLES}
+def business_counts(snap, baseline=None):
+    """Return comparable business table counts.
+
+    A migration may add a new infrastructure table (for example
+    ``payment_reconciliations``). That table did not exist in the baseline, so
+    comparing the raw dictionaries would report a false row-count change. When
+    ``baseline`` is supplied, compare only tables that existed in the baseline;
+    new tables are intentionally ignored here.
+    """
+    counts = {
+        key: value for key, value in snap["counts"].items() if key not in IGNORED_TABLES
+    }
+    if baseline is None:
+        return counts
+    baseline_keys = {
+        key for key in baseline["counts"] if key not in IGNORED_TABLES
+    }
+    return {key: counts.get(key, 0) for key in sorted(baseline_keys)}
 
 
 def require(condition, message):
@@ -161,7 +177,7 @@ def main():
     migrated = snapshot(work_db)
     require(migrated["integrity"] == "ok", f"migrated integrity failed: {migrated['integrity']}")
     require(
-        business_counts(migrated) == business_counts(source_snap),
+        business_counts(migrated, source_snap) == business_counts(source_snap),
         "business table row counts changed during migration",
     )
     require("app_entitlements" in migrated["counts"], "app_entitlements table is missing")
@@ -182,7 +198,7 @@ def main():
     )
     ok(f"seeded plan: {plan['label']} ({', '.join(plan['apps'])})")
     require(
-        business_counts(snapshot(work_db)) == business_counts(source_snap),
+        business_counts(snapshot(work_db), source_snap) == business_counts(source_snap),
         "business table row counts changed during entitlement seeding",
     )
 
@@ -230,14 +246,14 @@ def main():
 
     service.set_bundle("core", actor="dry-run", notes="downgrade rehearsal")
     require(
-        business_counts(snapshot(work_db)) == business_counts(source_snap),
+        business_counts(snapshot(work_db), source_snap) == business_counts(source_snap),
         "business table row counts changed during Core downgrade",
     )
     check_matrix("Core downgrade", "core")
 
     service.set_bundle(args.bundle, actor="dry-run", notes="upgrade rehearsal")
     require(
-        business_counts(snapshot(work_db)) == business_counts(source_snap),
+        business_counts(snapshot(work_db), source_snap) == business_counts(source_snap),
         "business table row counts changed during re-upgrade",
     )
     check_matrix("re-upgrade", args.bundle)

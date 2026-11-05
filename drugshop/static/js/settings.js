@@ -3,6 +3,7 @@ async function loadSettings() {
   try {
     const s = await api('/api/settings');
     $('setShop').value = s.shop_name || '';
+    $('setBranch').value = s.shop_branch || '';
     $('setPhone').value = s.shop_phone || '';
     $('setMgr').value = s.manager_phone || '';
     $('setFooter').value = s.receipt_footer || '';
@@ -11,7 +12,7 @@ async function loadSettings() {
 
 async function saveSettings(e) {
   e.preventDefault();
-  await api('/api/settings', 'POST', { shop_name: $('setShop').value, shop_phone: $('setPhone').value, manager_phone: $('setMgr').value, receipt_footer: $('setFooter').value });
+  await api('/api/settings', 'POST', { shop_name: $('setShop').value, shop_branch: $('setBranch').value, shop_phone: $('setPhone').value, manager_phone: $('setMgr').value, receipt_footer: $('setFooter').value });
   alert('Settings saved');
 }
 

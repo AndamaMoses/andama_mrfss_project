@@ -16,15 +16,6 @@ var BUNDLE_NAMES = {
 
 var PHARMACY_APP_IDS = ['pos', 'inventory', 'patients', 'finance', 'alerts'];
 
-function escHtml(value) {
-  return String(value == null ? '' : value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 function bundleLabel(bundleId) {
   return BUNDLE_NAMES[bundleId] || (bundleId ? String(bundleId) : '');
 }

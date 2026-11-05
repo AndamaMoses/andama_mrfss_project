@@ -6,6 +6,7 @@ accident. Every name, phone number, and amount here is invented for the demo.
 """
 from datetime import date, timedelta
 
+from drugshop.apps.service import is_entitled
 from drugshop.core.utils import normalize_ug_phone
 from drugshop.db import get_db
 
@@ -98,6 +99,10 @@ def seed_demo():
         sequences = {}
         sales = 0
         for days_ago, method, served_by, customer, phone, lines in DEMO_SALES:
+            # Core has no Finance app, so the demo must not contain a CREDIT
+            # sale that its own POS would reject. Keep the row as a cash sale.
+            if method == "CREDIT" and not is_entitled("finance"):
+                method = "CASH"
             day = (today - timedelta(days=days_ago)).isoformat()
             sequences[day] = sequences.get(day, 0) + 1
             ref = f"R-{day.replace('-', '')}-{sequences[day]:04d}"

@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+import config
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 _ENV_KEYS = ("DRUGSHOP_DB", "DRUGSHOP_UPLOADS", "SECRET_KEY", "FLASK_DEBUG")
 
@@ -53,6 +55,18 @@ def test_defaults_match_legacy_behavior():
     expected_uploads = legacy_uploads if legacy_has_files else PROJECT_ROOT / "instance" / "uploads"
     assert uploads == str(expected_uploads)
     assert debug == "False"
+
+
+@pytest.mark.parametrize("raw", ["", "abc", "0", "-3", "nan", "inf"])
+def test_env_float_falls_back_for_bad_values(monkeypatch, raw):
+    # A blank or malformed timeout in a hand-edited .env must not crash import.
+    monkeypatch.setenv("MOMO_TIMEOUT", raw)
+    assert config._env_float("MOMO_TIMEOUT", 20) == 20.0
+
+
+def test_env_float_reads_positive_values(monkeypatch):
+    monkeypatch.setenv("MOMO_TIMEOUT", "7.5")
+    assert config._env_float("MOMO_TIMEOUT", 20) == 7.5
 
 
 def test_debug_is_opt_in(tmp_path):
@@ -148,7 +162,7 @@ def test_factory_accepts_config_object(tmp_path, keep_db_globals):
     assert app.config["SESSION_COOKIE_HTTPONLY"] is True
     assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
     assert Path(TestConfig.UPLOAD_DIR).is_dir()
-    assert len(list(app.url_map.iter_rules())) == 60
+    assert len(list(app.url_map.iter_rules())) == 70
 
     client = app.test_client()
     assert client.get("/api/me").status_code == 200

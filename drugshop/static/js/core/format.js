@@ -1,6 +1,15 @@
 /* Shared display formatters. */
 var ROLE_LABEL = { admin: 'Shop Owner', attendant: 'Sales Agent' };
 
+function escHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -23,7 +32,7 @@ function waNum(p) {
 function contactCell(name, phone) {
   if (!name && !phone) return '—';
   const d = waNum(phone);
-  let s = `<b>${name || ''}</b>` + (phone ? `<br><small>${phone}</small>` : '');
+  let s = `<b>${escHtml(name)}</b>` + (phone ? `<br><small>${escHtml(phone)}</small>` : '');
   if (d) s += `<br><span class="flex"><a href="tel:+${d}" style="font-size:12px">Call</a><a target="_blank" href="https://wa.me/${d}" style="font-size:12px">WhatsApp</a></span>`;
   return s;
 }

@@ -1,0 +1,3307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dawa Ledger — Onzima Dawa Design System</title>
+  <meta name="description" content="Dawa Ledger: the Onzima Dawa design system. Visual identity, tokens, components, and interface patterns for pharmacy operations and Tender Copilot.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="ui-kit.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="patterns.css">
+</head>
+
+<body>
+
+  <!-- Icon and seal sprite. Every mark in this kit is drawn here. -->
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+    <defs>
+      <symbol id="seal" viewBox="0 0 64 64">
+        <defs>
+          <linearGradient id="sealBrass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#D8C07C" />
+            <stop offset=".55" stop-color="#B08A2E" />
+            <stop offset="1" stop-color="#8A6B16" />
+          </linearGradient>
+        </defs>
+        <path d="M18 2h28l16 16v28L46 62H18L2 46V18z" fill="url(#sealBrass)" />
+        <path d="M21 8h22l13 13v22L43 56H21L8 43V21z" fill="none" stroke="#061A15" stroke-opacity=".35" />
+        <g fill="none" stroke="#061A15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 34h24c0 7.2-5.4 13-12 13s-12-5.8-12-13z" />
+          <path d="M31 16l8 8" />
+          <path d="M23 51h18" />
+        </g>
+        <rect x="29" y="11" width="4" height="4" fill="#061A15" />
+      </symbol>
+
+      <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" />
+        <rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" />
+      </symbol>
+      <symbol id="i-cart" viewBox="0 0 24 24">
+        <path d="M3 4h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.7a1.5 1.5 0 0 0 1.5-1.2L20 7H6" />
+        <circle cx="9.5" cy="19.5" r="1.2" /><circle cx="17.5" cy="19.5" r="1.2" />
+      </symbol>
+      <symbol id="i-box" viewBox="0 0 24 24">
+        <path d="M3 8.2 12 3l9 5.2v7.6L12 21l-9-5.2z" /><path d="M3 8.2 12 13.4l9-5.2" />
+        <path d="M12 13.4V21" />
+      </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /><path d="M9 12h6M9 16h6" />
+      </symbol>
+      <symbol id="i-scale" viewBox="0 0 24 24">
+        <path d="M12 4v16M7 20h10M4 8h16" /><path d="M4 8 7 15h-6zM20 8l3 7h-6z" />
+      </symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24">
+        <path d="M12 20s-7-4.4-7-9.5A4 4 0 0 1 12 7a4 4 0 0 1 7 3.5C19 15.6 12 20 12 20z" />
+      </symbol>
+      <symbol id="i-card" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18M7 15h4" />
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M18 9a6 6 0 1 0-12 0c0 7-2 7-2 9h16c0-2-2-2-2-9" /><path d="M10 21h4" />
+      </symbol>
+      <symbol id="i-book" viewBox="0 0 24 24">
+        <path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z" /><path d="M5 4v16" /><path d="M9 8h5M9 12h5" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" />
+      </symbol>
+      <symbol id="i-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="3.5" /><path d="M5 20a7 7 0 0 1 14 0" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6" /></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" /></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24">
+        <path d="M3 5h18l-7 8v6l-4 2v-8z" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12M7 10l5 5 5-5" /><path d="M4 19h16" />
+      </symbol>
+      <symbol id="i-print" viewBox="0 0 24 24">
+        <path d="M7 9V3h10v6" /><rect x="4" y="9" width="16" height="8" rx="1" />
+        <path d="M7 14h10v7H7z" />
+      </symbol>
+      <symbol id="i-external" viewBox="0 0 24 24">
+        <path d="M14 4h6v6M20 4l-9 9" /><path d="M18 14v6H4V6h6" />
+      </symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6" /></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="1.5" /><path d="M3 10h18M8 3v4M16 3v4" />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" /><path d="M12 7v5l3.5 2" />
+      </symbol>
+      <symbol id="i-pill" viewBox="0 0 24 24">
+        <rect x="3.2" y="8.4" width="17.6" height="7.2" rx="3.6" transform="rotate(-45 12 12)" />
+        <path d="m8.5 8.5 7 7" />
+      </symbol>
+      <symbol id="i-receipt" viewBox="0 0 24 24">
+        <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" />
+      </symbol>
+      <symbol id="i-truck" viewBox="0 0 24 24">
+        <path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" /><circle cx="7" cy="19" r="1.6" />
+        <circle cx="17" cy="19" r="1.6" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="M12 3 5 6v5c0 5 3 8.2 7 10 4-1.8 7-5 7-10V6z" /><path d="m9 12 2 2 4-4" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <path d="M12 3 2.5 20h19z" /><path d="M12 9v5M12 17.2v.3" />
+      </symbol>
+      <symbol id="i-more" viewBox="0 0 24 24">
+        <circle cx="5" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="12" r="1" fill="currentColor" />
+        <circle cx="19" cy="12" r="1" fill="currentColor" />
+      </symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24">
+        <path d="M4 20h4L20 8l-4-4L4 16z" /><path d="m14 6 4 4" />
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24">
+        <path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14" /><path d="M10 11v6M14 11v6" />
+      </symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24">
+        <path d="M20 5v6h-6" /><path d="M19 11a7.5 7.5 0 1 0 .4 4" />
+      </symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24">
+        <path d="M9 4H5v16h4" /><path d="M13 8l4 4-4 4M17 12H8" />
+      </symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5z" />
+      </symbol>
+      <symbol id="i-columns" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="16" rx="1.5" /><path d="M9 4v16M15 4v16" />
+      </symbol>
+      <symbol id="i-check-doc" viewBox="0 0 24 24">
+        <path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 13l2 2 4-4" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3" /><path d="M3 19a6 6 0 0 1 12 0" /><path d="M16 5.5a3 3 0 0 1 0 5.5M18 19a5 5 0 0 0-2-4" />
+      </symbol>
+      <symbol id="i-whatsapp" viewBox="0 0 24 24">
+        <path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.5z" />
+        <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5.4 0 1-.4 1-.8l-.2-1.2-1.8-.4-.8 1c-1-.4-1.8-1.2-2.2-2.2l1-.8-.4-1.8-1.2-.2c-.4 0-.9.6-.9 1z" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="kit">
+
+    <aside class="kit-index" aria-label="Kit contents">
+      <a class="kit-index__brand" href="#cover">
+        <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+        <span class="kit-index__title">
+          <b>Dawa Ledger</b>
+          <span>Design system · v1.0</span>
+        </span>
+      </a>
+      <nav class="kit-index__nav" id="kitNav">
+        <a href="#cover"><span class="n">00</span> Cover</a>
+        <a href="#identity"><span class="n">01</span> Identity</a>
+        <a href="#color"><span class="n">02</span> Colour</a>
+        <a href="#type"><span class="n">03</span> Typography</a>
+        <a href="#space"><span class="n">04</span> Space &amp; layout</a>
+        <a href="#marks"><span class="n">05</span> Marks &amp; icons</a>
+        <a href="#actions"><span class="n">06</span> Actions</a>
+        <a href="#forms"><span class="n">07</span> Forms</a>
+        <a href="#navigation"><span class="n">08</span> Navigation</a>
+        <a href="#data"><span class="n">09</span> Data display</a>
+        <a href="#feedback"><span class="n">10</span> Feedback</a>
+        <a href="#overlays"><span class="n">11</span> Overlays</a>
+        <a href="#patterns"><span class="n">12</span> Patterns</a>
+        <a href="#motion"><span class="n">13</span> Motion &amp; access</a>
+        <a href="#implementation"><span class="n">14</span> Implementation</a>
+      </nav>
+      <div class="kit-index__foot">
+        <b>Review copy</b>
+        Not applied to production<br>
+        30 Oct 2026
+      </div>
+    </aside>
+
+    <div class="kit-main">
+
+      <header class="kit-topbar">
+        <div class="kit-topbar__path">
+          <span>Dawa Ledger</span>
+          <span class="sep">/</span>
+          <b>Specimen</b>
+        </div>
+        <div class="kit-topbar__right">
+          <span class="kit-topbar__tag">v1.0 · Review</span>
+        </div>
+      </header>
+
+      <main>
+
+        <!-- ===================================================================
+             COVER
+             =================================================================== -->
+        <section class="cover" id="cover">
+          <div class="cover__copy">
+            <div class="cover__eyebrow"><span class="rule"></span>Onzima Dawa · Design system 01</div>
+            <h1>Dawa<br><em>Ledger</em></h1>
+            <p class="cover__lede">
+              A working system for a pharmacy counter, a stockroom, and a tender desk.
+              Built from the artifacts of the trade — the label, the ledger, the seal,
+              the stock card — rather than from a generic component library.
+            </p>
+            <dl class="cover__meta">
+              <div>
+                <dt>Version</dt>
+                <dd>1.0 — proposed</dd>
+              </div>
+              <div>
+                <dt>Date</dt>
+                <dd>30 Oct 2026</dd>
+              </div>
+              <div>
+                <dt>Scope</dt>
+                <dd>Pharmacy + Tender</dd>
+              </div>
+              <div>
+                <dt>Owner</dt>
+                <dd>Product &amp; Eng.</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="cover__stage" aria-hidden="true">
+            <span class="cover__stage-label">Seal / 01</span>
+            <svg class="seal"><use href="#seal" /></svg>
+            <span class="cover__stage-foot">Kireka · Jinja · Uganda</span>
+          </div>
+          <div class="cover__scroll">Scroll to the system</div>
+        </section>
+
+        <!-- ===================================================================
+             01 IDENTITY
+             =================================================================== -->
+        <section class="kit-section" id="identity">
+          <div class="kit-section__head">
+            <div class="kit-section__num">01</div>
+            <h2>Identity</h2>
+            <p class="kit-section__lede">
+              A pharmacy runs on records. The interface should feel like those records are
+              being handled with care. <strong>Warm paper, dark ink, brass rules, precise
+              labels</strong> — confidence without decoration.
+            </p>
+          </div>
+
+          <div class="kit-prose">
+            <p>
+              The visual metaphor is the <strong>ledger and the label</strong>. This is not a
+              nostalgic paper pastiche; it is a precise operational instrument that borrows
+              the confidence of the ledger: ruled alignment, tabular figures, explicit labels,
+              and a clear record of who did what.
+            </p>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Principles</h3>
+              <span>Six rules that settle arguments</span>
+            </div>
+            <div class="principles">
+              <article class="principle">
+                <div class="principle__n">01</div>
+                <h4>The record comes first.</h4>
+                <p>A screen exists to help someone find, change, or trust a record. Decoration
+                  that does not help that job is removed.</p>
+              </article>
+              <article class="principle">
+                <div class="principle__n">02</div>
+                <h4>Label it like a pharmacist.</h4>
+                <p>Say “Expires in 5 days”, not “Attention required”. Use plain, specific words
+                  and put the number where the eye lands first.</p>
+              </article>
+              <article class="principle">
+                <div class="principle__n">03</div>
+                <h4>Structure with rules, not boxes.</h4>
+                <p>Hairlines, alignment, and spacing create groups. A border is a last resort,
+                  not the default container.</p>
+              </article>
+            </div>
+            <div class="principles" style="border-top:0">
+              <article class="principle">
+                <div class="principle__n">04</div>
+                <h4>Brass marks importance.</h4>
+                <p>A seal, an active marker, a focus ring, one underline. If everything is
+                  brass, nothing is.</p>
+              </article>
+              <article class="principle">
+                <div class="principle__n">05</div>
+                <h4>Density is a service.</h4>
+                <p>Counter staff need many rows on screen. Keep 40–44 px controls and compact
+                  tables, then relax on mobile rather than shrinking everything.</p>
+              </article>
+              <article class="principle">
+                <div class="principle__n">06</div>
+                <h4>No false affordances.</h4>
+                <p>If it looks like a button it is a button. A status is a stamp, not a pill
+                  that invites a tap.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Logo system</h3>
+              <span>Seal · wordmark · descriptor</span>
+            </div>
+            <div class="specimen specimen--marked">
+              <div class="specimen__head">
+                <span class="specimen__name">Primary lockup</span>
+                <span class="specimen__meta">Light ground · 01</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="identity-grid">
+                  <div class="stack">
+                    <a class="brand-lockup" href="#identity" aria-label="Onzima Dawa">
+                      <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                      <span>
+                        <span class="brand-lockup__word">Onzima <em>Dawa</em></span>
+                        <span class="brand-lockup__desc">Apothecary · Kireka</span>
+                      </span>
+                    </a>
+                    <div class="note">
+                      <b>The seal is the only ornament.</b> It appears in the sidebar, on
+                      sign-in, on receipts, and as the favicon. Never as a repeated background.
+                    </div>
+                  </div>
+                  <div class="identity-dark">
+                    <div class="brand-lockup brand-lockup--inverse">
+                      <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                      <span>
+                        <span class="brand-lockup__word">Onzima <em>Dawa</em></span>
+                        <span class="brand-lockup__desc">Apothecary · Kireka</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                <b>Clear space:</b> one seal width on all sides. <b>Minimum:</b> 120 px lockup,
+                24 px seal, 16 px favicon. No rotation, shadow, or recolouring outside the palette.
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:20px">
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Seal sizes</span>
+                  <span class="specimen__meta">24 / 32 / 48 / 64</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="seal-row">
+                    <div class="seal-size">
+                      <svg class="seal" style="width:24px;height:24px" aria-hidden="true"><use href="#seal" /></svg>
+                      24
+                    </div>
+                    <div class="seal-size">
+                      <svg class="seal" style="width:32px;height:32px" aria-hidden="true"><use href="#seal" /></svg>
+                      32
+                    </div>
+                    <div class="seal-size">
+                      <svg class="seal" style="width:48px;height:48px" aria-hidden="true"><use href="#seal" /></svg>
+                      48
+                    </div>
+                    <div class="seal-size">
+                      <svg class="seal" style="width:64px;height:64px" aria-hidden="true"><use href="#seal" /></svg>
+                      64
+                    </div>
+                  </div>
+                </div>
+                <div class="specimen__foot">Do not scale below 16 px. At 16 px, use the favicon
+                  variant with the keyline removed.</div>
+              </div>
+
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Clear space</span>
+                  <span class="specimen__meta">1× seal width</span>
+                </div>
+                <div class="specimen__stage" style="display:grid;place-items:center">
+                  <div class="clearbox">
+                    <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                  </div>
+                </div>
+                <div class="specimen__foot">The dashed field is a construction guide, not a
+                  visible frame. Nothing enters the clear space.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Product family</h3>
+              <span>One seal · two accents</span>
+            </div>
+            <div class="grid-2">
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Onzima Dawa</span>
+                  <span class="specimen__meta">Pine + brass</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="brand-lockup">
+                    <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                    <span>
+                      <span class="brand-lockup__word">Onzima <em>Dawa</em></span>
+                      <span class="brand-lockup__desc">Apothecary · Kireka</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Tender Copilot</span>
+                  <span class="specimen__meta">Pine + clay</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="brand-lockup brand-lockup--tender">
+                    <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                    <span>
+                      <span class="brand-lockup__word">Tender <em>Copilot</em></span>
+                      <span class="brand-lockup__desc">Procurement · Jinja</span>
+                    </span>
+                  </div>
+                  <div style="margin-top:14px"><span class="tender-tag">Tender workspace</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="kit-prose" style="margin-top:16px">
+              The seal stays brass in both products. Clay appears only in the product tag, the
+              active section marker, and tender-specific risk states. It never replaces brass
+              in the pharmacy workspace.
+            </p>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Voice</h3>
+              <span>Write like a senior colleague</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage specimen__stage--flush">
+                <table class="kit-table">
+                  <caption>Microcopy: approved and rejected</caption>
+                  <thead>
+                    <tr>
+                      <th style="width:50%">Do</th>
+                      <th>Don't</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>“Batch OM-55 expires in 5 days.”</td>
+                      <td>“Uh oh! Something needs your attention!”</td>
+                    </tr>
+                    <tr>
+                      <td>“Record a sale”</td>
+                      <td>“Let’s get selling ✨”</td>
+                    </tr>
+                    <tr>
+                      <td>“Saved. Stock is now 190 units.”</td>
+                      <td>“Success!! Your changes have been saved.”</td>
+                    </tr>
+                    <tr>
+                      <td>“Only the shop owner can download backups.”</td>
+                      <td>“You are not authorized to perform this action.”</td>
+                    </tr>
+                    <tr>
+                      <td>“No refills due today.”</td>
+                      <td>“Nothing to see here!”</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="specimen__foot">
+                Sentence case for actions and labels. Imperative for actions, past tense for
+                confirmations. Never emoji in chrome. Never exclamation marks in system messages.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             02 COLOUR
+             =================================================================== -->
+        <section class="kit-section" id="color">
+          <div class="kit-section__head">
+            <div class="kit-section__num">02</div>
+            <h2>Colour</h2>
+            <p class="kit-section__lede">
+              Colour is named after materials, not abstractions. <strong>Paper</strong> is the
+              working surface, <strong>ink</strong> is the record, <strong>pine</strong> is
+              navigation and action, and <strong>brass</strong> is the seal. Signal colours are
+              the exception, never the mood.
+            </p>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Paper — the ground</h3>
+              <span>70% of any screen</span>
+            </div>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#fcf9f1"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Paper 50 <span class="swatch__hex">#FCF9F1</span></div>
+                  <div class="swatch__token">--ds-paper-50 · surfaces</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#f6f1e4"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Paper 100 <span class="swatch__hex">#F6F1E4</span></div>
+                  <div class="swatch__token">--ds-paper-100 · canvas</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#ece5d3"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Paper 200 <span class="swatch__hex">#ECE5D3</span></div>
+                  <div class="swatch__token">--ds-paper-200 · sunken</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#dcd1b8"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Paper 300 <span class="swatch__hex">#DCD1B8</span></div>
+                  <div class="swatch__token">--ds-paper-300 · disabled</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Ink and pine — the record</h3>
+              <span>25% of any screen</span>
+            </div>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#111c17"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ink 900 <span class="swatch__hex">#111C17</span></div>
+                  <div class="swatch__token">--ds-ink-900 · primary text</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#2b4037"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ink 700 <span class="swatch__hex">#2B4037</span></div>
+                  <div class="swatch__token">--ds-ink-700 · secondary text</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#56695f"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ink 500 <span class="swatch__hex">#56695F</span></div>
+                  <div class="swatch__token">--ds-ink-500 · muted text</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#89988f"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ink 300 <span class="swatch__hex">#89988F</span></div>
+                  <div class="swatch__token">--ds-ink-300 · disabled only</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#061a15"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 950 <span class="swatch__hex">#061A15</span></div>
+                  <div class="swatch__token">--ds-pine-950 · inverse</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#0a241d"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 900 <span class="swatch__hex">#0A241D</span></div>
+                  <div class="swatch__token">--ds-pine-900 · headings</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#103328"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 800 <span class="swatch__hex">#103328</span></div>
+                  <div class="swatch__token">--ds-pine-800 · action</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#174838"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 700 <span class="swatch__hex">#174838</span></div>
+                  <div class="swatch__token">--ds-pine-700 · hover</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#2c6b55"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 500 <span class="swatch__hex">#2C6B55</span></div>
+                  <div class="swatch__token">--ds-pine-500 · charts</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#dce9e1"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 100 <span class="swatch__hex">#DCE9E1</span></div>
+                  <div class="swatch__token">--ds-pine-100 · info wash</div>
+                </div>
+              </div>
+              <div class="swatch" style="grid-column:span 2">
+                <div class="swatch__chip" style="background:linear-gradient(90deg,#061a15,#0a241d,#103328,#174838,#2c6b55,#dce9e1)"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine ramp <span class="swatch__hex">950 → 100</span></div>
+                  <div class="swatch__token">One family, six steps. Never invent an in-between green.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Brass — the seal</h3>
+              <span>5% of any screen</span>
+            </div>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#6e5511"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass 700 <span class="swatch__hex">#6E5511</span></div>
+                  <div class="swatch__token">--ds-brass-700 · brass text</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#8a6b16"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass 600 <span class="swatch__hex">#8A6B16</span></div>
+                  <div class="swatch__token">--ds-brass-600 · focus</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#b08a2e"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass 500 <span class="swatch__hex">#B08A2E</span></div>
+                  <div class="swatch__token">--ds-brass-500 · rules</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#d8c07c"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass 300 <span class="swatch__hex">#D8C07C</span></div>
+                  <div class="swatch__token">--ds-brass-300 · on dark</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#f2e8c9"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass 100 <span class="swatch__hex">#F2E8C9</span></div>
+                  <div class="swatch__token">--ds-brass-100 · wash</div>
+                </div>
+              </div>
+              <div class="swatch" style="grid-column:span 3">
+                <div class="swatch__chip" style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#fcf9f1">
+                  <span class="micro" style="color:#6e5511">Brass 700 on paper 50 — 6.27:1</span>
+                  <span class="micro" style="color:#8a6b16">Brass 600 — focus ring</span>
+                  <span class="micro" style="color:#b08a2e">Never body text</span>
+                </div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Brass in use <span class="swatch__hex">AA verified</span></div>
+                  <div class="swatch__token">Brass 500 is for marks and rules. Brass 700 is for text.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Signal — the exception</h3>
+              <span>Status only</span>
+            </div>
+            <div class="swatch-grid">
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#2e5c3d"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Moss 700 <span class="swatch__hex">#2E5C3D</span></div>
+                  <div class="swatch__token">--ds-moss-700 · success</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#e1ecdf"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Moss 100 <span class="swatch__hex">#E1ECDF</span></div>
+                  <div class="swatch__token">--ds-moss-100 · success wash</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#78560f"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ochre 700 <span class="swatch__hex">#78560F</span></div>
+                  <div class="swatch__token">--ds-ochre-700 · warning</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#f5e9cd"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Ochre 100 <span class="swatch__hex">#F5E9CD</span></div>
+                  <div class="swatch__token">--ds-ochre-100 · warning wash</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#8c3d23"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Clay 700 <span class="swatch__hex">#8C3D23</span></div>
+                  <div class="swatch__token">--ds-clay-700 · danger</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#f6e2d8"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Clay 100 <span class="swatch__hex">#F6E2D8</span></div>
+                  <div class="swatch__token">--ds-clay-100 · danger wash</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#174838"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 700 <span class="swatch__hex">#174838</span></div>
+                  <div class="swatch__token">--ds-info · info text</div>
+                </div>
+              </div>
+              <div class="swatch">
+                <div class="swatch__chip" style="background:#dce9e1"></div>
+                <div class="swatch__meta">
+                  <div class="swatch__name">Pine 100 <span class="swatch__hex">#DCE9E1</span></div>
+                  <div class="swatch__token">--ds-info-bg · info wash</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Composition</h3>
+              <span>70 / 25 / 5</span>
+            </div>
+            <div class="composition" aria-label="Suggested colour composition: 70 percent paper, 25 percent pine, 5 percent brass">
+              <span class="paper">70</span>
+              <span class="pine">25</span>
+              <span class="brass">5</span>
+            </div>
+            <div class="row" style="justify-content:space-between;margin-top:6px">
+              <span class="micro faint">Paper + ink · 70</span>
+              <span class="micro faint">Pine · 25</span>
+              <span class="micro faint">Brass · 5</span>
+            </div>
+            <p class="kit-prose" style="margin-top:14px">
+              If a screen feels “branded” rather than readable, there is too much brass.
+              Signal colour is allowed to break the ratio only when a genuine exception is on
+              screen — an expiring batch, a failed payment, a compliance risk.
+            </p>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Semantic tokens</h3>
+              <span>Components consume these, never raw palette values</span>
+            </div>
+            <div class="grid-2">
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__stage specimen__stage--flush">
+                  <table class="kit-table">
+                    <caption>Surface and text</caption>
+                    <thead>
+                      <tr><th>Token</th><th>Maps to</th><th>Use</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>--ds-canvas</code></td><td>paper-100</td><td>App ground</td></tr>
+                      <tr><td><code>--ds-surface</code></td><td>paper-50</td><td>Sheets, fields</td></tr>
+                      <tr><td><code>--ds-sunken</code></td><td>paper-200</td><td>Wells, headers</td></tr>
+                      <tr><td><code>--ds-inverse</code></td><td>pine-950</td><td>Sidebar, toasts</td></tr>
+                      <tr><td><code>--ds-text</code></td><td>ink-900</td><td>Primary text</td></tr>
+                      <tr><td><code>--ds-text-muted</code></td><td>ink-500</td><td>Captions</td></tr>
+                      <tr><td><code>--ds-text-accent</code></td><td>brass-700</td><td>Brass text</td></tr>
+                      <tr><td><code>--ds-line</code></td><td>ink @ 14%</td><td>Hairlines</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__stage specimen__stage--flush">
+                  <table class="kit-table">
+                    <caption>Action and signal</caption>
+                    <thead>
+                      <tr><th>Token</th><th>Maps to</th><th>Use</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>--ds-action</code></td><td>pine-800</td><td>Primary button</td></tr>
+                      <tr><td><code>--ds-action-hover</code></td><td>pine-700</td><td>Hover</td></tr>
+                      <tr><td><code>--ds-accent</code></td><td>brass-500</td><td>Rules, seals</td></tr>
+                      <tr><td><code>--ds-focus</code></td><td>brass-600</td><td>Focus ring</td></tr>
+                      <tr><td><code>--ds-success</code></td><td>moss-700</td><td>Success text</td></tr>
+                      <tr><td><code>--ds-warning</code></td><td>ochre-700</td><td>Warning text</td></tr>
+                      <tr><td><code>--ds-danger</code></td><td>clay-700</td><td>Danger text</td></tr>
+                      <tr><td><code>--ds-info</code></td><td>pine-700</td><td>Info text</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Contrast</h3>
+              <span>WCAG 2.2 AA · verified pairs</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage specimen__stage--flush">
+                <table class="contrast-table">
+                  <thead>
+                    <tr><th>Foreground / background</th><th>Sample</th><th>Ratio</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ink-900 on paper-100</td>
+                      <td><span class="contrast-chip"><i style="background:#f6f1e4"></i><b style="color:#111c17">Aa</b></span></td>
+                      <td>15.5:1</td>
+                    </tr>
+                    <tr>
+                      <td>ink-500 on paper-100</td>
+                      <td><span class="contrast-chip"><i style="background:#f6f1e4"></i><b style="color:#56695f">Aa</b></span></td>
+                      <td>5.2:1</td>
+                    </tr>
+                    <tr>
+                      <td>paper-50 on pine-900</td>
+                      <td><span class="contrast-chip"><i style="background:#0a241d"></i><b style="color:#fcf9f1">Aa</b></span></td>
+                      <td>15.6:1</td>
+                    </tr>
+                    <tr>
+                      <td>brass-700 on paper-100</td>
+                      <td><span class="contrast-chip"><i style="background:#f6f1e4"></i><b style="color:#6e5511">Aa</b></span></td>
+                      <td>6.3:1</td>
+                    </tr>
+                    <tr>
+                      <td>moss-700 on moss-100</td>
+                      <td><span class="contrast-chip"><i style="background:#e1ecdf"></i><b style="color:#2e5c3d">Aa</b></span></td>
+                      <td>6.4:1</td>
+                    </tr>
+                    <tr>
+                      <td>clay-700 on clay-100</td>
+                      <td><span class="contrast-chip"><i style="background:#f6e2d8"></i><b style="color:#8c3d23">Aa</b></span></td>
+                      <td>6.0:1</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="specimen__foot">
+                Never place brass-500 text on paper. Never use ink-300 for text. Colour never
+                carries meaning alone — every status includes a word and a mark.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             03 TYPOGRAPHY
+             =================================================================== -->
+        <section class="kit-section" id="type">
+          <div class="kit-section__head">
+            <div class="kit-section__num">03</div>
+            <h2>Typography</h2>
+            <p class="kit-section__lede">
+              Three families with three jobs. <strong>Fraunces</strong> carries the
+              apothecary character, <strong>Archivo</strong> does the work, and
+              <strong>IBM Plex Mono</strong> makes records feel recorded.
+            </p>
+          </div>
+
+          <div class="type-families">
+            <div class="type-family">
+              <div class="type-family__aa serif" style="font-weight:500">Aa</div>
+              <div class="type-family__name">Fraunces · Display</div>
+              <p class="type-family__use">Titles, figures, pull quotes. Optical sizing on.
+                Never a paragraph. Set tight, at 500 weight, with negative tracking.</p>
+            </div>
+            <div class="type-family">
+              <div class="type-family__aa" style="font-weight:600;font-size:58px">Aa</div>
+              <div class="type-family__name">Archivo · Interface</div>
+              <p class="type-family__use">Body, buttons, labels, forms. Sturdy at 11 px,
+                quiet at 17 px. Weights 400–600 only.</p>
+            </div>
+            <div class="type-family">
+              <div class="type-family__aa mono" style="font-size:52px">Aa</div>
+              <div class="type-family__name">IBM Plex Mono · Data</div>
+              <p class="type-family__use">Labels, batch codes, timestamps, quantities,
+                table heads. Uppercase at 9.5–10.5 px with wide tracking.</p>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Scale</h3>
+              <span>Desktop · rem based</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage">
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>display-xl</b>64 / 0.98<br>Fraunces 500</div>
+                  <p class="type-spec__sample type-display">Records, not guesses.</p>
+                </div>
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>title-l</b>28 / 1.15<br>Fraunces 500</div>
+                  <p class="type-spec__sample serif" style="font-size:28px;line-height:1.15;letter-spacing:-0.02em">Expiry watchdog</p>
+                </div>
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>title-s</b>17 / 1.35<br>Archivo 600</div>
+                  <p class="type-spec__sample" style="font-size:17px;font-weight:600;letter-spacing:-0.01em">Omeprazole 20mg · batch OM-55</p>
+                </div>
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>body</b>15 / 1.6<br>Archivo 400</div>
+                  <p class="type-spec__sample type-body">Every sale, batch, and refill is written
+                    to one ledger, so the counter and the back office work from the same truth.</p>
+                </div>
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>label</b>10.5 / 1.2<br>Plex Mono 600</div>
+                  <p class="type-spec__sample type-label">Batch · expires · quantity</p>
+                </div>
+                <div class="type-spec">
+                  <div class="type-spec__label"><b>micro</b>9.5 / 1.2<br>Plex Mono 500</div>
+                  <p class="type-spec__sample micro">2026-10-16 · 18:42 · Kireka</p>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                Display sizes use <code>clamp()</code> in the implementation. The table above
+                shows the desktop endpoint.
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Numbers and dates</h3>
+              <span>Tabular by default</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage">
+                <div class="type-numbers">
+                  <div>
+                    <div class="micro faint">Currency</div>
+                    <div class="big num">UGX 12,500</div>
+                  </div>
+                  <div>
+                    <div class="micro faint">Quantity</div>
+                    <div class="big num">190</div>
+                  </div>
+                  <div>
+                    <div class="micro faint">Date</div>
+                    <div class="big num" style="font-size:34px">16 Oct 2026</div>
+                  </div>
+                  <div>
+                    <div class="micro faint">Time</div>
+                    <div class="big num">18:42</div>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                <b>UGX</b> + thin space + grouped number, no decimals. Prose dates are
+                <code>16 Oct 2026</code>; table dates are <code>2026-10-16</code>; time is
+                24-hour. Never truncate money, quantities, dates, or status.
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Typesetting rules</h3>
+              <span>Six rules, no exceptions</span>
+            </div>
+            <ul class="checklist">
+              <li class="done"><b>Display type is structural, not decorative.</b> One page title,
+                one section opening. Never a whole paragraph in Fraunces.</li>
+              <li class="done"><b>Sentence case for nearly everything.</b> Uppercase is reserved
+                for mono labels and status stamps.</li>
+              <li class="done"><b>Numbers lead.</b> “3 batches expire this week”, not “This week,
+                three batches are expiring”.</li>
+              <li class="done"><b>Tabular numerals always.</b> Use
+                <code>font-variant-numeric: tabular-nums</code> for money, quantities, dates, counts.</li>
+              <li class="done"><b>No text shadows, no letter-spaced body copy,</b> no centred
+                paragraphs longer than two lines.</li>
+              <li class="done"><b>Line length 60–75 characters</b> for prose, 45–60 for narrow
+                panels. <code>text-wrap: balance</code> on headings only.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             04 SPACE & LAYOUT
+             =================================================================== -->
+        <section class="kit-section" id="space">
+          <div class="kit-section__head">
+            <div class="kit-section__num">04</div>
+            <h2>Space &amp; layout</h2>
+            <p class="kit-section__lede">
+              A 4 px base. Rules and alignment create groups; boxes are a last resort.
+              The shell is stable, the content breathes, and density is a deliberate
+              decision rather than an accident.
+            </p>
+          </div>
+
+          <div class="kit-sub" style="margin-top:0">
+            <div class="kit-sub__head">
+              <h3>Spacing scale</h3>
+              <span>4 px base · 4 → 96</span>
+            </div>
+            <div class="space-chart" role="img" aria-label="Spacing scale, 4 pixels to 96 pixels">
+              <div class="space-chart__cell"><span class="space-chart__name">space-1</span><span class="space-chart__bar" style="height:4px"></span><span class="space-chart__value">4</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-2</span><span class="space-chart__bar" style="height:8px"></span><span class="space-chart__value">8</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-3</span><span class="space-chart__bar" style="height:12px"></span><span class="space-chart__value">12</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-4</span><span class="space-chart__bar" style="height:16px"></span><span class="space-chart__value">16</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-5</span><span class="space-chart__bar" style="height:20px"></span><span class="space-chart__value">20</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-6</span><span class="space-chart__bar" style="height:24px"></span><span class="space-chart__value">24</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-7</span><span class="space-chart__bar" style="height:32px"></span><span class="space-chart__value">32</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-8</span><span class="space-chart__bar" style="height:40px"></span><span class="space-chart__value">40</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-9</span><span class="space-chart__bar" style="height:48px"></span><span class="space-chart__value">48</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-10</span><span class="space-chart__bar" style="height:64px"></span><span class="space-chart__value">64</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-11</span><span class="space-chart__bar" style="height:80px"></span><span class="space-chart__value">80</span></div>
+              <div class="space-chart__cell"><span class="space-chart__name">space-12</span><span class="space-chart__bar" style="height:96px"></span><span class="space-chart__value">96</span></div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Shape</h3>
+              <span>Rules, not pillows</span>
+            </div>
+            <div class="radius-row">
+              <div class="radius-swatch">
+                <span style="border-radius:0"></span>
+                <b>radius 0</b>
+                <em>0. Tables, charts, stat strips.</em>
+              </div>
+              <div class="radius-swatch">
+                <span style="border-radius:2px"></span>
+                <b>radius-xs</b>
+                <em>2 px. Buttons, inputs, panels, stamps.</em>
+              </div>
+              <div class="radius-swatch">
+                <span style="border-radius:3px"></span>
+                <b>radius-sm</b>
+                <em>3 px. Menus, larger sheets.</em>
+              </div>
+              <div class="radius-swatch">
+                <span style="border-radius:999px"></span>
+                <b>radius-round</b>
+                <em>999 px. Avatars and status dots only. Never a container.</em>
+              </div>
+            </div>
+            <div class="note" style="margin-top:16px">
+              <b>No shadow on in-page content.</b> Overlays get one shadow, at
+              <code>0 24px 64px -24px</code>. No glass blur. No gradient meshes.
+              No pill buttons.
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Breakpoints</h3>
+              <span>Mobile first</span>
+            </div>
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__stage specimen__stage--flush">
+                <table class="kit-table">
+                  <thead>
+                    <tr><th>Name</th><th>Min</th><th>Behaviour</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>compact</code></td><td>0</td><td>1 column, bottom nav, 44 px targets</td></tr>
+                    <tr><td><code>medium</code></td><td>640</td><td>2-column panels, drawer sidebar</td></tr>
+                    <tr><td><code>wide</code></td><td>960</td><td>Persistent sidebar, 3-column stats</td></tr>
+                    <tr><td><code>full</code></td><td>1280</td><td>Max density, optional summary rail</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>App shell</h3>
+              <span>Sidebar 272 fixed · Top bar 64 fixed · Content fluid</span>
+            </div>
+
+            <div class="shell-diagram" aria-label="App shell diagram: fixed 272 pixel sidebar, fixed 64 pixel top bar, fluid content area">
+              <div class="shell-diagram__side">
+                <div class="shell-diagram__navline active">01 · Dashboard</div>
+                <div class="shell-diagram__navline">02 · Sell</div>
+                <div class="shell-diagram__navline">03 · Stock</div>
+                <div class="shell-diagram__navline">04 · Refills</div>
+                <div class="shell-diagram__navline">05 · Finance</div>
+                <div class="shell-diagram__navline">06 · Suppliers</div>
+                <div class="shell-diagram__navline">07 · Tender desk</div>
+                <div class="shell-diagram__navline">08 · Settings</div>
+                <div style="margin-top:auto" class="shell-diagram__navline">User · role · sign out</div>
+              </div>
+
+              <div class="shell-diagram__main">
+                <div class="shell-diagram__top">Top bar · 64 · breadcrumb · search · branch switch · alerts</div>
+                <div class="shell-diagram__body">
+                  <div class="shell-diagram__bar">Page header · title · period · primary action</div>
+                  <div class="shell-diagram__bar">Filter rail · date range · branch · status</div>
+                  <div class="shell-diagram__statstrip">
+                    <div class="shell-diagram__stat">Sales today<span>KES 84,250</span></div>
+                    <div class="shell-diagram__stat">Margin<span>31.4%</span></div>
+                    <div class="shell-diagram__stat">Low stock<span>12 lines</span></div>
+                    <div class="shell-diagram__stat">Expiring<span>4 lines</span></div>
+                  </div>
+                  <div class="shell-diagram__grid">
+                    <div class="shell-diagram__block shell-diagram__block--tall">Ledger table · sticky header · 40 px rows</div>
+                    <div class="shell-diagram__block shell-diagram__block--tall">Summary rail · totals · actions</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shell-dims" aria-hidden="true">
+              <span>Sidebar 272</span>
+              <span>Top bar 64</span>
+              <span>Gutter 32</span>
+              <span>Content max 1440</span>
+              <span>Summary rail 320</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             05 MARKS & ICONOGRAPHY
+             =================================================================== -->
+        <section class="kit-section" id="marks">
+          <div class="kit-section__head">
+            <div class="kit-section__num">05</div>
+            <h2>Marks &amp; icons</h2>
+            <p class="kit-section__lede">
+              The seal is the only ornament. Icons are drawn on a 24 px grid with a 1.6 px
+              stroke. <strong>One icon, one meaning.</strong> No emoji, no multicolour sets,
+              no mixed stroke weights.
+            </p>
+          </div>
+
+          <div class="grid-2">
+            <div class="specimen">
+              <div class="specimen__head">
+                <span class="specimen__name">Seal in context</span>
+                <span class="specimen__meta">Once per view</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="stack">
+                  <div class="row">
+                    <svg class="seal" style="width:34px;height:34px" aria-hidden="true"><use href="#seal" /></svg>
+                    <span class="small muted">Sidebar header · 34 px</span>
+                  </div>
+                  <div class="row">
+                    <svg class="seal" style="width:28px;height:28px" aria-hidden="true"><use href="#seal" /></svg>
+                    <span class="small muted">Receipt · 28 px</span>
+                  </div>
+                  <div class="row">
+                    <svg class="seal" style="width:16px;height:16px" aria-hidden="true"><use href="#seal" /></svg>
+                    <span class="small muted">Favicon · 16 px, keyline removed</span>
+                  </div>
+                  <div class="row">
+                    <svg class="seal" style="width:40px;height:40px;opacity:.2" aria-hidden="true"><use href="#seal" /></svg>
+                    <span class="small muted">Empty state · 40 px at 20%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                Never repeat the seal as a pattern. Never place it inside body copy. Never
+                recolour it outside the brass ramp.
+              </div>
+            </div>
+
+            <div class="specimen">
+              <div class="specimen__head">
+                <span class="specimen__name">Icon rules</span>
+                <span class="specimen__meta">24 px grid</span>
+              </div>
+              <div class="specimen__stage">
+                <ul class="checklist">
+                  <li class="done"><b>Stroke:</b> 1.6 px, rounded caps and joins, no fills.</li>
+                  <li class="done"><b>Sizes:</b> 16, 20, 24. Never scale a 24 px icon below 16.</li>
+                  <li class="done"><b>Colour:</b> inherits text. Signal colour only for status.</li>
+                  <li class="done"><b>Labels:</b> primary navigation always shows the label.</li>
+                  <li class="done"><b>Ban:</b> emoji, illustrations, filled icon sets.</li>
+                </ul>
+              </div>
+              <div class="specimen__foot">
+                The reference set is drawn for this system, not borrowed from a library.
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Reference set</h3>
+              <span>24 icons</span>
+            </div>
+            <div class="icon-grid">
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-grid" /></svg><span>dashboard</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-cart" /></svg><span>sale</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-box" /></svg><span>stock</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-file" /></svg><span>invoice</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-scale" /></svg><span>reconcile</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-heart" /></svg><span>refill</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-card" /></svg><span>credit</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-bell" /></svg><span>alert</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-book" /></svg><span>catalogue</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-settings" /></svg><span>settings</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-search" /></svg><span>search</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-user" /></svg><span>person</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-calendar" /></svg><span>date</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-clock" /></svg><span>time</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-pill" /></svg><span>medicine</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-receipt" /></svg><span>receipt</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-truck" /></svg><span>supplier</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-shield" /></svg><span>entitlement</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-alert" /></svg><span>risk</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-download" /></svg><span>export</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-print" /></svg><span>print</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-filter" /></svg><span>filter</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-compass" /></svg><span>tender</span></div>
+              <div class="icon-cell"><svg aria-hidden="true"><use href="#i-users" /></svg><span>team</span></div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>On dark</h3>
+              <span>8 of 24 · brass-300</span>
+            </div>
+            <div class="icon-grid">
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-grid" /></svg><span>dashboard</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-box" /></svg><span>stock</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-pill" /></svg><span>medicine</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-search" /></svg><span>search</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-bell" /></svg><span>alert</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-compass" /></svg><span>tender</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-shield" /></svg><span>access</span></div>
+              <div class="icon-cell icon-cell--dark"><svg aria-hidden="true"><use href="#i-logout" /></svg><span>exit</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             06 ACTIONS
+             =================================================================== -->
+        <section class="kit-section" id="actions">
+          <div class="kit-section__head">
+            <div class="kit-section__num">06</div>
+            <h2>Actions</h2>
+            <p class="kit-section__lede">
+              Primary buttons carry a 3 px brass bottom inset — the <strong>seal edge</strong> —
+              instead of a gradient or glow. One primary action per region. Quiet actions stay
+              quiet until hover.
+            </p>
+          </div>
+
+          <div class="kit-sub" style="margin-top:0">
+            <div class="kit-sub__head">
+              <h3>Variants</h3>
+              <span>Default state</span>
+            </div>
+            <div class="specimen specimen--marked">
+              <div class="specimen__head">
+                <span class="specimen__name">Button hierarchy</span>
+                <span class="specimen__meta">Primary · secondary · quiet · danger</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="row">
+                  <button class="ds-btn ds-btn--primary">Record sale</button>
+                  <button class="ds-btn ds-btn--secondary">Add batch</button>
+                  <button class="ds-btn ds-btn--quiet">View ledger</button>
+                  <button class="ds-btn ds-btn--danger">Void sale</button>
+                  <button class="ds-btn ds-btn--link">Open in new tab</button>
+                </div>
+                <div class="row" style="margin-top:18px">
+                  <button class="ds-btn ds-btn--primary">
+                    <svg aria-hidden="true"><use href="#i-print" /></svg>
+                    Print receipt
+                  </button>
+                  <button class="ds-btn ds-btn--secondary">
+                    <svg aria-hidden="true"><use href="#i-download" /></svg>
+                    Export CSV
+                  </button>
+                  <button class="ds-btn ds-btn--quiet">
+                    <svg aria-hidden="true"><use href="#i-refresh" /></svg>
+                    Refresh
+                  </button>
+                  <button class="ds-btn ds-btn--danger">
+                    <svg aria-hidden="true"><use href="#i-trash" /></svg>
+                    Delete draft
+                  </button>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                <b>Primary:</b> one per region, pine-800 with the brass edge. <b>Secondary:</b>
+                bordered alternative. <b>Quiet:</b> toolbar and tertiary. <b>Danger:</b>
+                destructive confirmation only, never the default.
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:20px">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Sizes</span>
+                <span class="specimen__meta">32 / 40 / 48</span>
+              </div>
+              <div class="specimen__stage stack">
+                <button class="ds-btn ds-btn--primary ds-btn--sm">Small · 32</button>
+                <button class="ds-btn ds-btn--primary">Medium · 40</button>
+                <button class="ds-btn ds-btn--primary ds-btn--lg">Large · 48</button>
+              </div>
+              <div class="specimen__foot">40 px desktop minimum. 44 px on touch.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">States</span>
+                <span class="specimen__meta">Hover · focus · disabled · loading</span>
+              </div>
+              <div class="specimen__stage stack">
+                <button class="ds-btn ds-btn--primary">Default</button>
+                <button class="ds-btn ds-btn--primary" style="background:var(--ds-pine-700)">Hover</button>
+                <button class="ds-btn ds-btn--primary" disabled>Disabled</button>
+                <button class="ds-btn ds-btn--primary is-loading">Saving</button>
+              </div>
+              <div class="specimen__foot">Loading preserves width and removes the label.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Icon and group</span>
+                <span class="specimen__meta">40 × 40 · joined</span>
+              </div>
+              <div class="specimen__stage stack">
+                <div class="row">
+                  <button class="ds-btn ds-btn--secondary ds-btn--icon" aria-label="Add batch">
+                    <svg aria-hidden="true"><use href="#i-plus" /></svg>
+                  </button>
+                  <button class="ds-btn ds-btn--secondary ds-btn--icon" aria-label="Filter">
+                    <svg aria-hidden="true"><use href="#i-filter" /></svg>
+                  </button>
+                  <button class="ds-btn ds-btn--secondary ds-btn--icon" aria-label="More actions">
+                    <svg aria-hidden="true"><use href="#i-more" /></svg>
+                  </button>
+                  <span class="ds-tip" data-tip="Shift + N">
+                    <button class="ds-btn ds-btn--quiet ds-btn--icon" aria-label="New record">
+                      <svg aria-hidden="true"><use href="#i-plus" /></svg>
+                    </button>
+                  </span>
+                </div>
+                <div class="ds-btn-group">
+                  <button class="ds-btn ds-btn--secondary ds-btn--sm">Cash</button>
+                  <button class="ds-btn ds-btn--secondary ds-btn--sm">MoMo</button>
+                  <button class="ds-btn ds-btn--secondary ds-btn--sm">Credit</button>
+                </div>
+              </div>
+              <div class="specimen__foot">Icon-only buttons always require an accessible label.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             07 FORMS
+             =================================================================== -->
+        <section class="kit-section" id="forms">
+          <div class="kit-section__head">
+            <div class="kit-section__num">07</div>
+            <h2>Forms</h2>
+            <p class="kit-section__lede">
+              A form is a conversation with a record. Labels are mono and always visible.
+              Errors are specific and attached to their field. No placeholder ever does the
+              job of a label.
+            </p>
+          </div>
+
+          <div class="split-main">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Field anatomy</span>
+                <span class="specimen__meta">Add a batch · stock</span>
+              </div>
+              <div class="specimen__stage">
+                <form class="stack" onsubmit="return false">
+                  <div class="ds-field">
+                    <div class="ds-field__label-row">
+                      <label class="ds-field__label" for="f-product">Product</label>
+                      <span class="ds-field__req">Required</span>
+                    </div>
+                    <input class="ds-input" id="f-product" value="Omeprazole 20mg">
+                    <p class="ds-help">Choose the catalogue product, not a free-text name.</p>
+                  </div>
+
+                  <div class="grid-2" style="gap:14px">
+                    <div class="ds-field">
+                      <div class="ds-field__label-row">
+                        <label class="ds-field__label" for="f-batch">Batch code</label>
+                        <span class="ds-field__req">Required</span>
+                      </div>
+                      <input class="ds-input ds-input--mono" id="f-batch" value="OM-55">
+                    </div>
+                    <div class="ds-field">
+                      <div class="ds-field__label-row">
+                        <label class="ds-field__label" for="f-qty">Quantity</label>
+                        <span class="ds-field__req">Required</span>
+                      </div>
+                      <input class="ds-input ds-input--num" id="f-qty" type="number" value="190">
+                    </div>
+                  </div>
+
+                  <div class="grid-2" style="gap:14px">
+                    <div class="ds-field">
+                      <div class="ds-field__label-row">
+                        <label class="ds-field__label" for="f-expiry">Expiry</label>
+                      </div>
+                      <input class="ds-input ds-input--mono" id="f-expiry" type="date" value="2026-10-16">
+                    </div>
+                    <div class="ds-field">
+                      <div class="ds-field__label-row">
+                        <label class="ds-field__label" for="f-supplier">Supplier</label>
+                      </div>
+                      <select class="ds-select" id="f-supplier">
+                        <option>Kampala Pharmaceutical</option>
+                        <option>Joint Medical Store</option>
+                        <option>National Medical Stores</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="ds-field">
+                    <div class="ds-field__label-row">
+                      <label class="ds-field__label" for="f-cost">Unit cost</label>
+                    </div>
+                    <div class="ds-input-wrap">
+                      <span class="ds-input-wrap__prefix">UGX</span>
+                      <input class="ds-input ds-input--num" id="f-cost" value="1,200">
+                      <span class="ds-input-wrap__suffix">per unit</span>
+                    </div>
+                    <p class="ds-help">Cost is recorded at batch level. It never overwrites the selling price.</p>
+                  </div>
+
+                  <div class="ds-field">
+                    <div class="ds-field__label-row">
+                      <label class="ds-field__label" for="f-note">Receiving note</label>
+                      <span class="ds-field__req">Optional</span>
+                    </div>
+                    <textarea class="ds-textarea" id="f-note" rows="3"
+                      placeholder="Invoice number, delivery condition, or a short note for the next shift."></textarea>
+                  </div>
+
+                  <div class="row" style="justify-content:flex-end;padding-top:4px">
+                    <button type="button" class="ds-btn ds-btn--quiet">Cancel</button>
+                    <button type="submit" class="ds-btn ds-btn--primary">Save batch</button>
+                  </div>
+                </form>
+              </div>
+              <div class="specimen__foot">
+                <b>Anatomy:</b> label row → control → help. Focus is a pine border plus inset.
+                Required is a word, not an asterisk.
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Search</span>
+                  <span class="specimen__meta">Desktop hint</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="ds-search">
+                    <svg aria-hidden="true"><use href="#i-search" /></svg>
+                    <input class="ds-input" type="search" placeholder="Product or batch" aria-label="Search">
+                    <span class="ds-kbd">/</span>
+                  </div>
+                  <p class="ds-help" style="margin-top:6px">The slash hint disappears on touch.</p>
+                </div>
+              </div>
+
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Password</span>
+                  <span class="specimen__meta">Reveal inside the field</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="ds-field">
+                    <label class="ds-field__label" for="f-pass">Password</label>
+                    <div class="ds-input-wrap">
+                      <input class="ds-input" id="f-pass" type="password" value="dispensary2026">
+                      <span class="ds-input-wrap__suffix">
+                        <button type="button" aria-label="Show password">Show</button>
+                      </span>
+                    </div>
+                    <p class="ds-help">Caps Lock is on.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="specimen">
+                <div class="specimen__head">
+                  <span class="specimen__name">Error state</span>
+                  <span class="specimen__meta">Specific and attached</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="ds-field is-error">
+                    <label class="ds-field__label" for="f-err">Quantity</label>
+                    <input class="ds-input ds-input--num" id="f-err" value="0" aria-invalid="true"
+                      aria-describedby="f-err-msg">
+                    <p class="ds-error" id="f-err-msg" role="alert">
+                      <svg aria-hidden="true"><use href="#i-alert" /></svg>
+                      Quantity must be at least 1. Enter the number of units received.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Selection controls</h3>
+              <span>Checkbox · radio · switch</span>
+            </div>
+            <div class="grid-3">
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Checkbox</span>
+                  <span class="specimen__meta">18 px</span>
+                </div>
+                <div class="specimen__stage stack">
+                  <label class="ds-check">
+                    <input type="checkbox" checked>
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>Print receipt after sale</span>
+                  </label>
+                  <label class="ds-check">
+                    <input type="checkbox">
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>Send WhatsApp refill reminder</span>
+                  </label>
+                  <label class="ds-check">
+                    <input type="checkbox" disabled>
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>Include expired batches</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Radio</span>
+                  <span class="specimen__meta">One choice</span>
+                </div>
+                <div class="specimen__stage stack">
+                  <label class="ds-check ds-check--radio">
+                    <input type="radio" name="pay" checked>
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>Cash</span>
+                  </label>
+                  <label class="ds-check ds-check--radio">
+                    <input type="radio" name="pay">
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>MTN MoMo</span>
+                  </label>
+                  <label class="ds-check ds-check--radio">
+                    <input type="radio" name="pay">
+                    <span class="ds-check__box"><svg aria-hidden="true"><use href="#i-check" /></svg></span>
+                    <span>Credit</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Switch</span>
+                  <span class="specimen__meta">Immediate effect</span>
+                </div>
+                <div class="specimen__stage stack">
+                  <label class="ds-switch">
+                    <input type="checkbox" checked>
+                    <span class="ds-switch__track"></span>
+                    <span>Expiry alerts</span>
+                  </label>
+                  <label class="ds-switch">
+                    <input type="checkbox">
+                    <span class="ds-switch__track"></span>
+                    <span>Low-stock alerts</span>
+                  </label>
+                  <label class="ds-switch">
+                    <input type="checkbox" checked>
+                    <span class="ds-switch__track"></span>
+                    <span>Daily close reminder</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Composite controls</h3>
+              <span>Segment · stepper · drop zone</span>
+            </div>
+            <div class="grid-3">
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Segmented</span>
+                  <span class="specimen__meta">View switch</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="ds-segment" role="group" aria-label="Stock view">
+                    <button type="button" class="is-active">Batches</button>
+                    <button type="button">Products</button>
+                    <button type="button">Expired</button>
+                  </div>
+                  <p class="ds-help" style="margin-top:10px">Not for destructive or multi-step choices.</p>
+                </div>
+              </div>
+
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Stepper</span>
+                  <span class="specimen__meta">Quantity</span>
+                </div>
+                <div class="specimen__stage">
+                  <div class="ds-stepper">
+                    <button type="button" aria-label="Decrease quantity">−</button>
+                    <input type="number" value="2" aria-label="Quantity">
+                    <button type="button" aria-label="Increase quantity">+</button>
+                  </div>
+                  <p class="ds-help" style="margin-top:10px">Use for small counts. Use a text field above 20.</p>
+                </div>
+              </div>
+
+              <div class="specimen" style="margin-top:0">
+                <div class="specimen__head">
+                  <span class="specimen__name">Drop zone</span>
+                  <span class="specimen__meta">Supplier invoice</span>
+                </div>
+                <div class="specimen__stage">
+                  <label class="ds-drop">
+                    <svg aria-hidden="true"><use href="#i-file" /></svg>
+                    <b>Drop a supplier invoice</b>
+                    <span>PDF or JPG · max 8 MB</span>
+                    <input type="file" class="visually-hidden">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Validation summary</h3>
+              <span>At the top of long forms</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage">
+                <div class="ds-validation" role="alert">
+                  <strong>3 fields need attention before this batch can be saved.</strong>
+                  <ul>
+                    <li>Quantity must be at least 1.</li>
+                    <li>Expiry date must be in the future.</li>
+                    <li>Supplier is required for a batch receipt.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                The summary names every field. Each message is repeated next to its field and
+                linked with <code>aria-describedby</code>.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             08 NAVIGATION
+             =================================================================== -->
+        <section class="kit-section" id="navigation">
+          <div class="kit-section__head">
+            <div class="kit-section__num">08</div>
+            <h2>Navigation</h2>
+            <p class="kit-section__lede">
+              The sidebar is a dark shelf; the active item is a paper label pinned to it.
+              Numbered groups in mono make the workspace predictable. The top bar carries
+              context, search, and utilities — never primary navigation.
+            </p>
+          </div>
+
+          <div class="specimen specimen--marked" style="margin-top:0">
+            <div class="specimen__head">
+              <span class="specimen__name">Workspace shell</span>
+              <span class="specimen__meta">Operations overview · 1280 px</span>
+            </div>
+            <div class="specimen__stage specimen__stage--flush">
+              <div class="ds-shell">
+                <aside class="ds-sidebar" aria-label="Workspace">
+                  <div class="ds-sidebar__brand">
+                    <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                    <span>
+                      <b>Onzima <em>Dawa</em></b>
+                      <span>Apothecary · Kireka</span>
+                    </span>
+                  </div>
+
+                  <nav class="ds-nav" aria-label="Primary">
+                    <a class="ds-navitem is-active" href="#navigation">
+                      <span class="n">01</span>
+                      <svg aria-hidden="true"><use href="#i-grid" /></svg>
+                      <span>Dashboard</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">02</span>
+                      <svg aria-hidden="true"><use href="#i-cart" /></svg>
+                      <span>Sell / POS</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">03</span>
+                      <svg aria-hidden="true"><use href="#i-box" /></svg>
+                      <span>Stock room</span>
+                      <span class="ds-badge">3</span>
+                    </a>
+
+                    <div class="ds-nav__group">Finance &amp; care</div>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">04</span>
+                      <svg aria-hidden="true"><use href="#i-file" /></svg>
+                      <span>Invoices</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">05</span>
+                      <svg aria-hidden="true"><use href="#i-scale" /></svg>
+                      <span>Reconciliation</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">06</span>
+                      <svg aria-hidden="true"><use href="#i-heart" /></svg>
+                      <span>Refill care</span>
+                      <span class="ds-badge">4</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">07</span>
+                      <svg aria-hidden="true"><use href="#i-card" /></svg>
+                      <span>Credit &amp; expenses</span>
+                    </a>
+
+                    <div class="ds-nav__group">Inventory &amp; data</div>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">08</span>
+                      <svg aria-hidden="true"><use href="#i-bell" /></svg>
+                      <span>Stock alerts</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">09</span>
+                      <svg aria-hidden="true"><use href="#i-book" /></svg>
+                      <span>Drug catalogue</span>
+                    </a>
+                    <a class="ds-navitem" href="#navigation">
+                      <span class="n">10</span>
+                      <svg aria-hidden="true"><use href="#i-settings" /></svg>
+                      <span>Manage data</span>
+                    </a>
+                  </nav>
+
+                  <div class="ds-sidebar__foot">
+                    <div class="ds-user">
+                      <span class="ds-avatar">CO</span>
+                      <span class="ds-user__meta">
+                        <b>Charles Onzima</b>
+                        <span>Shop owner</span>
+                      </span>
+                    </div>
+                  </div>
+                </aside>
+
+                <div class="ds-shell__main">
+                  <div class="ds-appbar">
+                    <span class="ds-appbar__title">Kireka · Apothecary</span>
+                    <div class="ds-appbar__search ds-search">
+                      <svg aria-hidden="true"><use href="#i-search" /></svg>
+                      <input class="ds-input" type="search" placeholder="Search" aria-label="Search workspace">
+                      <span class="ds-kbd">/</span>
+                    </div>
+                    <button class="ds-appbar__icon" aria-label="Alerts">
+                      <svg aria-hidden="true"><use href="#i-bell" /></svg>
+                    </button>
+                    <button class="ds-appbar__icon" aria-label="Profile">
+                      <span class="ds-avatar ds-avatar--sm">CO</span>
+                    </button>
+                  </div>
+
+                  <div class="ds-pagehead">
+                    <div>
+                      <div class="ds-pagehead__eyebrow">Workspace / Overview</div>
+                      <h1>Today at the counter</h1>
+                      <p>Tuesday 28 Oct 2026 · Shift open 08:12</p>
+                    </div>
+                    <div class="ds-pagehead__right">
+                      <span class="ds-pagehead__meta">Last sync<br>18:42</span>
+                      <button class="ds-btn ds-btn--primary ds-btn--sm">Record sale</button>
+                    </div>
+                  </div>
+
+                  <div class="ds-pagebody">
+                    <div class="ds-stats">
+                      <div class="ds-stat ds-stat--accent">
+                        <div class="ds-stat__label">Sales today <span class="n">01</span></div>
+                        <div class="ds-stat__value">148,500</div>
+                        <div class="ds-stat__note">UGX · 12 sales</div>
+                      </div>
+                      <div class="ds-stat">
+                        <div class="ds-stat__label">Refills due <span class="n">02</span></div>
+                        <div class="ds-stat__value">4</div>
+                        <div class="ds-stat__note">Chronic patients</div>
+                      </div>
+                      <div class="ds-stat">
+                        <div class="ds-stat__label">Low stock <span class="n">03</span></div>
+                        <div class="ds-stat__value">3</div>
+                        <div class="ds-stat__note">Items at reorder</div>
+                      </div>
+                      <div class="ds-stat ds-stat--alert">
+                        <div class="ds-stat__label">Expiring <span class="n">04</span></div>
+                        <div class="ds-stat__value">2</div>
+                        <div class="ds-stat__note">Within 30 days</div>
+                      </div>
+                    </div>
+
+                    <div class="ds-main-grid">
+                      <div class="ds-panel">
+                        <div class="ds-panel__head">
+                          <span class="ds-panel__title">
+                            <svg aria-hidden="true"><use href="#i-alert" /></svg>
+                            Expiry watchdog
+                          </span>
+                          <span class="ds-panel__meta">2 batches</span>
+                        </div>
+                        <div class="ds-panel__body">
+                          <div class="expiry-row">
+                            <span class="expiry-row__mark expiry-row__mark--danger"></span>
+                            <span class="expiry-row__body">
+                              <b>Omeprazole 20mg · OM-55</b>
+                              <span>80 left · expires 2026-10-16</span>
+                            </span>
+                            <span class="expiry-row__dose expiry-row__dose--danger">5 days</span>
+                          </div>
+                          <div class="expiry-row">
+                            <span class="expiry-row__mark"></span>
+                            <span class="expiry-row__body">
+                              <b>Artemether-Lumefantrine 20/120 · AL-77</b>
+                              <span>60 left · expires 2026-11-10</span>
+                            </span>
+                            <span class="expiry-row__dose">20 days</span>
+                          </div>
+                          <div class="expiry-row">
+                            <span class="expiry-row__mark"></span>
+                            <span class="expiry-row__body">
+                              <b>Paracetamol 500mg · PC-889</b>
+                              <span>190 left · expires 2026-11-15</span>
+                            </span>
+                            <span class="expiry-row__dose">25 days</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ds-panel">
+                        <div class="ds-panel__head">
+                          <span class="ds-panel__title">
+                            <svg aria-hidden="true"><use href="#i-heart" /></svg>
+                            Refills due
+                          </span>
+                          <span class="ds-panel__meta">Day 25</span>
+                        </div>
+                        <div class="ds-panel__body">
+                          <div class="refill-row">
+                            <span class="ds-avatar ds-avatar--sm">AN</span>
+                            <span class="refill-row__body">
+                              <b>Amina Namono</b>
+                              <span>Metformin 500mg · 0701 456 789</span>
+                            </span>
+                            <span class="ds-stamp ds-stamp--warning">Due</span>
+                          </div>
+                          <div class="refill-row">
+                            <span class="ds-avatar ds-avatar--sm ds-avatar--pine">NG</span>
+                            <span class="refill-row__body">
+                              <b>Nakato Grace</b>
+                              <span>Amlodipine 5mg · 0774 123 456</span>
+                            </span>
+                            <span class="ds-stamp ds-stamp--neutral">2 days</span>
+                          </div>
+                          <div class="refill-row">
+                            <span class="ds-avatar ds-avatar--sm">JM</span>
+                            <span class="refill-row__body">
+                              <b>John Mukasa</b>
+                              <span>Metformin 500mg · 0752 908 114</span>
+                            </span>
+                            <span class="ds-stamp ds-stamp--neutral">4 days</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen__foot">
+              <b>Sidebar 272 px:</b> numbered groups, paper active label, brass inset rail.
+              <b>Top bar 64 px:</b> breadcrumb, search, utilities. <b>Page:</b> one header,
+              one stat strip, one asymmetric grid.
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Tabs</h3>
+              <span>Underline · never pills</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage">
+                <div class="ds-tabs" role="tablist" aria-label="Stock views">
+                  <button class="ds-tab is-active" role="tab" aria-selected="true" data-tab="tab-batches">Batches <span class="ds-badge">12</span></button>
+                  <button class="ds-tab" role="tab" aria-selected="false" data-tab="tab-products">Products</button>
+                  <button class="ds-tab" role="tab" aria-selected="false" data-tab="tab-expired">Expired <span class="ds-badge ds-badge--danger">2</span></button>
+                  <button class="ds-tab" role="tab" aria-selected="false" data-tab="tab-adjust">Adjustments</button>
+                </div>
+                <div class="ds-tabpanel" id="tab-batches" style="padding-top:16px">
+                  <p class="small muted">12 active batches across 9 products. Sorted by expiry.</p>
+                </div>
+                <div class="ds-tabpanel" id="tab-products" hidden style="padding-top:16px">
+                  <p class="small muted">9 catalogue products. Two are below reorder level.</p>
+                </div>
+                <div class="ds-tabpanel" id="tab-expired" hidden style="padding-top:16px">
+                  <p class="small muted">2 batches have passed their expiry date and are blocked from sale.</p>
+                </div>
+                <div class="ds-tabpanel" id="tab-adjust" hidden style="padding-top:16px">
+                  <p class="small muted">Stock adjustments are attributed to a staff member and a reason.</p>
+                </div>
+              </div>
+              <div class="specimen__foot">The 2 px brass indicator is the only decoration. Counts use
+                the rectangular badge, not a pill.</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Breadcrumbs</span>
+                <span class="specimen__meta">Mono · slash</span>
+              </div>
+              <div class="specimen__stage">
+                <nav class="ds-crumbs" aria-label="Breadcrumb">
+                  <a href="#navigation">Workspace</a>
+                  <span class="sep">/</span>
+                  <a href="#navigation">Stock</a>
+                  <span class="sep">/</span>
+                  <span aria-current="page">Batch OM-55</span>
+                </nav>
+              </div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Pagination</span>
+                <span class="specimen__meta">32 px · rectangular</span>
+              </div>
+              <div class="specimen__stage">
+                <nav class="ds-pagination" aria-label="Pagination">
+                  <button class="ds-page" disabled aria-label="Previous page">
+                    <svg aria-hidden="true"><use href="#i-chevron-left" /></svg>
+                  </button>
+                  <button class="ds-page is-current" aria-current="page">1</button>
+                  <button class="ds-page">2</button>
+                  <button class="ds-page">3</button>
+                  <span class="ds-page">…</span>
+                  <button class="ds-page">12</button>
+                  <button class="ds-page" aria-label="Next page">
+                    <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                  </button>
+                  <span class="ds-pagination__meta">1–20 of 236</span>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             09 DATA DISPLAY
+             =================================================================== -->
+        <section class="kit-section" id="data">
+          <div class="kit-section__head">
+            <div class="kit-section__num">09</div>
+            <h2>Data display</h2>
+            <p class="kit-section__lede">
+              The ledger table is the primary data component. Stat strips are one ruled band,
+              not four cards. Numbers are tabular, statuses are stamps, and every chart has a
+              text summary.
+            </p>
+          </div>
+
+          <div class="specimen" style="margin-top:0">
+            <div class="specimen__head">
+              <span class="specimen__name">Stat strip</span>
+              <span class="specimen__meta">One band · four figures</span>
+            </div>
+            <div class="specimen__stage">
+              <div class="ds-stats">
+                <div class="ds-stat ds-stat--accent">
+                  <div class="ds-stat__label">Sales today <span class="n">01</span></div>
+                  <div class="ds-stat__value">148,500</div>
+                  <div class="ds-stat__note">UGX · 12 sales</div>
+                </div>
+                <div class="ds-stat">
+                  <div class="ds-stat__label">Cash / MoMo <span class="n">02</span></div>
+                  <div class="ds-stat__value">96,000 <small>/ 52,500</small></div>
+                  <div class="ds-stat__note">UGX split</div>
+                </div>
+                <div class="ds-stat">
+                  <div class="ds-stat__label">Stock value <span class="n">03</span></div>
+                  <div class="ds-stat__value">4.2<small>m</small></div>
+                  <div class="ds-stat__note">UGX at cost</div>
+                </div>
+                <div class="ds-stat ds-stat--alert">
+                  <div class="ds-stat__label">Expiring <span class="n">04</span></div>
+                  <div class="ds-stat__value">2</div>
+                  <div class="ds-stat__note">Batches within 30 days</div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen__foot">
+              Dividers are hairlines, not gaps. One figure may take brass emphasis; only a
+              genuine exception takes clay.
+            </div>
+          </div>
+
+          <div class="split-main" style="margin-top:20px">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Ledger table</span>
+                <span class="specimen__meta">Stock · 5 of 12 batches</span>
+              </div>
+              <div class="specimen__stage specimen__stage--flush">
+                <div class="ds-table-wrap">
+                  <table class="ds-table">
+                    <caption class="visually-hidden">Stock batches ordered by expiry date</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" class="rowno">#</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Batch</th>
+                        <th scope="col">Expiry</th>
+                        <th scope="col" class="num">Qty</th>
+                        <th scope="col" class="num">Value</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="is-selected">
+                        <td class="rowno">01</td>
+                        <td>
+                          <span class="cell-title">Omeprazole 20mg</span>
+                          <span class="cell-sub">Capsule · 20 mg</span>
+                        </td>
+                        <td class="mono">OM-55</td>
+                        <td class="num">2026-10-16</td>
+                        <td class="num">80</td>
+                        <td class="num">96,000</td>
+                        <td><span class="ds-stamp ds-stamp--danger">Expiring</span></td>
+                      </tr>
+                      <tr>
+                        <td class="rowno">02</td>
+                        <td>
+                          <span class="cell-title">Artemether-Lumefantrine</span>
+                          <span class="cell-sub">Tablet · 20/120</span>
+                        </td>
+                        <td class="mono">AL-77</td>
+                        <td class="num">2026-11-10</td>
+                        <td class="num">60</td>
+                        <td class="num">84,000</td>
+                        <td><span class="ds-stamp ds-stamp--warning">25 days</span></td>
+                      </tr>
+                      <tr>
+                        <td class="rowno">03</td>
+                        <td>
+                          <span class="cell-title">Paracetamol 500mg</span>
+                          <span class="cell-sub">Tablet · 500 mg</span>
+                        </td>
+                        <td class="mono">PC-889</td>
+                        <td class="num">2026-11-15</td>
+                        <td class="num">190</td>
+                        <td class="num">38,000</td>
+                        <td><span class="ds-stamp ds-stamp--success">In stock</span></td>
+                      </tr>
+                      <tr>
+                        <td class="rowno">04</td>
+                        <td>
+                          <span class="cell-title">Metformin 500mg</span>
+                          <span class="cell-sub">Tablet · 500 mg</span>
+                        </td>
+                        <td class="mono">MF-204</td>
+                        <td class="num">2027-02-28</td>
+                        <td class="num">42</td>
+                        <td class="num">12,600</td>
+                        <td><span class="ds-stamp ds-stamp--warning">Low</span></td>
+                      </tr>
+                      <tr>
+                        <td class="rowno">05</td>
+                        <td>
+                          <span class="cell-title">Amlodipine 5mg</span>
+                          <span class="cell-sub">Tablet · 5 mg</span>
+                        </td>
+                        <td class="mono">AM-118</td>
+                        <td class="num">2027-04-02</td>
+                        <td class="num">0</td>
+                        <td class="num">0</td>
+                        <td><span class="ds-stamp ds-stamp--neutral">Out</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                Row numbers are mono and faint. Numeric columns are right-aligned and tabular.
+                Status is a word, a mark, and a colour.
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="ds-panel" style="margin-top:0">
+                <div class="ds-panel__head">
+                  <span class="ds-panel__title">Stock cover</span>
+                  <span class="ds-panel__meta">Summary</span>
+                </div>
+                <div class="ds-panel__body stack">
+                  <div class="ds-meter">
+                    <div class="ds-meter__head"><span>Omeprazole 20mg</span><b>18 days</b></div>
+                    <div class="ds-meter__track">
+                      <div class="ds-meter__fill ds-meter__fill--warn" style="width:62%"></div>
+                      <span class="ds-meter__mark" style="left:40%"></span>
+                    </div>
+                  </div>
+                  <div class="ds-meter">
+                    <div class="ds-meter__head"><span>Paracetamol 500mg</span><b>46 days</b></div>
+                    <div class="ds-meter__track">
+                      <div class="ds-meter__fill" style="width:88%"></div>
+                      <span class="ds-meter__mark" style="left:40%"></span>
+                    </div>
+                  </div>
+                  <div class="ds-meter">
+                    <div class="ds-meter__head"><span>Amlodipine 5mg</span><b>0 days</b></div>
+                    <div class="ds-meter__track">
+                      <div class="ds-meter__fill ds-meter__fill--danger" style="width:0%"></div>
+                      <span class="ds-meter__mark" style="left:40%"></span>
+                    </div>
+                  </div>
+                  <p class="ds-help">The brass mark is the reorder threshold. The number is the
+                    source of truth; the bar is a glance.</p>
+                </div>
+              </div>
+
+              <div class="ds-panel">
+                <div class="ds-panel__head">
+                  <span class="ds-panel__title">Batch detail</span>
+                  <span class="ds-panel__meta">OM-55</span>
+                </div>
+                <div class="ds-panel__body">
+                  <div class="kv">
+                    <span>Received</span><b>2026-03-04</b>
+                    <span>Supplier</span><b>Kampala Pharmaceutical</b>
+                    <span>Unit cost</span><b>UGX 1,200</b>
+                    <span>Selling price</span><b>UGX 1,800</b>
+                    <span>Margin</span><b class="accent">33%</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Stamps and identifiers</h3>
+              <span>Status · count · tag · avatar</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage">
+                <div class="row">
+                  <span class="ds-stamp ds-stamp--live">Live</span>
+                  <span class="ds-stamp ds-stamp--success">In stock</span>
+                  <span class="ds-stamp ds-stamp--warning">Low</span>
+                  <span class="ds-stamp ds-stamp--danger">Expired</span>
+                  <span class="ds-stamp ds-stamp--info">Info</span>
+                  <span class="ds-stamp ds-stamp--brass">Owner</span>
+                  <span class="ds-stamp ds-stamp--neutral">Draft</span>
+                </div>
+                <div class="row" style="margin-top:18px">
+                  <span class="ds-badge">3</span>
+                  <span class="ds-badge ds-badge--brass">12</span>
+                  <span class="ds-badge ds-badge--danger">2</span>
+                  <span class="ds-badge ds-badge--quiet">0</span>
+                  <span class="ds-tag">POS</span>
+                  <span class="ds-tag">Batch</span>
+                  <span class="ds-tag">UNRA</span>
+                </div>
+                <div class="row" style="margin-top:18px">
+                  <span class="ds-avatar">CO</span>
+                  <span class="ds-avatar ds-avatar--pine">SA</span>
+                  <span class="ds-avatar ds-avatar--sm">AN</span>
+                  <span class="ds-avatar ds-avatar--lg ds-avatar--pine">NG</span>
+                  <span class="ds-avatar-group">
+                    <span class="ds-avatar ds-avatar--sm">CO</span>
+                    <span class="ds-avatar ds-avatar--sm ds-avatar--pine">JM</span>
+                    <span class="ds-avatar ds-avatar--sm">AN</span>
+                    <span class="ds-avatar-group__more">+2</span>
+                  </span>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                A stamp is rectangular and uppercase. A pill invites a tap; a stamp does not.
+                Count badges widen after two digits and never exceed three. Avatars group side
+                by side, never overlapped; the remainder is a count, not a hidden disc.
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Chart</span>
+                <span class="specimen__meta">Sales · 7 days</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="ds-chart">
+                  <svg viewBox="0 0 600 190" role="img" aria-label="Sales over seven days: Monday 84,000; Tuesday 96,000; Wednesday 78,000; Thursday 120,000; Friday 108,000; Saturday 148,500; Sunday 132,000 Uganda shillings.">
+                    <line class="ds-chart__grid" x1="24" y1="30" x2="580" y2="30" />
+                    <line class="ds-chart__grid" x1="24" y1="72" x2="580" y2="72" />
+                    <line class="ds-chart__grid" x1="24" y1="114" x2="580" y2="114" />
+                    <line class="ds-chart__grid" x1="24" y1="156" x2="580" y2="156" />
+                    <text class="ds-chart__axis" x="0" y="34">150k</text>
+                    <text class="ds-chart__axis" x="4" y="76">100k</text>
+                    <text class="ds-chart__axis" x="8" y="118">50k</text>
+                    <text class="ds-chart__axis" x="20" y="160">0</text>
+                    <path class="ds-chart__area" d="M50 112 L130 101 L210 118 L290 84 L370 92 L450 62 L530 72 L530 156 L50 156 Z" />
+                    <path class="ds-chart__line" d="M50 112 L130 101 L210 118 L290 84 L370 92 L450 62 L530 72" />
+                    <line class="ds-chart__line ds-chart__line--brass" x1="24" y1="84" x2="580" y2="84" />
+                    <circle class="ds-chart__dot" cx="50" cy="112" r="3" />
+                    <circle class="ds-chart__dot" cx="130" cy="101" r="3" />
+                    <circle class="ds-chart__dot" cx="210" cy="118" r="3" />
+                    <circle class="ds-chart__dot" cx="290" cy="84" r="3" />
+                    <circle class="ds-chart__dot" cx="370" cy="92" r="3" />
+                    <circle class="ds-chart__dot ds-chart__dot--active" cx="450" cy="62" r="4" />
+                    <circle class="ds-chart__dot" cx="530" cy="72" r="3" />
+                    <text class="ds-chart__axis" x="38" y="180">MON</text>
+                    <text class="ds-chart__axis" x="118" y="180">TUE</text>
+                    <text class="ds-chart__axis" x="198" y="180">WED</text>
+                    <text class="ds-chart__axis" x="278" y="180">THU</text>
+                    <text class="ds-chart__axis" x="358" y="180">FRI</text>
+                    <text class="ds-chart__axis" x="438" y="180">SAT</text>
+                    <text class="ds-chart__axis" x="518" y="180">SUN</text>
+                  </svg>
+                  <div class="ds-chart__legend">
+                    <span><i></i> Sales</span>
+                    <span><i class="brass"></i> Daily target</span>
+                  </div>
+                  <p class="ds-chart__summary">
+                    Saturday was the strongest day at UGX 148,500. The week finished 18% above
+                    the daily target.
+                  </p>
+                </div>
+              </div>
+              <div class="specimen__foot">One brass series maximum. Grid hairlines, 1.5–1.8 px
+                lines, no gradients or 3D. The summary is not optional.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Activity</span>
+                <span class="specimen__meta">Shift log</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="ds-timeline">
+                  <div class="ds-timeline__item">
+                    <span class="ds-timeline__time">18:42</span>
+                    <span class="ds-timeline__node ds-timeline__node--solid"></span>
+                    <span class="ds-timeline__body"><b>Daily close recorded</b>
+                      <span>Charles Onzima · cash counted UGX 96,000</span></span>
+                  </div>
+                  <div class="ds-timeline__item">
+                    <span class="ds-timeline__time">17:15</span>
+                    <span class="ds-timeline__node"></span>
+                    <span class="ds-timeline__body"><b>Sale #0184 · UGX 12,500</b>
+                      <span>Sarah Achen · MTN MoMo</span></span>
+                  </div>
+                  <div class="ds-timeline__item">
+                    <span class="ds-timeline__time">16:02</span>
+                    <span class="ds-timeline__node"></span>
+                    <span class="ds-timeline__body"><b>Batch OM-55 quarantined</b>
+                      <span>Charles Onzima · 80 units · expires in 5 days</span></span>
+                  </div>
+                  <div class="ds-timeline__item">
+                    <span class="ds-timeline__time">08:12</span>
+                    <span class="ds-timeline__node"></span>
+                    <span class="ds-timeline__body"><b>Shift opened</b>
+                      <span>Sarah Achen · opening float UGX 50,000</span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">The timeline is an audit record: time, actor, action.
+                No relative labels without an exact timestamp.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             10 FEEDBACK
+             =================================================================== -->
+        <section class="kit-section" id="feedback">
+          <div class="kit-section__head">
+            <div class="kit-section__num">10</div>
+            <h2>Feedback</h2>
+            <p class="kit-section__lede">
+              A banner explains. A toast confirms. An empty state directs. None of them
+              performs. <strong>No shimmer, no confetti, no mascots.</strong>
+            </p>
+          </div>
+
+          <div class="kit-sub" style="margin-top:0">
+            <div class="kit-sub__head">
+              <h3>Inline banners</h3>
+              <span>Title + one sentence + optional action</span>
+            </div>
+            <div class="grid-2">
+              <div class="stack">
+                <div class="ds-alert ds-alert--info" role="status">
+                  <svg aria-hidden="true"><use href="#i-shield" /></svg>
+                  <div>
+                    <div class="ds-alert__title">Plan limit reached</div>
+                    <div class="ds-alert__body">Core includes POS and inventory. Refill care is
+                      available on Pro.</div>
+                  </div>
+                  <a class="ds-btn ds-btn--link ds-alert__action" href="#overlays">See plans</a>
+                </div>
+                <div class="ds-alert ds-alert--success" role="status">
+                  <svg aria-hidden="true"><use href="#i-check" /></svg>
+                  <div>
+                    <div class="ds-alert__title">Batch saved</div>
+                    <div class="ds-alert__body">OM-55 is now 190 units. Expiry is 16 Oct 2026.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="stack">
+                <div class="ds-alert ds-alert--warning" role="status">
+                  <svg aria-hidden="true"><use href="#i-alert" /></svg>
+                  <div>
+                    <div class="ds-alert__title">5 batches expire this week</div>
+                    <div class="ds-alert__body">Quarantine them before the next sale to keep
+                      expired stock off the counter.</div>
+                  </div>
+                  <a class="ds-btn ds-btn--link ds-alert__action" href="#data">Review</a>
+                </div>
+                <div class="ds-alert ds-alert--danger" role="alert">
+                  <svg aria-hidden="true"><use href="#i-alert" /></svg>
+                  <div>
+                    <div class="ds-alert__title">Payment not recorded</div>
+                    <div class="ds-alert__body">The MoMo reference is missing. The sale is still
+                      open and can be retried.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Toast</span>
+                <span class="specimen__meta">Confirmation only · 6 s</span>
+              </div>
+              <div class="specimen__stage specimen__stage--sunken" style="display:grid;place-items:end">
+                <span class="stage-note stage-note--paper"><b>Placement</b>Bottom-right · above
+                  content · one at a time</span>
+                <div class="ds-toast" role="status">
+                  <svg aria-hidden="true"><use href="#i-check" /></svg>
+                  <div>
+                    <div class="ds-toast__title">Payment recorded</div>
+                    <div class="ds-toast__body">Sale #0184 · UGX 12,500 · MTN MoMo</div>
+                  </div>
+                  <button class="ds-toast__close" aria-label="Dismiss">×</button>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                Toasts confirm. They never ask for a decision. Errors that need a decision use
+                a banner or a dialog.
+                <button class="ds-btn ds-btn--quiet ds-btn--sm" type="button" data-toast style="margin-left:8px">Show live toast</button>
+              </div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Empty state</span>
+                <span class="specimen__meta">Seal watermark · one action</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="ds-empty">
+                  <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                  <h4>No batches recorded</h4>
+                  <p>Add the first batch to start tracking expiry and stock value for this product.</p>
+                  <button class="ds-btn ds-btn--primary ds-btn--sm">Add batch</button>
+                </div>
+              </div>
+              <div class="specimen__foot">A direct sentence and one action. No illustration.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:20px">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Skeleton</span>
+                <span class="specimen__meta">No shimmer</span>
+              </div>
+              <div class="specimen__stage stack">
+                <span class="ds-skel ds-skel--title"></span>
+                <span class="ds-skel"></span>
+                <span class="ds-skel ds-skel--short"></span>
+                <span class="ds-skel"></span>
+              </div>
+              <div class="specimen__foot">Only for content that is genuinely loading.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Loading</span>
+                <span class="specimen__meta">Preserve width</span>
+              </div>
+              <div class="specimen__stage stack">
+                <div class="ds-loading-row"><span class="ds-spinner"></span> Loading ledger</div>
+                <button class="ds-btn ds-btn--primary is-loading" style="width:150px">Saving</button>
+              </div>
+              <div class="specimen__foot">Never replace a wide button with a narrow spinner.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Tooltip</span>
+                <span class="specimen__meta">200 ms delay</span>
+              </div>
+              <div class="specimen__stage" style="padding-top:38px">
+                <div class="row">
+                  <span class="ds-tip" data-tip="Download the current database">
+                    <button class="ds-btn ds-btn--secondary ds-btn--sm">
+                      <svg aria-hidden="true"><use href="#i-download" /></svg>
+                      Backup
+                    </button>
+                  </span>
+                  <span class="ds-tip" data-tip="Only the shop owner can do this">
+                    <span class="ds-stamp ds-stamp--neutral" tabindex="0">Owner only</span>
+                  </span>
+                </div>
+              </div>
+              <div class="specimen__foot">Hover or focus. Never the only source of essential
+                information.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             11 OVERLAYS
+             =================================================================== -->
+        <section class="kit-section" id="overlays">
+          <div class="kit-section__head">
+            <div class="kit-section__num">11</div>
+            <h2>Overlays</h2>
+            <p class="kit-section__lede">
+              Overlays are paper sheets with a brass top rule and one shadow. The backdrop is
+              ink at 60%, never a blur. Menus are small, direct, and keyboard reachable.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Menu</span>
+                <span class="specimen__meta">Row actions</span>
+              </div>
+              <div class="specimen__stage" style="min-height:330px">
+                <details class="ds-menu-wrap" open>
+                  <summary class="ds-btn ds-btn--secondary ds-btn--sm">
+                    Actions
+                    <svg aria-hidden="true"><use href="#i-chevron-down" /></svg>
+                  </summary>
+                  <div class="ds-menu ds-menu--left">
+                    <div class="ds-menu__label">Batch OM-55</div>
+                    <button class="ds-menu__item">
+                      <svg aria-hidden="true"><use href="#i-edit" /></svg>
+                      Edit batch
+                    </button>
+                    <button class="ds-menu__item">
+                      <svg aria-hidden="true"><use href="#i-print" /></svg>
+                      Print label
+                    </button>
+                    <button class="ds-menu__item">
+                      <svg aria-hidden="true"><use href="#i-external" /></svg>
+                      Open ledger
+                    </button>
+                    <div class="ds-menu__sep"></div>
+                    <button class="ds-menu__item ds-menu__item--danger">
+                      <svg aria-hidden="true"><use href="#i-trash" /></svg>
+                      Write off batch
+                    </button>
+                  </div>
+                </details>
+              </div>
+              <div class="specimen__foot">32 px rows, 6 px padding, one danger action at the end.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Dialog</span>
+                <span class="specimen__meta">Decision</span>
+              </div>
+              <div class="specimen__stage" style="display:grid;place-items:center;min-height:250px">
+                <div class="stack" style="justify-items:center;text-align:center">
+                  <button class="ds-btn ds-btn--secondary" data-open-dialog>
+                    <svg aria-hidden="true"><use href="#i-logout" /></svg>
+                    Open dialog
+                  </button>
+                  <p class="ds-help">Focus is trapped and restored.</p>
+                </div>
+              </div>
+              <div class="specimen__foot">One decision, actions right-aligned. Destructive action
+                never default-focused.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Drawer</span>
+                <span class="specimen__meta">Context</span>
+              </div>
+              <div class="specimen__stage" style="display:grid;place-items:center;min-height:250px">
+                <div class="stack" style="justify-items:center;text-align:center">
+                  <button class="ds-btn ds-btn--secondary" data-open-drawer>
+                    <svg aria-hidden="true"><use href="#i-user" /></svg>
+                    Open drawer
+                  </button>
+                  <p class="ds-help">Detail without losing the list.</p>
+                </div>
+              </div>
+              <div class="specimen__foot">400 px sheet from the right. Filters use the same
+                drawer pattern.</div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Confirmation copy</h3>
+              <span>Name the record · name the consequence</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage copy-check">
+                <div class="ds-dialog" style="position:static;max-width:100%;box-shadow:none">
+                  <div class="ds-dialog__head">
+                    <div class="ds-dialog__eyebrow">Write off batch</div>
+                    <h2>Remove OM-55 from stock?</h2>
+                  </div>
+                  <div class="ds-dialog__body">
+                    <p>80 units of Omeprazole 20mg will be removed from sale and recorded as a
+                      write-off. This cannot be undone, but the audit record is kept.</p>
+                  </div>
+                  <div class="ds-dialog__foot">
+                    <button class="ds-btn ds-btn--quiet">Cancel</button>
+                    <button class="ds-btn ds-btn--danger">Write off 80 units</button>
+                  </div>
+                </div>
+                <ol class="copy-rules">
+                  <li><span><b>Name the record.</b>OM-55, not “this batch”.</span></li>
+                  <li><span><b>State the consequence.</b>80 units leave sale and become a
+                    write-off.</span></li>
+                  <li><span><b>Keep the promise.</b>Says what cannot be undone, and what is
+                    kept.</span></li>
+                  <li><span><b>Repeat the number.</b>The action carries the quantity, so the
+                    button cannot be pressed by habit.</span></li>
+                </ol>
+              </div>
+              <div class="specimen__foot">
+                A destructive dialog names the record, the consequence, and the number.
+                “Are you sure?” is not a consequence.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             12 PATTERNS
+             =================================================================== -->
+        <section class="kit-section" id="patterns">
+          <div class="kit-section__head">
+            <div class="kit-section__num">12</div>
+            <h2>Patterns</h2>
+            <p class="kit-section__lede">
+              The system in use. These are compositions, not new components. Each one keeps
+              the same rule: <strong>title → numbers → exceptions → detail.</strong>
+            </p>
+          </div>
+
+          <div class="kit-sub" style="margin-top:0">
+            <div class="kit-sub__head">
+              <h3>Counter sale</h3>
+              <span>Two-pane instrument</span>
+            </div>
+            <div class="specimen specimen--marked">
+              <div class="specimen__head">
+                <span class="specimen__name">POS · New sale</span>
+                <span class="specimen__meta">Basket + payment</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="split-main" style="gap:16px">
+                  <div class="ds-panel">
+                    <div class="ds-panel__head">
+                      <span class="ds-panel__title">
+                        <svg aria-hidden="true"><use href="#i-cart" /></svg>
+                        Basket · 3 items
+                      </span>
+                      <span class="ds-panel__meta">Sale #0184</span>
+                    </div>
+                    <div class="ds-panel__body" style="padding:12px 14px">
+                      <div class="ds-search" style="margin-bottom:10px">
+                        <svg aria-hidden="true"><use href="#i-search" /></svg>
+                        <input class="ds-input" type="search" placeholder="Scan or search product" aria-label="Scan or search product">
+                        <span class="ds-kbd">F2</span>
+                      </div>
+                      <div class="ds-table-wrap">
+                        <table class="ds-table ds-table--compact">
+                          <thead>
+                            <tr><th>Item</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Total</th><th></th></tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><span class="cell-title">Omeprazole 20mg</span><span class="cell-sub">OM-55 · capsule</span></td>
+                              <td class="num">2</td>
+                              <td class="num">1,800</td>
+                              <td class="num">3,600</td>
+                              <td class="num"><button class="ds-btn ds-btn--quiet ds-btn--sm" aria-label="Remove Omeprazole">×</button></td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">Paracetamol 500mg</span><span class="cell-sub">PC-889 · tablet</span></td>
+                              <td class="num">10</td>
+                              <td class="num">200</td>
+                              <td class="num">2,000</td>
+                              <td class="num"><button class="ds-btn ds-btn--quiet ds-btn--sm" aria-label="Remove Paracetamol">×</button></td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">Metformin 500mg</span><span class="cell-sub">MF-204 · tablet</span></td>
+                              <td class="num">10</td>
+                              <td class="num">300</td>
+                              <td class="num">3,000</td>
+                              <td class="num"><button class="ds-btn ds-btn--quiet ds-btn--sm" aria-label="Remove Metformin">×</button></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ds-panel">
+                    <div class="ds-panel__head">
+                      <span class="ds-panel__title">Payment</span>
+                      <span class="ds-panel__meta">UGX</span>
+                    </div>
+                    <div class="ds-panel__body stack">
+                      <div class="kv">
+                        <span>Subtotal</span><b>8,600</b>
+                        <span>Discount</span><b>0</b>
+                        <span>Total</span><b class="kv__total">8,600</b>
+                      </div>
+                      <div>
+                        <div class="ds-field__label" style="margin-bottom:5px">Method</div>
+                        <div class="ds-segment" role="group" aria-label="Payment method">
+                          <button type="button" class="is-active">Cash</button>
+                          <button type="button">MoMo</button>
+                          <button type="button">Credit</button>
+                        </div>
+                      </div>
+                      <button class="ds-btn ds-btn--primary ds-btn--lg ds-btn--full">
+                        <svg aria-hidden="true"><use href="#i-receipt" /></svg>
+                        Complete sale · 8,600
+                      </button>
+                      <p class="ds-help" style="text-align:center">The amount is always visible
+                        on the primary action.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                <b>Left:</b> search and basket. <b>Right:</b> totals, payment, the one action.
+                Never hide the total behind a tab or a second screen.
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Receipt</span>
+                <span class="specimen__meta">The one centred layout</span>
+              </div>
+              <div class="specimen__stage specimen__stage--flush">
+                <div class="receipt-stage">
+                  <div class="receipt">
+                    <svg class="receipt__seal" aria-hidden="true"><use href="#seal" /></svg>
+                    <div class="receipt__brand">Onzima <em>Dawa</em></div>
+                    <div class="receipt__meta">Kireka · Apothecary<br>Sale #0184 · 28 Oct 2026 · 17:15</div>
+                    <div class="receipt__rule"></div>
+                    <div class="receipt__row"><span>Cashier</span><span>Sarah Achen</span></div>
+                    <div class="receipt__row"><span>Payment</span><span>MTN MoMo</span></div>
+                    <div class="receipt__rule"></div>
+                    <div class="receipt__item">
+                      <b>Omeprazole 20mg × 2</b>
+                      <span>OM-55 · UGX 1,800 each</span>
+                    </div>
+                    <div class="receipt__item">
+                      <b>Paracetamol 500mg × 10</b>
+                      <span>PC-889 · UGX 200 each</span>
+                    </div>
+                    <div class="receipt__item">
+                      <b>Metformin 500mg × 10</b>
+                      <span>MF-204 · UGX 300 each</span>
+                    </div>
+                    <div class="receipt__rule"></div>
+                    <div class="receipt__row"><span>Subtotal</span><span>8,600</span></div>
+                    <div class="receipt__row"><span>Discount</span><span>0</span></div>
+                    <div class="receipt__total"><span>Total paid</span><b>UGX 8,600</b></div>
+                    <div class="receipt__barcode"></div>
+                    <div class="receipt__code">0184 · 20261028 · 1715</div>
+                    <div class="receipt__rule"></div>
+                    <div class="receipt__meta">Keep this receipt for returns.<br>Thank you.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">Mono throughout, total in Fraunces, seal once. No
+                marketing copy.</div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Plan gate</span>
+                <span class="specimen__meta">Entitlement</span>
+              </div>
+              <div class="specimen__stage">
+                <div class="plan-gate">
+                  <div class="plan-gate__eyebrow">
+                    <span class="ds-stamp ds-stamp--brass">Core plan</span>
+                    <span class="micro faint">Refill care</span>
+                  </div>
+                  <h3>Care for chronic patients, without a second book.</h3>
+                  <p>Refill care is part of Pro. It keeps a patient register, tracks Day-25
+                    refills, and sends one reminder at the right time.</p>
+                  <ul>
+                    <li><svg aria-hidden="true"><use href="#i-check" /></svg>Chronic-patient register with contact history</li>
+                    <li><svg aria-hidden="true"><use href="#i-check" /></svg>Day-25 refill queue on the dashboard</li>
+                    <li><svg aria-hidden="true"><use href="#i-check" /></svg>SMS or WhatsApp reminder from the counter</li>
+                  </ul>
+                  <div class="plan-gate__foot">
+                    <a class="ds-btn ds-btn--primary" href="#implementation">Ask about upgrading</a>
+                    <button class="ds-btn ds-btn--quiet">Not now</button>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">No lock illustration. State the feature, the plan, the
+                next step. One primary, one quiet.</div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Sign-in</h3>
+              <span>Split sheet · profiles as rows</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage specimen__stage--paper">
+                <div class="signin">
+                  <div class="signin__brand">
+                    <div>
+                      <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                      <h2>Onzima <em>Dawa</em></h2>
+                      <p>Kireka Apothecary &amp; Retail System — expiry watchdog, MoMo and cash
+                        reconciliation, and patient refill care.</p>
+                      <div class="signin__roles">
+                        <div class="signin__role"><b>Owner</b>Financials, staff oversight, backups</div>
+                        <div class="signin__role"><b>Sales</b>Fast POS sales, refill care, credit logs</div>
+                      </div>
+                    </div>
+                    <div class="signin__brand-foot">Kireka &amp; Jinja · v2.6</div>
+                  </div>
+                  <div class="signin__form">
+                    <h3>Staff sign in</h3>
+                    <p>Select your profile, or type your username, then enter your password.</p>
+                    <div class="profile-list">
+                      <button class="profile-row is-active">
+                        <span class="ds-avatar ds-avatar--sm">CO</span>
+                        <span class="profile-row__body"><b>Charles Onzima</b><span>Shop owner · admin</span></span>
+                        <span class="ds-stamp ds-stamp--brass">You</span>
+                      </button>
+                      <button class="profile-row">
+                        <span class="ds-avatar ds-avatar--sm ds-avatar--pine">SA</span>
+                        <span class="profile-row__body"><b>Sarah Achen</b><span>Sales agent · grace</span></span>
+                      </button>
+                    </div>
+                    <form class="stack" onsubmit="return false" style="gap:12px">
+                      <div class="ds-field">
+                        <label class="ds-field__label" for="s-user">Username or full name</label>
+                        <input class="ds-input" id="s-user" value="admin">
+                      </div>
+                      <div class="ds-field">
+                        <label class="ds-field__label" for="s-pass">Password</label>
+                        <div class="ds-input-wrap">
+                          <input class="ds-input" id="s-pass" type="password" value="dispensary2026">
+                          <span class="ds-input-wrap__suffix"><button type="button">Show</button></span>
+                        </div>
+                        <p class="ds-help">Caps Lock is on.</p>
+                      </div>
+                      <button class="ds-btn ds-btn--primary ds-btn--lg ds-btn--full" type="submit">
+                        Sign in
+                        <svg aria-hidden="true"><use href="#i-arrow-right" /></svg>
+                      </button>
+                      <p class="ds-help">Ask the shop owner if you need login details.</p>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                The profile list is a set of rows, not a wall of tiles. The reveal is inside the
+                field. Caps-lock warning sits directly under the password.
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Tender Copilot</h3>
+              <span>Same shell · clay accent</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage specimen__stage--paper">
+                <div class="split-main" style="gap:16px">
+                  <div class="ds-panel tender-panel">
+                    <div class="ds-panel__head">
+                      <span class="ds-panel__title">
+                        <svg aria-hidden="true"><use href="#i-compass" /></svg>
+                        UNRA/2026/014 · Supply of PPE
+                      </span>
+                      <span class="tender-tag">Tender</span>
+                    </div>
+                    <div class="ds-panel__body" style="padding:0">
+                      <div class="ds-table-wrap">
+                        <table class="ds-table">
+                          <thead>
+                            <tr><th>Requirement</th><th>Status</th><th>Evidence</th><th>Owner</th></tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><span class="cell-title">Certificate of incorporation</span><span class="cell-sub">Mandatory · section 2.1</span></td>
+                              <td><span class="ds-stamp ds-stamp--success">Met</span></td>
+                              <td class="mono">doc-014.pdf</td>
+                              <td>Moses</td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">PPDA provider registration</span><span class="cell-sub">Mandatory · section 2.2</span></td>
+                              <td><span class="ds-stamp ds-stamp--success">Met</span></td>
+                              <td class="mono">ppda-2026.pdf</td>
+                              <td>Moses</td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">Bid security · UGX 4.2m</span><span class="cell-sub">Deadline 12 Nov 2026</span></td>
+                              <td><span class="ds-stamp ds-stamp--danger">At risk</span></td>
+                              <td class="mono">—</td>
+                              <td>Grace</td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">Technical methodology</span><span class="cell-sub">Scored · 30 points</span></td>
+                              <td><span class="ds-stamp ds-stamp--warning">Draft</span></td>
+                              <td class="mono">method-v3</td>
+                              <td>Moses</td>
+                            </tr>
+                            <tr>
+                              <td><span class="cell-title">Past performance references</span><span class="cell-sub">Scored · 15 points</span></td>
+                              <td><span class="ds-stamp ds-stamp--success">Met</span></td>
+                              <td class="mono">refs-2025.pdf</td>
+                              <td>Grace</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="ds-panel__foot">
+                      <span class="risk-flag">1 risk flag</span>
+                      <a class="ds-btn ds-btn--link" href="#patterns">Open compliance matrix</a>
+                    </div>
+                  </div>
+
+                  <div class="stack">
+                    <div class="ds-panel" style="margin-top:0">
+                      <div class="ds-panel__head">
+                        <span class="ds-panel__title">Readiness</span>
+                        <span class="ds-panel__meta">Score</span>
+                      </div>
+                      <div class="ds-panel__body">
+                        <div class="compliance-score"><b>78</b><span>/ 100</span></div>
+                        <div class="ds-meter" style="margin-top:12px">
+                          <div class="ds-meter__track">
+                            <div class="ds-meter__fill" style="width:78%"></div>
+                          </div>
+                        </div>
+                        <p class="ds-help" style="margin-top:8px">3 of 5 requirements met. Bid
+                          security must be resolved before submission.</p>
+                      </div>
+                    </div>
+                    <div class="tender-note">
+                      <div class="micro">Risk note</div>
+                      <p><b>Bid security is unarranged.</b> The deadline is 12 Nov 2026. Assign
+                        an owner today or the bid cannot be submitted.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                The compliance matrix is the hero. Clay marks risk and the Tender tag; brass
+                stays out of risk states.
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Mobile shift view</h3>
+              <span>320 px · thumb reach</span>
+            </div>
+            <div class="specimen">
+              <div class="specimen__stage specimen__stage--paper">
+                <div class="split-main" style="align-items:center;gap:40px">
+                  <div class="phone">
+                    <div class="phone__screen">
+                      <div class="phone__status"><span>08:12</span><span>MTN · 84%</span></div>
+                      <div class="phone__bar">
+                        <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+                        <b>Onzima <em>Dawa</em></b>
+                        <span class="ds-avatar">SA</span>
+                      </div>
+                      <div class="phone__body">
+                        <div class="phone__hero">
+                          <div class="micro">Sales today</div>
+                          <b>148,500</b>
+                          <span>UGX · 12 sales · shift open</span>
+                        </div>
+                        <div class="phone__row">
+                          <span class="ds-stamp ds-stamp--warning">Refill</span>
+                          <span class="phone__row__body"><b>Amina Namono</b><span>Metformin · due today</span></span>
+                          <svg style="width:14px;height:14px;color:var(--ds-ink-500)" aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </div>
+                        <div class="phone__row">
+                          <span class="ds-stamp ds-stamp--warning">Refill</span>
+                          <span class="phone__row__body"><b>Nakato Grace</b><span>Amlodipine · in 2 days</span></span>
+                          <svg style="width:14px;height:14px;color:var(--ds-ink-500)" aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </div>
+                        <div class="phone__row">
+                          <span class="ds-stamp ds-stamp--danger">Expiry</span>
+                          <span class="phone__row__body"><b>OM-55</b><span>80 units · 5 days</span></span>
+                          <svg style="width:14px;height:14px;color:var(--ds-ink-500)" aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </div>
+                        <button class="ds-btn ds-btn--primary ds-btn--full" style="margin-top:2px">
+                          <svg aria-hidden="true"><use href="#i-cart" /></svg>
+                          Record a sale
+                        </button>
+                      </div>
+                      <nav class="phone__bottom" aria-label="Mobile navigation">
+                        <button class="phone__nav is-active"><svg aria-hidden="true"><use href="#i-grid" /></svg>Today</button>
+                        <button class="phone__nav"><svg aria-hidden="true"><use href="#i-cart" /></svg>Sell</button>
+                        <button class="phone__nav"><svg aria-hidden="true"><use href="#i-heart" /></svg>Refills</button>
+                        <button class="phone__nav"><svg aria-hidden="true"><use href="#i-bell" /></svg>Alerts</button>
+                      </nav>
+                    </div>
+                  </div>
+                  <div class="stack">
+                    <h4 class="serif" style="font-size:26px;color:var(--ds-pine-900);letter-spacing:-.03em">One hand, one job.</h4>
+                    <p class="kit-prose">The mobile view is not the desktop squeezed down. It
+                      shows the shift total, the next refill, and the most urgent expiry. The
+                      sale action sits above the bottom navigation, within thumb reach.</p>
+                    <ul class="checklist">
+                      <li class="done">44 px touch targets, 16 px gutters</li>
+                      <li class="done">Four bottom destinations, labels always visible</li>
+                      <li class="done">No tables; rows become stacked records</li>
+                      <li class="done">One primary action per screen</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="specimen__foot">
+                Test at 320 px and at 200% zoom. If an action is not reachable with a thumb, it
+                is in the wrong place.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             13 MOTION & ACCESSIBILITY
+             =================================================================== -->
+        <section class="kit-section" id="motion">
+          <div class="kit-section__head">
+            <div class="kit-section__num">13</div>
+            <h2>Motion &amp; access</h2>
+            <p class="kit-section__lede">
+              Motion confirms a change; it does not perform personality. Accessibility is the
+              floor: visible focus, real labels, 40–44 px targets, and status that never relies
+              on colour alone.
+            </p>
+          </div>
+
+          <div class="split-main">
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Motion tokens</span>
+                <span class="specimen__meta">Fast · base · slow</span>
+              </div>
+              <div class="specimen__stage specimen__stage--flush">
+                <table class="kit-table">
+                  <thead>
+                    <tr><th>Token</th><th>Duration</th><th>Use</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>dur-fast</code></td><td>120 ms</td><td>Hover, focus, small state changes</td></tr>
+                    <tr><td><code>dur-base</code></td><td>180 ms</td><td>Menus, tabs, toggles</td></tr>
+                    <tr><td><code>dur-slow</code></td><td>280 ms</td><td>Drawers, dialogs</td></tr>
+                    <tr><td><code>ease</code></td><td>cubic-bezier(.2,.7,.2,1)</td><td>All standard motion</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="specimen__foot">
+                No bounce, spring, parallax, or looping decoration. The live dot pulses at 2 s
+                and stops under <code>prefers-reduced-motion</code>.
+              </div>
+            </div>
+
+            <div class="specimen" style="margin-top:0">
+              <div class="specimen__head">
+                <span class="specimen__name">Focus</span>
+                <span class="specimen__meta">2 px · 2 px offset</span>
+              </div>
+              <div class="specimen__stage stack">
+                <div class="row">
+                  <button class="ds-btn ds-btn--primary">Tab to me</button>
+                  <input class="ds-input" style="max-width:190px" value="Focused field" aria-label="Focus sample">
+                  <a class="ds-btn ds-btn--link" href="#motion">A link</a>
+                </div>
+                <p class="ds-help">Press <span class="ds-kbd">Tab</span> through this specimen.
+                  The ring is brass-600 at 2 px with a 2 px offset.</p>
+                <div class="note">Keyboard order follows visual order. Dialogs trap focus and
+                  restore it on close. Never remove an outline without replacing it.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-sub">
+            <div class="kit-sub__head">
+              <h3>Access checklist</h3>
+              <span>Before any screen ships</span>
+            </div>
+            <ul class="checklist">
+              <li class="done"><b>Contrast:</b> 4.5:1 body, 3:1 large text and UI marks. The pairs
+                in section 02 are the approved set.</li>
+              <li class="done"><b>Focus:</b> every interactive element has a visible ring in
+                visual order; dialogs trap and restore focus.</li>
+              <li class="done"><b>Targets:</b> 40 × 40 px desktop minimum, 44 × 44 px on touch.</li>
+              <li class="done"><b>Labels:</b> persistent visible labels; placeholders are examples,
+                not labels.</li>
+              <li class="done"><b>Errors:</b> announced (<code>role="alert"</code>), described,
+                and tied to the field with <code>aria-describedby</code>.</li>
+              <li class="done"><b>Status:</b> word + mark + colour, never colour alone.</li>
+              <li class="done"><b>Zoom:</b> 200% must not clip content or hide actions; test at
+                320 px width.</li>
+              <li class="done"><b>Tables and charts:</b> captions, <code>scope</code>, and a text
+                summary for every chart.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             14 IMPLEMENTATION
+             =================================================================== -->
+        <section class="kit-section" id="implementation">
+          <div class="kit-section__head">
+            <div class="kit-section__num">14</div>
+            <h2>Implementation</h2>
+            <p class="kit-section__lede">
+              The kit is dependency-free: one HTML file, three CSS layers, one small script,
+              and Google Fonts. It is a review artifact, not a production bundle. The tokens
+              are the contract.
+            </p>
+          </div>
+
+          <div class="impl-grid">
+            <div>
+              <div class="kit-sub" style="margin-top:0">
+                <div class="kit-sub__head">
+                  <h3>Core tokens</h3>
+                  <span>Copy into tokens.css</span>
+                </div>
+                <pre class="code-block"><code><span class="c">/* Dawa Ledger 1.0 — semantic tokens */</span>
+:root {
+  <span class="v">--ds-paper-50</span>: <span class="s">#fcf9f1</span>;
+  <span class="v">--ds-paper-100</span>: <span class="s">#f6f1e4</span>;
+  <span class="v">--ds-paper-200</span>: <span class="s">#ece5d3</span>;
+  <span class="v">--ds-ink-900</span>: <span class="s">#111c17</span>;
+  <span class="v">--ds-ink-500</span>: <span class="s">#56695f</span>;
+  <span class="v">--ds-pine-950</span>: <span class="s">#061a15</span>;
+  <span class="v">--ds-pine-800</span>: <span class="s">#103328</span>;
+  <span class="v">--ds-brass-700</span>: <span class="s">#6e5511</span>;
+  <span class="v">--ds-brass-500</span>: <span class="s">#b08a2e</span>;
+  <span class="v">--ds-clay-700</span>: <span class="s">#8c3d23</span>;
+  <span class="v">--ds-moss-700</span>: <span class="s">#2e5c3d</span>;
+
+  <span class="v">--ds-canvas</span>: <span class="v">var(--ds-paper-100)</span>;
+  <span class="v">--ds-surface</span>: <span class="v">var(--ds-paper-50)</span>;
+  <span class="v">--ds-text</span>: <span class="v">var(--ds-ink-900)</span>;
+  <span class="v">--ds-line</span>: <span class="s">rgba(17,28,23,.14)</span>;
+  <span class="v">--ds-action</span>: <span class="v">var(--ds-pine-800)</span>;
+  <span class="v">--ds-focus</span>: <span class="v">var(--ds-brass-600)</span>;
+
+  <span class="v">--ds-font-display</span>: <span class="s">"Fraunces", Georgia, serif</span>;
+  <span class="v">--ds-font-ui</span>: <span class="s">"Archivo", system-ui, sans-serif</span>;
+  <span class="v">--ds-font-mono</span>: <span class="s">"IBM Plex Mono", monospace</span>;
+
+  <span class="v">--ds-space-4</span>: <span class="s">16px</span>;
+  <span class="v">--ds-radius-xs</span>: <span class="s">2px</span>;
+  <span class="v">--ds-dur-base</span>: <span class="s">180ms</span>;
+  <span class="v">--ds-ease</span>: <span class="s">cubic-bezier(.2,.7,.2,1)</span>;
+}</code><button class="copy-btn" type="button" data-copy>Copy</button></pre>
+              </div>
+
+              <div class="kit-sub">
+                <div class="kit-sub__head">
+                  <h3>File map</h3>
+                  <span>Review artifact</span>
+                </div>
+                <pre class="filemap"><b>docs/</b>
+├── design-system.md          the rules
+└── design/
+    ├── ui-kit.html           this specimen
+    ├── ui-kit.css            tokens, reset, kit, foundations
+    ├── components.css        buttons → overlays
+    ├── patterns.css          shell → patterns
+    └── ui-kit.js             demo interactions only</pre>
+              </div>
+            </div>
+
+            <div>
+              <div class="kit-sub" style="margin-top:0">
+                <div class="kit-sub__head">
+                  <h3>Adoption path</h3>
+                  <span>Six steps · one visual language</span>
+                </div>
+                <ul class="checklist">
+                  <li class="done"><b>Approve the language.</b> Review at 320, 768, 1280, and
+                    1440 px. Settle the brass ratio and the density before code.</li>
+                  <li><b>Extract tokens.</b> Move section 02 + 03 into
+                    <code>drugshop/static/css/tokens.css</code>.</li>
+                  <li><b>Build the shell.</b> Sidebar, top bar, page header, stat strip. These
+                    set the tone.</li>
+                  <li><b>Replace the ledger surfaces.</b> Tables, panels, stamps, forms.</li>
+                  <li><b>Retire the old layer.</b> Remove inline <code>&lt;style&gt;</code> blocks
+                    one screen at a time. Never mix languages in one viewport.</li>
+                  <li><b>Regression pass.</b> Persona journeys, keyboard checks, screenshot suite.</li>
+                </ul>
+              </div>
+
+              <div class="kit-sub">
+                <div class="kit-sub__head">
+                  <h3>Definition of done</h3>
+                  <span>For every screen</span>
+                </div>
+                <ul class="checklist">
+                  <li>Semantic tokens only; no raw hex in component CSS.</li>
+                  <li>One primary action; hierarchy obvious at arm’s length.</li>
+                  <li>Numbers tabular and aligned; currency and dates follow the rules.</li>
+                  <li>Empty, loading, error, and permission-denied states designed.</li>
+                  <li>Keyboard focus visible and in visual order.</li>
+                  <li>Works at 320 px and at 200% zoom.</li>
+                  <li>No emoji, glass, gradient mesh, floating card, or pill button.</li>
+                  <li>Copy reviewed against the voice rules.</li>
+                </ul>
+              </div>
+
+              <div class="note" style="margin-top:20px">
+                <b>Governance:</b> changes update the document, the kit, and the token source in
+                one pull request. A component without a documented state is not approved.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live overlays used by the specimen buttons -->
+        <dialog class="ds-dialog" id="demoDialog" aria-labelledby="demoDialogTitle">
+          <button class="ds-dialog__close" type="button" data-close-dialog aria-label="Close dialog">×</button>
+          <div class="ds-dialog__head">
+            <div class="ds-dialog__eyebrow">End shift</div>
+            <h2 id="demoDialogTitle">Close today’s shift?</h2>
+          </div>
+          <div class="ds-dialog__body">
+            <p>The cash drawer will be reconciled against UGX 148,500 in recorded sales.
+              New sales will be blocked until the shift is reopened.</p>
+            <p class="small muted">This is a specimen. No records are changed.</p>
+          </div>
+          <div class="ds-dialog__foot">
+            <button class="ds-btn ds-btn--quiet" type="button" data-close-dialog>Keep selling</button>
+            <button class="ds-btn ds-btn--primary" type="button" data-close-dialog>Close shift</button>
+          </div>
+        </dialog>
+
+        <div class="ds-backdrop" data-drawer-backdrop></div>
+        <aside class="ds-drawer" id="demoDrawer" aria-label="Batch detail" aria-hidden="true">
+          <div class="ds-drawer__head">
+            <div>
+              <h2>Batch OM-55</h2>
+              <p>Omeprazole 20mg · capsule</p>
+            </div>
+            <button class="ds-drawer__close" type="button" data-close-drawer aria-label="Close drawer">
+              <svg style="width:14px;height:14px" aria-hidden="true"><use href="#i-x" /></svg>
+            </button>
+          </div>
+          <div class="ds-drawer__body stack">
+            <div class="row">
+              <span class="ds-stamp ds-stamp--danger">Expires in 5 days</span>
+              <span class="ds-tag">Quarantined</span>
+            </div>
+            <div class="kv">
+              <span>On hand</span><b>80 units</b>
+              <span>Unit cost</span><b>UGX 1,200</b>
+              <span>Selling price</span><b>UGX 1,800</b>
+              <span>Expiry</span><b>2026-10-16</b>
+              <span>Supplier</span><b>Kampala Pharmaceutical</b>
+              <span>Received</span><b>2026-03-04</b>
+            </div>
+            <div class="ds-alert ds-alert--warning">
+              <svg aria-hidden="true"><use href="#i-alert" /></svg>
+              <div>
+                <div class="ds-alert__title">Remove from sale</div>
+                <div class="ds-alert__body">This batch is inside the 30-day window. Quarantine
+                  it or write it off before the next shift.</div>
+              </div>
+            </div>
+            <div class="ds-meter">
+              <div class="ds-meter__head"><span>Stock cover</span><b>18 days</b></div>
+              <div class="ds-meter__track"><div class="ds-meter__fill ds-meter__fill--warn" style="width:62%"></div></div>
+            </div>
+          </div>
+          <div class="ds-drawer__foot">
+            <button class="ds-btn ds-btn--secondary" type="button">Print label</button>
+            <button class="ds-btn ds-btn--primary" type="button">Write off</button>
+          </div>
+        </aside>
+
+        <div class="ds-toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+      </main>
+
+      <footer class="kit-footer">
+        <div class="brand-lockup brand-lockup--inverse brand-lockup--sm">
+          <svg class="seal" aria-hidden="true"><use href="#seal" /></svg>
+          <span>
+            <span class="brand-lockup__word">Onzima <em>Dawa</em></span>
+            <span class="brand-lockup__desc">Apothecary · Kireka</span>
+          </span>
+        </div>
+        <div class="kit-footer__meta">
+          <b>Dawa Ledger 1.0</b> · Proposed for review<br>
+          Communion Engineering Services Ltd<br>
+          Kireka &amp; Jinja, Uganda · 2026
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="ui-kit.js"></script>
+</body>
+
+</html>

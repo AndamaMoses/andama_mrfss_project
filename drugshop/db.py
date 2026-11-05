@@ -91,7 +91,35 @@ def init_db():
     _upgrade_legacy_columns()
     from drugshop.migrations import run as run_migrations
 
-    return run_migrations(_db_path, _MIGRATIONS_DIR)
+    applied = run_migrations(_db_path, _MIGRATIONS_DIR)
+    # Safety net for an installation whose migrations directory predates 005.
+    # On a normal boot migration 005 has already added the column.
+    _ensure_momo_provider_column()
+    return applied
+
+
+def _ensure_momo_provider_column():
+    """Add ``momo_collections.provider`` if an old migration set missed it."""
+    db = get_db()
+    try:
+        table = db.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='momo_collections'"
+        ).fetchone()
+        if table is None:
+            return
+        cols = [r[1] for r in db.execute("PRAGMA table_info(momo_collections)").fetchall()]
+        if "provider" not in cols:
+            db.execute(
+                "ALTER TABLE momo_collections ADD COLUMN provider TEXT NOT NULL "
+                "DEFAULT 'MTN' CHECK (provider IN ('MTN','AIRTEL'))"
+            )
+        db.execute(
+            "CREATE INDEX IF NOT EXISTS idx_momo_collections_provider_status "
+            "ON momo_collections(provider, status, created_at)"
+        )
+        db.commit()
+    finally:
+        db.close()
 
 
 def _upgrade_legacy_columns():
@@ -112,6 +140,8 @@ def _upgrade_legacy_columns():
             db.execute("ALTER TABLE sales ADD COLUMN created_at TEXT DEFAULT ''")
         if "customer_phone" not in cols:
             db.execute("ALTER TABLE sales ADD COLUMN customer_phone TEXT DEFAULT ''")
+        if "momo_ref" not in cols:
+            db.execute("ALTER TABLE sales ADD COLUMN momo_ref TEXT DEFAULT ''")
         db.commit()
         db.execute("UPDATE sales SET receipt_ref=('R-' || substr('000000' || id, -6, 6)) "
                    "WHERE receipt_ref IS NULL OR receipt_ref=''")

@@ -27,9 +27,12 @@ gateways per country.
 from __future__ import annotations
 
 import base64
+import http.client
 import json
+import math
 import os
 import re
+import threading
 import time
 import uuid
 from dataclasses import dataclass
@@ -74,16 +77,28 @@ class MomoSettings:
         def get(key, default=""):
             return values.get(key, default) or default
 
+        try:
+            timeout = float(get("MOMO_TIMEOUT", DEFAULT_TIMEOUT))
+        except (TypeError, ValueError):
+            timeout = DEFAULT_TIMEOUT
+        if not math.isfinite(timeout) or timeout <= 0:
+            timeout = DEFAULT_TIMEOUT
+
+        environment = str(get("MOMO_TARGET_ENVIRONMENT", "sandbox")).strip()
+        environment = environment or "sandbox"
+        # MTN's sandbox accepts EUR only; production environments use their
+        # local currency (UGX for mtnuganda).
+        currency = str(get("MOMO_CURRENCY")).strip().upper()
+        currency = currency or ("EUR" if environment.lower() == "sandbox" else "UGX")
         return cls(
             subscription_key=str(get("MOMO_SUBSCRIPTION_KEY")).strip(),
             api_user=str(get("MOMO_API_USER")).strip(),
             api_key=str(get("MOMO_API_KEY")).strip(),
-            environment=str(get("MOMO_TARGET_ENVIRONMENT", "sandbox")).strip()
-            or "sandbox",
+            environment=environment,
             base_url=str(get("MOMO_BASE_URL")).strip(),
-            currency=str(get("MOMO_CURRENCY", "UGX")).strip().upper() or "UGX",
+            currency=currency,
             callback_url=str(get("MOMO_CALLBACK_URL")).strip(),
-            timeout=float(get("MOMO_TIMEOUT", DEFAULT_TIMEOUT)),
+            timeout=timeout,
         )
 
     @classmethod
@@ -129,13 +144,28 @@ def normalize_msisdn(phone, country_code="256"):
         digits = digits[2:]
     if not digits:
         raise ValueError("phone number is required")
+    if digits.startswith(country_code + "0"):
+        # Common handset form: 2560772123456 -> 256772123456.
+        digits = country_code + digits[len(country_code) + 1:]
     if digits.startswith(country_code):
-        return digits
-    if digits.startswith("0"):
-        return country_code + digits[1:]
-    if len(digits) == 9:
-        return country_code + digits
-    return digits
+        normalized = digits
+    elif digits.startswith("0"):
+        normalized = country_code + digits[1:]
+    elif len(digits) == 9:
+        normalized = country_code + digits
+    else:
+        normalized = digits
+    if country_code == "256" and not (
+        len(normalized) == 12 and normalized.startswith("256")
+    ):
+        raise ValueError(
+            "phone number must be a Ugandan MSISDN, e.g. 0772123456 or +256772123456"
+        )
+    if not normalized.startswith(country_code):
+        raise ValueError(f"phone number must use country code {country_code}")
+    if not (10 <= len(normalized) <= 15):
+        raise ValueError("phone number is invalid")
+    return normalized
 
 
 def _validate_amount(amount):
@@ -143,15 +173,44 @@ def _validate_amount(amount):
         value = float(amount)
     except (TypeError, ValueError) as exc:
         raise ValueError("amount must be a number") from exc
+    if not math.isfinite(value):
+        raise ValueError("amount must be a finite number")
     if value <= 0:
         raise ValueError("amount must be greater than zero")
     return value
 
 
+# Currencies whose smallest unit is the whole unit. Sending decimals for these
+# makes MTN reject the request, or worse, creates a mismatch with the sale total.
+ZERO_DECIMAL_CURRENCIES = frozenset(
+    {"UGX", "RWF", "BIF", "DJF", "GNF", "KMF", "XAF", "XOF", "JPY", "KRW", "VND"}
+)
+
+
+def _format_amount(value, currency):
+    """Format an amount the way MTN expects for ``currency``.
+
+    ``UGX`` and other zero-decimal currencies must be whole numbers. A
+    fractional UGX total is a data error, not something to round silently:
+    rounding could collect a different amount than the receipt says.
+    """
+    code = str(currency or "").upper()
+    if code in ZERO_DECIMAL_CURRENCIES:
+        if not float(value).is_integer():
+            raise ValueError(f"{code} amounts must be whole numbers")
+        return str(int(value))
+    text = f"{value:.2f}".rstrip("0").rstrip(".")
+    if text in {"", "0", "-0"}:
+        raise ValueError("amount is too small for the selected currency")
+    return text
+
+
 def _urllib_transport(method, url, headers, body, timeout):
     """Default transport: return ``(status, headers, text)`` without raising on 4xx/5xx."""
-    req = urlrequest.Request(url, data=body, headers=headers, method=method)  # noqa: S310
     try:
+        req = urlrequest.Request(  # noqa: S310
+            url, data=body, headers=headers, method=method
+        )
         with urlrequest.urlopen(req, timeout=timeout) as resp:  # noqa: S310 - fixed MTN hosts
             return (
                 resp.status,
@@ -164,8 +223,14 @@ def _urllib_transport(method, url, headers, body, timeout):
             {k.lower(): v for k, v in exc.headers.items()},
             exc.read().decode("utf-8", "replace"),
         )
-    except urlerror.URLError as exc:
-        raise MomoError(f"cannot reach MTN MoMo at {url}: {exc.reason}") from exc
+    except (urlerror.URLError, OSError, http.client.HTTPException) as exc:
+        reason = getattr(exc, "reason", exc)
+        raise MomoError(f"cannot reach MTN MoMo at {url}: {reason}") from exc
+    except ValueError as exc:
+        # urlopen raises ValueError for an unsupported scheme or a malformed
+        # URL (for example MOMO_BASE_URL=foo). Surface it as a config error,
+        # not an unhandled traceback in the health endpoint or CLI.
+        raise MomoError(f"invalid MTN MoMo URL {url}: {exc}") from exc
 
 
 def _decode(text):
@@ -201,6 +266,7 @@ class MomoClient:
         self._transport = transport or _urllib_transport
         self._token = ""
         self._token_expires_at = 0.0
+        self._token_lock = threading.Lock()
 
     # -- low level ---------------------------------------------------------
     def _headers(self, extra=None, authorized=False):
@@ -230,11 +296,37 @@ class MomoClient:
             raise _http_error(f"MoMo {method} {path}", status, data)
         return status, data
 
+    def _send_authorized(self, method, path, body=None, extra=None):
+        """Send with a bearer token, refreshing it once if MTN returns 401.
+
+        Tokens are cached for an hour, but a rotated API key or an early
+        revocation would otherwise fail every poll until the process restarts.
+        """
+        extra = dict(extra or {})
+        for attempt in (0, 1):
+            headers = self._headers(extra, authorized=True)
+            try:
+                return self._send(method, path, body=body, headers=headers)
+            except MomoError as exc:
+                if exc.status == 401 and attempt == 0:
+                    self.access_token(force=True)
+                    continue
+                raise
+        raise AssertionError("unreachable")  # pragma: no cover
+
     # -- auth --------------------------------------------------------------
     def access_token(self, force=False):
         """Return a cached Collections bearer token, refreshing 60s before expiry."""
         if not force and self._token and time.monotonic() < self._token_expires_at:
             return self._token
+        # Serialize the fetch so concurrent POS polls do not all hit the token
+        # endpoint when the cache is cold or just expired.
+        with self._token_lock:
+            if not force and self._token and time.monotonic() < self._token_expires_at:
+                return self._token
+            return self._fetch_token()
+
+    def _fetch_token(self):
         if not (self.settings.api_user and self.settings.api_key):
             raise MomoError(
                 "MOMO_API_USER / MOMO_API_KEY are not set - run "
@@ -248,7 +340,12 @@ class MomoClient:
         token = (data or {}).get("access_token", "")
         if not token:
             raise MomoError("MoMo token response did not include an access_token")
-        expires_in = int((data or {}).get("expires_in", 3600))
+        try:
+            expires_in = int((data or {}).get("expires_in", 3600))
+        except (TypeError, ValueError):
+            expires_in = 3600
+        if expires_in <= 0:
+            expires_in = 3600
         self._token = token
         self._token_expires_at = time.monotonic() + max(60, expires_in - 60)
         return token
@@ -271,46 +368,74 @@ class MomoClient:
         ``FAILED``, or ``REJECTED``.
         """
         value = _validate_amount(amount)
-        reference_id = reference_id or str(uuid.uuid4())
+        if reference_id is None:
+            reference_id = str(uuid.uuid4())
+        else:
+            try:
+                # MTN requires a UUID in X-Reference-Id; fail fast with a 400
+                # instead of forwarding a malformed id and returning a 502.
+                reference_id = str(uuid.UUID(str(reference_id)))
+            except (TypeError, ValueError) as exc:
+                raise ValueError("reference_id must be a valid UUID") from exc
+        # MTN requires a non-empty externalId. Callers that only have a
+        # reference id (for example a retried request) can omit it safely.
+        external_id = str(external_id or "").strip() or reference_id
+        code = str(currency or self.settings.currency or "").strip().upper()
+        if len(code) != 3:
+            raise ValueError("currency must be a three-letter ISO code")
         body = {
-            "amount": f"{value:.2f}".rstrip("0").rstrip("."),
-            "currency": (currency or self.settings.currency).upper(),
-            "externalId": str(external_id),
+            "amount": _format_amount(value, code),
+            "currency": code,
+            "externalId": external_id,
             "payer": {
                 "partyIdType": "MSISDN",
                 "partyId": normalize_msisdn(phone),
             },
-            "payerMessage": payer_message[:160],
-            "payeeNote": payee_note[:160],
+            "payerMessage": str(payer_message or "")[:160],
+            "payeeNote": str(payee_note or "")[:160],
         }
-        headers = self._headers(
-            {
-                "X-Reference-Id": reference_id,
-                "X-Target-Environment": self.settings.environment,
-            },
-            authorized=True,
-        )
+        extra_headers = {
+            "X-Reference-Id": reference_id,
+            "X-Target-Environment": self.settings.environment,
+        }
         if self.settings.callback_url:
-            headers["X-Callback-Url"] = self.settings.callback_url
-        self._send("POST", REQUEST_TO_PAY_PATH, body=body, headers=headers)
+            extra_headers["X-Callback-Url"] = self.settings.callback_url
+        try:
+            self._send_authorized(
+                "POST", REQUEST_TO_PAY_PATH, body=body, extra=extra_headers
+            )
+        except MomoError as exc:
+            if "currency not supported" in str(exc).lower():
+                raise MomoError(
+                    f"{exc}. MTN's sandbox accepts EUR only; set MOMO_CURRENCY=EUR "
+                    "for sandbox demos (production environments use their own "
+                    "currency, e.g. UGX for mtnuganda).",
+                    status=exc.status,
+                    payload=exc.payload,
+                ) from exc
+            raise
         return {"reference_id": reference_id, **body}
 
     def request_status(self, reference_id):
         if not reference_id:
             raise ValueError("reference_id is required")
-        headers = self._headers(
-            {"X-Target-Environment": self.settings.environment}, authorized=True
-        )
-        _status, data = self._send(
-            "GET", f"{REQUEST_TO_PAY_PATH}/{reference_id}", headers=headers
+        try:
+            reference_id = str(uuid.UUID(str(reference_id)))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("reference_id must be a valid UUID") from exc
+        _status, data = self._send_authorized(
+            "GET",
+            f"{REQUEST_TO_PAY_PATH}/{reference_id}",
+            extra={"X-Target-Environment": self.settings.environment},
         )
         return data or {}
 
     def account_balance(self):
-        headers = self._headers(
-            {"X-Target-Environment": self.settings.environment}, authorized=True
+        _status, data = self._send_authorized(
+            "GET",
+            ACCOUNT_BALANCE_PATH,
+            extra={"X-Target-Environment": self.settings.environment},
         )
-        _status, data = self._send("GET", ACCOUNT_BALANCE_PATH, headers=headers)
         return data or {}
 
 
@@ -350,6 +475,10 @@ def create_api_key(settings, api_user, transport=None):
         raise MomoError("MOMO_SUBSCRIPTION_KEY is not set - add it to .env")
     if not api_user:
         raise MomoError("API user id is required")
+    try:
+        api_user = str(uuid.UUID(str(api_user)))
+    except (TypeError, ValueError) as exc:
+        raise MomoError("API user id must be a valid UUID") from exc
     send = transport or _urllib_transport
     headers = {
         "Ocp-Apim-Subscription-Key": settings.subscription_key,
