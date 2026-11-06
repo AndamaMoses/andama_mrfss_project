@@ -21,7 +21,7 @@ from drugshop.payments import ledger, providers
 from drugshop.payments.airtel import AirtelSettings
 from drugshop.payments.errors import PaymentError
 from drugshop.payments.momo import MomoSettings
-from drugshop.payments.service import verify_reference
+from drugshop.payments.service import verify_reference, verify_sales_enabled
 from drugshop.sales.service import next_receipt_ref, sales_summary
 
 bp = Blueprint("sales", __name__)
@@ -52,11 +52,6 @@ def _manual_currency(provider):
     return str(current_app.config.get("MOMO_CURRENCY") or "UGX").strip().upper()
 
 
-def _verify_enabled(provider):
-    key = "MOMO_VERIFY_SALES" if provider == providers.MTN else "AIRTEL_VERIFY_SALES"
-    return _truthy(current_app.config.get(key, True))
-
-
 def _momo_guard(method, momo_ref, total, manual_entry=False):
     """Validate a mobile-money reference before stock is deducted.
 
@@ -81,7 +76,7 @@ def _momo_guard(method, momo_ref, total, manual_entry=False):
             ), None
         return None, None
 
-    verify = _verify_enabled(provider)
+    verify = verify_sales_enabled(provider)
     if not raw:
         if verify:
             return (

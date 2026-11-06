@@ -41,6 +41,7 @@ def create_app(config=None):
     from drugshop.auth import guards
     from drugshop.auth.cli import register_cli as register_auth_cli
     from drugshop.auth.routes import bp as auth_bp
+    from drugshop.billing.cli import register_cli as register_billing_cli
     from drugshop.credit.routes import bp as credit_bp
     from drugshop.customers.routes import bp as customers_bp
     from drugshop.finance.routes import bp as finance_bp
@@ -79,6 +80,7 @@ def create_app(config=None):
     register_auth_cli(app)
     register_cli(app)
     register_momo_cli(app)
+    register_billing_cli(app)
 
     @app.after_request
     def security_headers(response):

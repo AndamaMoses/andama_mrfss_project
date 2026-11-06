@@ -568,6 +568,14 @@
             <div class="momo-state" id="momoState" data-tone="idle">
               <span class="momo-dot"></span><span id="momoStateText">Ready</span>
             </div>
+            <div class="momo-guard" id="momoGuard" hidden>
+              <p class="momo-guard-text" id="momoGuardText"></p>
+              <div class="momo-guard-actions">
+                <button type="button" class="btn ghost" id="momoCheckBtn" onclick="checkMomoPending()" hidden>Check pending request</button>
+                <button type="button" class="btn ghost momo-danger" id="momoForgetPendingBtn" onclick="forgetMomoPending()" hidden>Forget pending</button>
+                <button type="button" class="btn ghost momo-danger" id="momoForgetPaidBtn" onclick="forgetMomoPaid()" hidden>Forget paid reference</button>
+              </div>
+            </div>
             <button type="button" class="btn ghost" id="momoCancel" onclick="cancelMomo()" hidden>Cancel request</button>
           </div>
           <div class="panel">

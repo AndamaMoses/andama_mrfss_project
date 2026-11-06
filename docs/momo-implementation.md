@@ -120,19 +120,47 @@ Phase 3 adds:
   variance totals, per-provider breakdowns, the actual unresolved/orphaned
   references, a “Check Pending” action, and a “Close Shift & Snapshot” action.
 
-**Phase 4 verification (2026-11-05):** `python -m pytest -q` → 445 passed;
+**Phase 4 verification (2026-11-06):** `python -m pytest -q` → 499 passed;
 `python -m ruff check .` → clean; `node --check` → clean for `momo.js`,
 `pos.js`, `finance.js`, `core/api.js`, `core/format.js`, and `core/apps.js`.
-The suite uses fake carriers only and never moves money.
+The rendered `/staff` inline script also passes `node --check`. The suite uses
+fake carriers only and never moves money.
 
-Phase 4 hardening:
+Phase 4 hardening (second review, money safety):
 
+- `MOMO_PAID` now stores the provider, amount, and normalised customer phone.
+  It is cleared only when the saved sale response carries that exact
+  reference. A cash sale, a manual sale on another reference, or a sale for a
+  different customer no longer erases a paid-but-unsaved guard and allows a
+  second prompt.
+- A successful sale also clears a matching `MOMO_PENDING` guard. A manual sale
+  that consumes the pending reference therefore releases the guard instead of
+  leaving the POS permanently blocked.
+- The payment panel exposes explicit guard controls: “Check pending request”
+  polls/reuses the pending reference, “Forget pending” releases an unresolved
+  prompt with a warning, and “Forget paid reference” releases a paid guard only
+  after a confirmation that explains the double-charge risk.
+- Both guards are persisted in `sessionStorage` for the tab, so an accidental
+  reload does not forget a paid-but-unsaved reference. The guard controls remain
+  available to resolve a stale entry.
+- The basket is snapshotted before an automated prompt, and the Clear action is
+  locked during checkout. A basket change during approval can no longer make the
+  saved sale differ from the amount the customer approved.
+- `/api/payments/health` and `/api/momo/health` expose `verify_sales`. The POS
+  and staff pages require a manual reference only when the server will verify
+  it, so the documented monitored-rollout path is usable without weakening the
+  default verified path.
+- POS-generated `external_id` values include a random suffix, so two terminals
+  creating a request in the same millisecond cannot collide and reuse each
+  other’s payment reference.
 - A `SALE_BUSY` lock covers both single-item and basket checkout. The Sell and
   Complete buttons disable while a request is in flight, so a double-click
-  cannot submit two sales.
-- Manual MTN/Airtel references are required client-side before a sale request is
-  sent. The staff page applies the same rule and focuses the reference input
-  when it is missing.
+  cannot submit two sales. Basket add/remove actions are ignored during the
+  request, so the basket cannot change underneath an in-progress checkout.
+- Manual MTN/Airtel references are required client-side when the server's
+  `verify_sales` flag is on. The POS and staff pages read that flag from the
+  health endpoint; the staff page focuses the reference input when it is
+  missing.
 - The staff checkout is serialized with a `BUSY` guard and surfaces a `409`
   duplicate reference as the existing receipt instead of retrying the sale.
 - Pending-prompt reuse compares normalised phone digits, so `077...`, `+256...`,
@@ -560,9 +588,15 @@ The shipped module is function-based and provider-aware:
   request box is unchecked.
 - `momoReferenceFor(amount, phone, method)` sends
   `/api/payments/collect` with the selected provider, reuses a paid-but-unsaved
-  reference, and polls an existing pending request before sending another
-  prompt. Pending requests are matched on normalised phone digits, so a local
-  `077...` number matches the same customer entered as `+256...`.
+  reference only when the provider, amount, and normalised phone all match, and
+  polls an existing pending request before sending another prompt. Pending
+  requests are matched the same way, so a local `077...` number matches the same
+  customer entered as `+256...`.
+- A paid or pending guard is not released until the sale that used its
+  reference is confirmed saved. `MOMO_PAID` and `MOMO_PENDING` are persisted in
+  `sessionStorage`, and the panel offers “Check pending request”, “Forget
+  pending”, and “Forget paid reference” controls so a stale guard cannot block
+  the counter forever.
 - `waitForMomo(reference, provider)` polls
   `/api/payments/status/<provider>/<reference>` every four seconds and treats
   `FAILED`, `REJECTED`, and `TIMEOUT` as terminal. A cancel or two-minute
@@ -570,13 +604,16 @@ The shipped module is function-based and provider-aware:
 - A definitive collection failure (`status: FAILED`) is not polled; an
   ambiguous network/5xx response with `status: UNKNOWN` is polled.
 - `pos.js` handles both automated and manual entry for both carriers and keeps
-  `MOMO_PAID` scoped to the provider and amount. A `SALE_BUSY` lock serialises
-  single-item and basket checkout, manual references are checked before the
-  request is sent, and receipt/sale rendering escapes user-controlled fields.
+  `MOMO_PAID` scoped to the provider, amount, and phone. It clears the guard only
+  when the saved sale response carries that reference, snapshots the basket
+  before an automated prompt, and locks Clear during checkout. Receipt/sale
+  rendering escapes user-controlled fields.
 - `staff.html` shows the manual reference field for both carriers; it never
   sends an automated prompt. Its checkout has a `BUSY` guard, requires a
-  reference for mobile money, and treats a `409` duplicate reference as the
-  existing receipt rather than retrying the sale.
+  reference for mobile money only when `verify_sales` is on, and treats a `409`
+  duplicate reference as the existing receipt rather than retrying the sale.
+- `/api/payments/health` and `/api/momo/health` expose `verify_sales` so both
+  counter pages follow the server's verification policy.
 
 
 ## 6. Blueprint Registration (`drugshop/__init__.py`)

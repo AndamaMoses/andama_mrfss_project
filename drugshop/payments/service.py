@@ -19,7 +19,12 @@ from drugshop.payments.airtel import AirtelClient, AirtelError, AirtelSettings
 from drugshop.payments.errors import PaymentError
 from drugshop.payments.momo import MomoClient, MomoError, MomoSettings
 
-__all__ = ["PaymentError", "enabled", "verify_reference"]
+__all__ = [
+    "PaymentError",
+    "enabled",
+    "verify_reference",
+    "verify_sales_enabled",
+]
 
 # Sale verification runs on every mobile-money checkout. Reuse one client per
 # distinct provider/configuration so a valid bearer token is not re-fetched for
@@ -100,6 +105,15 @@ def _truthy(value):
 def _verify_flag(provider):
     key = "MOMO_VERIFY_SALES" if provider == providers.MTN else "AIRTEL_VERIFY_SALES"
     return _truthy(current_app.config.get(key, True))
+
+
+def verify_sales_enabled(provider=providers.MTN):
+    """True when a sale must re-check the carrier reference (default on)."""
+    try:
+        provider = providers.normalize_provider(provider)
+    except ValueError:
+        return False
+    return _verify_flag(provider)
 
 
 def _provider_label(provider):

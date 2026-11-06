@@ -440,6 +440,7 @@ def momo_health():
     settings = _settings()
     payload = settings.status_payload
     payload["provider"] = providers.MTN
+    payload["verify_sales"] = service.verify_sales_enabled(providers.MTN)
     if request.args.get("check") in {"1", "true", "yes", "on"}:
         try:
             # Force a real exchange: a cached token would not prove MTN is up.
@@ -653,6 +654,7 @@ def payments_health():
         payload = settings.status_payload
         payload["provider"] = provider
         payload["payment_method"] = providers.PROVIDER_TO_METHOD[provider]
+        payload["verify_sales"] = service.verify_sales_enabled(provider)
         if check:
             if not settings.configured:
                 # A shop may intentionally use only one carrier. Report it as

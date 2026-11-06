@@ -44,6 +44,7 @@ async function makeSale(e) {
   let momoRef = '';
   const momoProvider = momoMethodProvider(method);
   const manualMomo = !!momoProvider && momoManualMode(method);
+  const salePhone = payload.customer_phone;
   if (manualMomo) {
     const manualError = momoManualReferenceError(momoProvider);
     if (manualError) {
@@ -59,12 +60,14 @@ async function makeSale(e) {
         payload.is_manual_entry = true;
         payload.momo_ref = momoManualReference();
       } else if (momoConfiguredFor(method)) {
-        momoRef = await momoReferenceFor(productPrice($('sProd').value) * qty, $('sPhone').value, method);
+        momoRef = await momoReferenceFor(productPrice($('sProd').value) * qty, salePhone, method);
         payload.momo_ref = momoRef;
       }
     }
     const r = await api('/api/sales', 'POST', payload);
-    MOMO_PAID = null;
+    // Clear only the guard the saved sale actually used. A cash sale or a
+    // sale on another reference must not erase a paid-but-unsaved guard.
+    momoClearGuardsForRef(r.momo_ref || momoRef || payload.momo_ref);
     if (manualMomo) clearMomoManualReference();
     if (momoRef) setMomoState('ok', 'Sale saved · ' + momoProviderLabel(momoProvider) + ' ' + shortRef(momoRef));
     const receiptRef = posSafeRef(r.receipt_ref);
@@ -77,7 +80,7 @@ async function makeSale(e) {
   } catch (err) {
     const savedRef = posSafeRef(err.data && err.data.receipt_ref);
     if (err.status === 409) {
-      MOMO_PAID = null;
+      momoClearGuardsForRef((err.data && err.data.momo_ref) || momoRef || payload.momo_ref);
       if (manualMomo) clearMomoManualReference();
       setMomoState('warn', err.message);
       if (savedRef) {
@@ -90,8 +93,8 @@ async function makeSale(e) {
       const paidAmount = err.data && err.data.paid_amount != null
         ? +err.data.paid_amount
         : productPrice($('sProd').value) * qty;
-      MOMO_PAID = { ref: momoRef, amount: paidAmount, provider: momoProvider };
-      $('saleMsg').textContent = '⚠ ' + err.message + ' — ' + momoProviderLabel(momoProvider) + ' ' + momoRef + ' was paid. Sell again to save it without charging twice.';
+      momoSetPaid({ ref: momoRef, amount: paidAmount, phone: salePhone, provider: momoProvider });
+      $('saleMsg').textContent = '⚠ ' + err.message + ' — ' + momoProviderLabel(momoProvider) + ' ' + momoRef + ' was paid. Sell again to save it without charging twice. If that reference is already on a receipt, use "Forget paid reference" in the payment panel.';
     } else if (manualMomo && payload.momo_ref) {
       $('saleMsg').textContent = '⚠ ' + err.message + ' — manual ' + momoProviderLabel(momoProvider) + ' ' + payload.momo_ref + ' was not saved. Correct the sale and try again.';
     } else {
@@ -122,17 +125,25 @@ function prodPrice(id) {
 }
 
 function addToBasket() {
+  if (SALE_BUSY) return;
   const id = $('sProd').value, q = +$('sQty').value || 1;
   const ex = BASKET.find(x => x.product_id === id);
   if (ex) ex.qty += q; else BASKET.push({ product_id: id, qty: q });
   renderBasket();
 }
 
-function renderBasket() {
-  $('basketRows').innerHTML = BASKET.length ? BASKET.map((b, i) => `<tr><td>${escHtml(prodName(b.product_id))}</td><td>${escHtml(b.qty)}</td><td>${(productPrice(b.product_id) * b.qty).toLocaleString()}</td><td><button class="btn ghost" onclick="BASKET.splice(${i},1);renderBasket()">✕</button></td></tr>`).join('') : '<tr><td colspan="4">Empty — add items with + Basket</td></tr>';
+function removeBasketItem(index) {
+  if (SALE_BUSY) return;
+  BASKET.splice(index, 1);
+  renderBasket();
 }
 
-function clearBasket() {
+function renderBasket() {
+  $('basketRows').innerHTML = BASKET.length ? BASKET.map((b, i) => `<tr><td>${escHtml(prodName(b.product_id))}</td><td>${escHtml(b.qty)}</td><td>${(productPrice(b.product_id) * b.qty).toLocaleString()}</td><td><button class="btn ghost" onclick="removeBasketItem(${i})">✕</button></td></tr>`).join('') : '<tr><td colspan="4">Empty — add items with + Basket</td></tr>';
+}
+
+function clearBasket(force) {
+  if (SALE_BUSY && !force) return;
   BASKET = [];
   renderBasket();
 }
@@ -141,9 +152,12 @@ async function completeBasket() {
   if (!BASKET.length) { alert('Basket is empty'); return }
   if (SALE_BUSY || MOMO.busy) return;
   const method = $('bMethod').value;
-  const total = basketTotal();
+  // Snapshot the basket before the payment prompt. If the basket is changed
+  // while the customer approves, the sale must still match the prompted total.
+  const items = BASKET.map(b => ({ product_id: b.product_id, qty: b.qty }));
+  const total = items.reduce((sum, b) => sum + productPrice(b.product_id) * b.qty, 0);
   const payload = {
-    items: BASKET, payment_method: method,
+    items: items, payment_method: method,
     served_by: $('bBy').value || $('sBy').value || ME.display_name,
     customer_name: $('bCustomer').value, customer_phone: $('bPhone').value,
     sale_date: $('salesDate').value,
@@ -151,6 +165,7 @@ async function completeBasket() {
   let momoRef = '';
   const momoProvider = momoMethodProvider(method);
   const manualMomo = !!momoProvider && momoManualMode(method);
+  const salePhone = payload.customer_phone;
   if (manualMomo) {
     const manualError = momoManualReferenceError(momoProvider);
     if (manualError) {
@@ -166,15 +181,15 @@ async function completeBasket() {
         payload.is_manual_entry = true;
         payload.momo_ref = momoManualReference();
       } else if (momoConfiguredFor(method)) {
-        momoRef = await momoReferenceFor(total, $('bPhone').value, method);
+        momoRef = await momoReferenceFor(total, salePhone, method);
         payload.momo_ref = momoRef;
       }
     }
     const r = await api('/api/sales/cart', 'POST', payload);
-    MOMO_PAID = null;
+    momoClearGuardsForRef(r.momo_ref || momoRef || payload.momo_ref);
     if (manualMomo) clearMomoManualReference();
     if (momoRef) setMomoState('ok', 'Sale saved · ' + momoProviderLabel(momoProvider) + ' ' + shortRef(momoRef));
-    clearBasket(); loadSales(); loadDash(); loadStock(); loadCredit(); loadCustomers();
+    clearBasket(true); loadSales(); loadDash(); loadStock(); loadCredit(); loadCustomers();
     try {
       await printReceiptRef(r.receipt_ref);
     } catch (printErr) {
@@ -183,7 +198,7 @@ async function completeBasket() {
   } catch (e) {
     const savedRef = posSafeRef(e.data && e.data.receipt_ref);
     if (e.status === 409) {
-      MOMO_PAID = null;
+      momoClearGuardsForRef((e.data && e.data.momo_ref) || momoRef || payload.momo_ref);
       if (manualMomo) clearMomoManualReference();
       setMomoState('warn', e.message);
       if (savedRef) {
@@ -196,8 +211,8 @@ async function completeBasket() {
       const paidAmount = e.data && e.data.paid_amount != null
         ? +e.data.paid_amount
         : total;
-      MOMO_PAID = { ref: momoRef, amount: paidAmount, provider: momoProvider };
-      alert('⚠ ' + e.message + '\n\n' + momoProviderLabel(momoProvider) + ' ' + momoRef + ' was paid. Complete the sale again to save it without charging twice.');
+      momoSetPaid({ ref: momoRef, amount: paidAmount, phone: salePhone, provider: momoProvider });
+      alert('⚠ ' + e.message + '\n\n' + momoProviderLabel(momoProvider) + ' ' + momoRef + ' was paid. Complete the sale again to save it without charging twice. If that reference is already on a receipt, use "Forget paid reference" in the payment panel.');
     } else if (manualMomo && payload.momo_ref) {
       alert('⚠ ' + e.message + '\n\nManual ' + momoProviderLabel(momoProvider) + ' ' + payload.momo_ref + ' was not saved. Correct the sale and try again.');
     } else {

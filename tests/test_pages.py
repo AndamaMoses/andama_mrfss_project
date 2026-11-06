@@ -92,7 +92,15 @@ def test_reconciliation_controls_and_hooks_are_present(admin_client):
 
 def test_pos_checkout_guards_and_escaping_hooks_are_present(admin_client):
     html = admin_client.get("/").get_data(as_text=True)
-    for marker in ('id="saleBtn"', 'id="basketBtn"', 'id="momoManualRef"'):
+    for marker in (
+        'id="saleBtn"',
+        'id="basketBtn"',
+        'id="momoManualRef"',
+        'id="momoGuard"',
+        'id="momoCheckBtn"',
+        'id="momoForgetPendingBtn"',
+        'id="momoForgetPaidBtn"',
+    ):
         assert marker in html, marker
 
     pos = admin_client.get("/static/js/pos.js").get_data(as_text=True)
@@ -102,6 +110,12 @@ def test_pos_checkout_guards_and_escaping_hooks_are_present(admin_client):
         "SALE_BUSY || MOMO.busy",
         "momoManualReferenceError(momoProvider)",
         "function posSafeRef",
+        "function removeBasketItem",
+        "if (err.status === 409)",
+        "if (e.status === 409)",
+        "momoClearGuardsForRef(r.momo_ref",
+        "momoSetPaid({ ref: momoRef",
+        "const items = BASKET.map",
         "escHtml(l.product_name)",
         "escHtml(r.momo_ref)",
         "escHtml(r.shop_name)",
@@ -112,7 +126,16 @@ def test_pos_checkout_guards_and_escaping_hooks_are_present(admin_client):
     for hook in (
         "function momoPhoneKey",
         "function momoManualReferenceError",
-        "momoPhoneKey(MOMO_PENDING.phone) === phoneKey",
+        "function momoGuardMatches",
+        "function momoClearGuardsForRef",
+        "function renderMomoGuards",
+        "function checkMomoPending",
+        "function forgetMomoPending",
+        "function forgetMomoPaid",
+        "momoGuardMatches(MOMO_PENDING",
+        "sessionStorage",
+        "verify_sales",
+        "MOMO.manualProvider",
     ):
         assert hook in momo, hook
 
@@ -124,6 +147,8 @@ def test_pos_checkout_guards_and_escaping_hooks_are_present(admin_client):
         "if(BUSY)return",
         "e.status===409&&receipt",
         "const esc=",
+        "VERIFY[provider]",
+        "verify_sales",
     ):
         assert hook in staff, hook
 

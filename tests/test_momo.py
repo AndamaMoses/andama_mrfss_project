@@ -341,6 +341,14 @@ def test_momo_health_summarizes_configuration(app_under_test, admin_client):
     assert body["base_url"] == momo.SANDBOX_BASE_URL
 
 
+def test_health_reports_verify_sales_flags(app_under_test, admin_client):
+    app_under_test.config.update(MOMO_VERIFY_SALES=True, AIRTEL_VERIFY_SALES=False)
+    body = admin_client.get("/api/payments/health").get_json()
+    assert body["providers"]["MTN"]["verify_sales"] is True
+    assert body["providers"]["AIRTEL"]["verify_sales"] is False
+    assert admin_client.get("/api/momo/health").get_json()["verify_sales"] is True
+
+
 def test_momo_health_check_reports_unreachable(
     app_under_test, admin_client, monkeypatch
 ):

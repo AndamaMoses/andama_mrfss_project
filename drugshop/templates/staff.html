@@ -78,16 +78,16 @@
 <button data-t="me" onclick="go('me',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Me</button>
 </nav>
 <script>
-let ME={},PRODS=[],BASKET=[],BUSY=false;
+let ME={},PRODS=[],BASKET=[],BUSY=false,VERIFY={MTN:true,AIRTEL:true};
 const CAPS={patients:{{ show_patients|tojson }},finance:{{ show_finance|tojson }}};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const today=()=>new Date().toISOString().slice(0,10);
 function go(t,btn){document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');else document.querySelector(`.nav button[data-t="${t}"]`).classList.add('active');document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));$('t-'+t).classList.add('active');window.scrollTo(0,0)}
 async function api(u,m,b){const r=await fetch(u,{method:m||'GET',headers:b?{'Content-Type':'application/json'}:{},body:b?JSON.stringify(b):undefined});if(r.status===401){location.href='/login';throw 0}const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.error||'Error');e.status=r.status;e.data=j;throw e}return j}
-function syncStaffMomo(){const el=$('bMomoRef');if(!el)return;const m=$('bMethod').value;const isMomo=m==='MTN_MOMO'||m==='AIRTEL_MOMO';if(el.dataset.method&&el.dataset.method!==m)el.value='';el.dataset.method=m;el.hidden=!isMomo;el.placeholder=(m==='AIRTEL_MOMO'?'Airtel Money':'MTN MoMo')+' reference (SMS ID)'}
+function syncStaffMomo(){const el=$('bMomoRef');if(!el)return;const m=$('bMethod').value;const isMomo=m==='MTN_MOMO'||m==='AIRTEL_MOMO';if(el.dataset.method&&el.dataset.method!==m)el.value='';el.dataset.method=m;el.hidden=!isMomo;const p=m==='AIRTEL_MOMO'?'AIRTEL':'MTN';el.placeholder=(m==='AIRTEL_MOMO'?'Airtel Money':'MTN MoMo')+' reference (SMS ID)'+(VERIFY[p]?'':' (optional)')}
 function initials(n){return (n||'?').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase()}
-async function boot(){ME=await api('/api/me');$('whoName').textContent=ME.display_name||ME.username;$('whoRole').textContent=ME.role==='admin'?'Shop Owner':'Sales Agent';$('avatar').textContent=initials(ME.display_name||ME.username);$('pfName').value=ME.display_name||'';$('pfPhone').value=ME.phone||'';setInterval(()=>{$('clock').textContent=new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})},1000);loadAll()}
+async function boot(){ME=await api('/api/me');$('whoName').textContent=ME.display_name||ME.username;$('whoRole').textContent=ME.role==='admin'?'Shop Owner':'Sales Agent';$('avatar').textContent=initials(ME.display_name||ME.username);$('pfName').value=ME.display_name||'';$('pfPhone').value=ME.phone||'';setInterval(()=>{$('clock').textContent=new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})},1000);try{const h=await api('/api/payments/health');const p=h.providers||{};VERIFY.MTN=p.MTN?p.MTN.verify_sales!==false:true;VERIFY.AIRTEL=p.AIRTEL?p.AIRTEL.verify_sales!==false:true;syncStaffMomo()}catch(e){}loadAll()}
 function ugDigits(p){let d=String(p||'').replace(/\D/g,'');if(/^0\d{9}$/.test(d))d='256'+d.slice(1);return d}
 async function loadAll(){PRODS=await api('/api/products');renderProds();renderStock();
 const d=await api('/api/dashboard');$('shopTotal').textContent=d.sales_today.total.toLocaleString();$('shopCount').textContent=d.sales_today.count+' sales';$('lowN').textContent=d.low_stock_count;if(CAPS.patients&&$('refN'))$('refN').textContent=d.refill.due_count;
@@ -96,8 +96,8 @@ const my=await api('/api/my-sales');$('myTotal').textContent=my.total.toLocaleSt
 }
 function renderProds(){const q=($('q').value||'').toLowerCase();$('prodGrid').innerHTML=PRODS.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<button class="prod" onclick="addB(${+p.id||0})"><b>${esc(p.name)}</b><span>UGX ${(+p.price_sell||0).toLocaleString()}</span><small>${esc(p.stock_on_hand)} ${esc(p.unit)} left${p.low_stock?' · LOW':''}</small></button>`).join('')||'<div class="row">No matches</div>'}
 function renderStock(){const q=($('q2').value||'').toLowerCase();$('stockList').innerHTML=PRODS.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<div class="row"><b>${esc(p.name)}</b> — ${esc(p.stock_on_hand)} ${esc(p.unit)} <span class="badge ${p.low_stock?'b-low':'b-ok'}">${p.low_stock?'LOW':'OK'}</span><br><small>UGX ${(+p.price_sell||0).toLocaleString()} · reorder at ${esc(p.reorder_level)}</small></div>`).join('')}
-function addB(id){const e=BASKET.find(x=>x.product_id===id);if(e)e.qty++;else BASKET.push({product_id:id,qty:1});renderB()}
-function chQty(i,d){BASKET[i].qty+=d;if(BASKET[i].qty<=0)BASKET.splice(i,1);renderB()}
+function addB(id){if(BUSY)return;const e=BASKET.find(x=>x.product_id===id);if(e)e.qty++;else BASKET.push({product_id:id,qty:1});renderB()}
+function chQty(i,d){if(BUSY)return;BASKET[i].qty+=d;if(BASKET[i].qty<=0)BASKET.splice(i,1);renderB()}
 function prodOf(id){return PRODS.find(p=>String(p.id)===String(id))}
 function renderB(){const tot=BASKET.reduce((s,b)=>s+prodOf(b.product_id).price_sell*b.qty,0);$('bSum').textContent=BASKET.length?`· UGX ${tot.toLocaleString()}`:'';$('bRows').innerHTML=BASKET.length?BASKET.map((b,i)=>{const p=prodOf(b.product_id);return `<div class="brow"><div class="nm">${esc(p.name)}<br><small>${(+p.price_sell*b.qty||0).toLocaleString()} UGX</small></div><div class="stepper"><button onclick="chQty(${i},-1)">−</button><span>${esc(b.qty)}</span><button onclick="chQty(${i},1)">+</button></div></div>`}).join(''):'<div class="row">Empty — tap medicines above</div>'}
 async function checkout(){
@@ -105,13 +105,14 @@ async function checkout(){
   if(!BASKET.length){$('saleMsg').textContent='Basket is empty';return}
   const method=$('bMethod').value;
   const isMomo=method==='MTN_MOMO'||method==='AIRTEL_MOMO';
+  const provider=method==='AIRTEL_MOMO'?'AIRTEL':'MTN';
   const ref=isMomo?($('bMomoRef').value||'').trim():'';
-  if(isMomo&&!ref){
+  if(isMomo&&!ref&&VERIFY[provider]){
     $('saleMsg').textContent='❌ Enter the '+(method==='AIRTEL_MOMO'?'Airtel Money':'MTN MoMo')+' reference from the customer\'s SMS before completing the sale.';
     $('bMomoRef').focus();
     return;
   }
-  const payload={items:BASKET,payment_method:method,customer_name:$('bCustomer').value,customer_phone:$('bPhone').value,served_by:ME.display_name||ME.username};
+  const payload={items:BASKET.map(b=>({product_id:b.product_id,qty:b.qty})),payment_method:method,customer_name:$('bCustomer').value,customer_phone:$('bPhone').value,served_by:ME.display_name||ME.username};
   if(isMomo){payload.is_manual_entry=true;payload.momo_ref=ref}
   BUSY=true;
   const btn=$('staffCheckoutBtn');
