@@ -156,7 +156,16 @@ ENDPOINT_APPS = {
     "reporting.api_staff_activity": "finance",
 }
 ALWAYS_ON_BLUEPRINTS = frozenset(
-    {"auth", "web", "admin", "customers", "reporting", "apps", "payments_callback"}
+    {
+        "auth",
+        "web",
+        "admin",
+        "customers",
+        "reporting",
+        "apps",
+        "billing",
+        "payments_callback",
+    }
 )
 
 

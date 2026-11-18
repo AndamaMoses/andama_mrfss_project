@@ -91,6 +91,8 @@ def test_init_db_creates_fresh_schema_and_records_migrations(tmp_path):
         "users", "login_events", "customers", "credit_payments", "expenses",
         "app_entitlements", "entitlement_events", "stock_adjustments",
         "momo_collections", "momo_events", "payment_reconciliations",
+        "billing_subscriptions", "billing_events", "billing_invoices",
+        "billing_payments",
     } <= tables
     assert {"receipt_ref", "customer_name", "created_at", "customer_phone", "momo_ref"} <= scols
     assert "provider" in mcols
@@ -100,6 +102,8 @@ def test_init_db_creates_fresh_schema_and_records_migrations(tmp_path):
     assert "004_momo_ledger.sql" in versions
     assert "005_momo_provider.sql" in versions
     assert "006_payment_reconciliation.sql" in versions
+    assert "007_billing_subscriptions.sql" in versions
+    assert "008_billing_invoices.sql" in versions
     assert "idx_momo_collections_provider_status" in indexes
 
 
@@ -157,6 +161,10 @@ def test_init_db_upgrades_legacy_schema(tmp_path):
         "momo_collections",
         "momo_events",
         "payment_reconciliations",
+        "billing_subscriptions",
+        "billing_events",
+        "billing_invoices",
+        "billing_payments",
     } <= tables
     assert sale == (200.0, "R-000001")
     assert display_name == "Charles Onzima"
@@ -166,6 +174,8 @@ def test_init_db_upgrades_legacy_schema(tmp_path):
     assert "004_momo_ledger.sql" in versions
     assert "005_momo_provider.sql" in versions
     assert "006_payment_reconciliation.sql" in versions
+    assert "007_billing_subscriptions.sql" in versions
+    assert "008_billing_invoices.sql" in versions
 
 
 def test_payment_reconciliation_migration_adds_table_to_existing_db(tmp_path):
@@ -191,7 +201,11 @@ def test_payment_reconciliation_migration_adds_table_to_existing_db(tmp_path):
     conn.close()
 
     applied = run(db_file)
-    assert applied == ["006_payment_reconciliation.sql"]
+    assert applied == [
+        "006_payment_reconciliation.sql",
+        "007_billing_subscriptions.sql",
+        "008_billing_invoices.sql",
+    ]
 
     conn = sqlite3.connect(db_file)
     tables = {
@@ -230,6 +244,7 @@ def test_payment_reconciliation_migration_adds_table_to_existing_db(tmp_path):
     } <= cols
     assert "idx_payment_reconciliations_date" in indexes
     assert "006_payment_reconciliation.sql" in versions
+    assert "008_billing_invoices.sql" in versions
 
 
 def test_momo_provider_migration_upgrades_phase1_ledger(tmp_path):

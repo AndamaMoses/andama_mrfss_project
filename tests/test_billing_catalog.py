@@ -7,6 +7,7 @@ from drugshop.billing.catalog import (
     CURRENCY,
     PRICE_BOOK,
     PRICE_BOOK_VERSION,
+    SETUP_DISCOUNT_CAP,
     Price,
     QuoteError,
     QuoteLine,
@@ -90,10 +91,11 @@ def test_zero_setup_discount_is_allowed():
     assert result.setup_total == 400_000
 
 
-def test_setup_discount_equal_to_subtotal_is_allowed():
-    result = quote("core", setup_discount=400_000)
+def test_setup_discount_equal_to_cap_is_allowed():
+    result = quote("core", setup_discount=SETUP_DISCOUNT_CAP)
 
-    assert result.setup_total == 0
+    assert result.setup_discount == 100_000
+    assert result.setup_total == 300_000
 
 
 def test_negative_setup_discount_is_rejected():
@@ -101,9 +103,14 @@ def test_negative_setup_discount_is_rejected():
         quote("core", setup_discount=-1)
 
 
-def test_setup_discount_above_subtotal_is_rejected():
-    with pytest.raises(QuoteError, match="exceeds the setup subtotal"):
-        quote("core", setup_discount=400_001)
+def test_setup_discount_above_cap_is_rejected():
+    with pytest.raises(QuoteError, match="exceeds the approved v1 cap"):
+        quote("core", setup_discount=SETUP_DISCOUNT_CAP + 1)
+
+
+def test_setup_discount_above_subtotal_is_rejected_by_cap():
+    with pytest.raises(QuoteError, match="exceeds the approved v1 cap"):
+        quote("core", setup_discount=400_000)
 
 
 def test_non_integer_setup_discount_is_rejected():

@@ -24,6 +24,15 @@ Extracts pilot metrics and logs for the Onzima Charles Drug Shop rollout, summar
 .\.venv\Scripts\python.exe scripts\pilot_metrics.py
 ```
 
+### 4. `revenue_rollup.py`
+Builds a read-only revenue rollup across one or more installation databases. Accepts database paths or a directory of `*.db` files, opens every source with `mode=ro` and `PRAGMA query_only` inside one read snapshot, and fails if a source hash changes or the portfolio mixes currencies.
+```powershell
+python scripts\revenue_rollup.py instance --format json
+python scripts\revenue_rollup.py instance --format csv
+python scripts\revenue_rollup.py a.db b.db --format json --days 14
+```
+Use this for the monthly close and the renewal queue; totals equal the sum of each installation's `flask --app run revenue report`.
+
 ---
 
 > [!NOTE]

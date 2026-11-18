@@ -42,6 +42,7 @@ def create_app(config=None):
     from drugshop.auth.cli import register_cli as register_auth_cli
     from drugshop.auth.routes import bp as auth_bp
     from drugshop.billing.cli import register_cli as register_billing_cli
+    from drugshop.billing.routes import bp as billing_bp
     from drugshop.credit.routes import bp as credit_bp
     from drugshop.customers.routes import bp as customers_bp
     from drugshop.finance.routes import bp as finance_bp
@@ -73,6 +74,7 @@ def create_app(config=None):
     app.register_blueprint(admin_bp)
     app.register_blueprint(tender_bp)
     app.register_blueprint(apps_bp)
+    app.register_blueprint(billing_bp)
     # Registered last: the entitlement gate builds its endpoint map from the
     # complete URL map. The auth gate above stays first, so anonymous API
     # requests still receive 401 before entitlement checks.

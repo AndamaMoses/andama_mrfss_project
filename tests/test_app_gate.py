@@ -29,6 +29,9 @@ def test_gate_map_uses_blueprints_and_endpoint_overrides(app_under_test):
     assert mapping["reporting.api_staff_activity"] == "finance"
     assert mapping["reporting.api_dashboard"] is None
     assert mapping["apps.api_apps"] is None
+    assert mapping["billing.api_subscription"] is None
+    assert mapping["billing.api_subscription_invoices"] is None
+    assert mapping["billing.api_subscription_invoice"] is None
 
 
 def test_core_keeps_core_and_always_on_routes(app_under_test, admin_client):

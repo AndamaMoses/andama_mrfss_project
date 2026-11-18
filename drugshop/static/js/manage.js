@@ -1,3 +1,39 @@
+/* Read-only plan invoice ledger (admin only). The rendering helpers live in
+   format.js/apps.js and are defined by the time this runs. */
+async function loadPlanInvoices() {
+  if (!ME || ME.role !== 'admin' || !$('planInvoiceRows')) return;
+  try {
+    renderPlanInvoices(await api('/api/subscription/invoices'));
+  } catch (e) {
+    console.warn('Invoice ledger unavailable', e);
+  }
+}
+
+function renderPlanInvoices(rows) {
+  var section = $('planInvoices');
+  var body = $('planInvoiceRows');
+  if (!section || !body) return;
+
+  section.hidden = false;
+  if (!rows || !rows.length) {
+    body.innerHTML = '<tr><td colspan="6" class="plan-empty">No invoices recorded.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = rows.map(function (row) {
+    var currency = row.currency || 'UGX';
+    var status = INVOICE_STATUS_LABELS[row.status] || row.status || '';
+    return '<tr>' +
+      '<td>' + escHtml(row.invoice_no) + '</td>' +
+      '<td>' + escHtml(prettyDate(row.due_date) || '—') + '</td>' +
+      '<td>' + escHtml(planMoney(row.amount, currency)) + '</td>' +
+      '<td>' + escHtml(planMoney(row.paid, currency)) + '</td>' +
+      '<td>' + escHtml(planMoney(row.balance, currency)) + '</td>' +
+      '<td>' + escHtml(status) + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
 /* Owner manage-data tab. */
 async function loadManage() {
   if (ME.role !== 'admin') return;

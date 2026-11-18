@@ -971,10 +971,31 @@
               </svg>Plan &amp; Apps <span class="plan-status" id="planStatus">active</span></h2>
             <div class="plan-grid">
               <div class="plan-item"><span>Current plan</span><strong id="planName">…</strong></div>
-              <div class="plan-item"><span>Expires</span><strong id="planExpiry">No expiry set</strong></div>
+              <div class="plan-item"><span>Renews</span><strong id="planExpiry">No expiry set</strong></div>
+              <div class="plan-item"><span>Started</span><strong id="planStarted">—</strong></div>
+              <div class="plan-item"><span>Monthly fee</span><strong id="planMonthly">—</strong></div>
+              <div class="plan-item"><span>Outstanding balance</span><strong id="planBalance">0 UGX</strong></div>
             </div>
             <span class="plan-label">Included apps</span>
             <div class="plan-chips" id="planApps"></div>
+            <div class="plan-invoices" id="planInvoices" hidden>
+              <span class="plan-label">Invoices</span>
+              <div class="plan-invoice-wrap">
+                <table class="plan-invoice-table">
+                  <thead>
+                    <tr>
+                      <th>Invoice</th>
+                      <th>Due</th>
+                      <th>Amount</th>
+                      <th>Paid</th>
+                      <th>Balance</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="planInvoiceRows"></tbody>
+                </table>
+              </div>
+            </div>
             <p class="plan-note">This panel is read-only. Plan changes are made by your account manager.
               <a id="planSupport" class="plan-link" target="_blank" rel="noopener" hidden>Ask about upgrades</a>
             </p>

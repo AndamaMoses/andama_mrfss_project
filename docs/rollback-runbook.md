@@ -45,7 +45,38 @@ flask --app run plan show
 
 The app does not need a restart for an entitlement change; refresh the browser.
 
-## 2. Code rollback
+## 2. Billing rollback (no database restore)
+
+Commercial records are corrected through the CLI, not by editing SQLite. The
+invoice row stays for audit; a void invoice reports a zero balance.
+
+| Problem | Action |
+|---|---|
+| Wrong invoice amount or period | `revenue invoice void INV-... --reason "wrong period"` then reissue |
+| Wrong bundle, fee, or dates | Re-run `revenue activate ... --override-reason "correction"` |
+| Wrong status | `revenue status active|past_due|cancelled|expired --notes "..."` |
+| Invoice marked paid in error | Stop and keep the rows. v1 has no payment reversal; restore the verified backup if the money record is materially wrong |
+| Customer should lose access | `plan set core` (or the last paid bundle), then `revenue status cancelled` when appropriate |
+
+Examples:
+
+```powershell
+flask --app run revenue invoice void INV-202611-0002 --actor "Andama" --reason "duplicate period"
+flask --app run revenue invoice monthly --period-start 2026-12-18 --period-end 2027-01-18 --actor "Andama"
+flask --app run revenue status past_due --actor "Andama" --notes "December invoice unpaid"
+flask --app run revenue show
+flask --app run revenue report
+```
+
+Do not delete or hand-edit `billing_subscriptions`, `billing_invoices`, or
+`billing_payments`. If the read-only plan card or `/api/subscription` is the
+problem, roll back the code; the billing tables are additive and can stay idle.
+
+Onzima's Legacy state has no required billing row. Do not create one to
+"roll back" a UI change; leave the entitlements and the empty billing tables in
+place unless the founder deliberately exits the grandfathered arrangement.
+
+## 3. Code rollback
 
 Stop the app before changing code. Commit or stash local changes first, then
 check out the last known-good release tag.
@@ -82,7 +113,7 @@ If the rollback is temporary, return to the release branch after the fix:
 git checkout feature/packaging
 ```
 
-## 3. Database restore
+## 4. Database restore
 
 Restoring a database discards everything written since that backup. If possible,
 take a fresh copy of the current database first.
@@ -144,7 +175,7 @@ flask --app run plan show
 Do not restore a backup while the app or another Python process is writing to
 the database. Do not run destructive SQL by hand.
 
-## 4. Rehearse the restore before you need it
+## 5. Rehearse the restore before you need it
 
 The Phase 5 rehearsal copies the real database, migrates it, seeds a plan,
 checks access, downgrades to Core, re-upgrades, restores the verified backup,
@@ -165,7 +196,7 @@ The current Phase 5 verified backup is
 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`.
 Use the newest backup that has been verified for the customer, not this example.
 
-## 5. Post-rollback checks
+## 6. Post-rollback checks
 
 1. `flask --app run plan show` matches the intended plan.
 2. `GET /api/apps` matches the launcher.
@@ -179,9 +210,11 @@ Use the newest backup that has been verified for the customer, not this example.
 4. Complete one real workflow (sale, patient, or Tender analysis) as the owner.
 5. Confirm row counts for the main tables match the backup or the
    pre-rollback snapshot.
-6. Record what was rolled back, why, the tag, the backup path, and the time.
+6. Run `flask --app run revenue report` and confirm MRR, collections, and the
+   outstanding balance match the backup or the pre-rollback snapshot.
+7. Record what was rolled back, why, the tag, the backup path, and the time.
 
-## 6. Escalation
+## 7. Escalation
 
 If the app still fails after an access rollback and a verified data restore:
 

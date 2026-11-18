@@ -24,8 +24,8 @@ status and points to the detailed records; it does not replace them.
 | Workstream | Status | Current position | Next action |
 |---|---|---|---|
 | Modularization foundation | **Done and archived** | 14-domain package, app factory, DB/migrations, auth guards, frontend split, tests/lint/CI | No active work; preserve as the platform baseline |
-| Packaging and entitlements | **Done through Phase 5** | Registry, entitlements, server-side gate, launcher, Tender packaging, dry run, and runbooks are complete | Finish Phase 6 pilot observation |
-| Phase 6 pilot | **In progress** | Re-baselined 2026-10-26; observation ends 2026-11-09 | Owner walkthrough, upgrade demo, final exit review |
+| Packaging and entitlements | **Done through Phase 5** | Registry, entitlements, server-side gate, launcher, Tender packaging, dry run, and runbooks are complete | Complete the re-baselined Phase 6 observation on `a622894` |
+| Phase 6 pilot | **Re-baselined — observation running** | `a622894` (2026-11-06); new window 2026-11-06 to 2026-11-20; 499 tests and staging Core/Pro/Core 15/15 each PASS | Run the live Day 0 smoke, start a fresh log, record the walkthrough answers, complete the upgrade demo, and track 403/support evidence |
 | Owner-only security guards | **Done** | `/api/profit` and `/api/backup` require admin; regression tests added | Extend the same guard pattern if new owner-only endpoints appear |
 | Persona QA harness | **P2 done; P1/P3/P4/P5 planned** | P2 golden path 16/16; P2 boundary audit 8/8; seed profiles and report template complete | Implement P1, P3, P4, and P5 scenarios |
 | Browser/manual QA layer | **Not started** | Manual report template exists; Playwright is not built | Build the browser layer after the API-level scenarios stabilize |
@@ -68,7 +68,7 @@ tests.
 | 3 — Launcher, navigation, loaders | **Done** | Apps launcher, locked tiles, upgrade modal, plan card, grouped loaders |
 | 4 — Tender packaging | **Done** | Tender-only brand and auth; no pharmacy upsell leakage |
 | 5 — Hardening, docs, dry run | **Done** | Dry run passed; onboarding and rollback runbooks added |
-| 6 — Pilot | **In progress** | Re-baselined 2026-10-26; ends 2026-11-09 |
+| 6 — Pilot | **Blocked — re-baseline required** | Live build changed after `eaeb2f8`; the `eaeb2f8` window is superseded. Owner walkthrough completed (answers pending); upgrade demo, support-time evidence, and 403 evidence missing |
 
 **Definition-of-done status:** all engineering items are checked except the
 two-week pilot without regressions. The pilot remains the only open item in the
@@ -143,24 +143,31 @@ The pilot is tracked operationally in [`pilot-tracker.md`](pilot-tracker.md).
 
 | Item | Current state |
 |---|---|
-| Release under observation | `v2.5.0` / `eaeb2f8` |
-| Observation window | 2026-10-26 to 2026-11-09 |
+| Release under observation | `a622894` / 2026-11-06 (the `eaeb2f8` window is superseded) |
+| Observation window | 2026-11-06 to 2026-11-20 (re-baselined) |
 | Live plan | Legacy (grandfathered) |
-| Fresh 403 denials | 0 since the 2026-10-26 re-baseline |
+| Fresh 403 denials | Not captured for the new window; start a fresh log |
 | Live DB integrity | `ok` |
-| Logins at re-baseline | 91 cumulative |
-| Support tickets | 0 recorded |
-| Owner walkthrough | **Pending** |
-| Upgrade demo | **Pending** |
-| Final exit decision | **Pending** |
+| Day 0 evidence on `a622894` | 499 tests; staging Core/Pro/Core 15/15 each; business rows unchanged; live smoke pending |
+| Logins | 131 at the `eaeb2f8` close; new-window count starts fresh |
+| Support tickets | Not tracked |
+| Owner walkthrough | Completed 2026-11-09; answers pending transcription |
+| Upgrade demo | **Not completed** |
+| Final exit decision | **Wait for the new window and missing evidence** |
 
 **Open pilot checks:**
 
-- Confirm that removal of the historical `andama` account was intentional.
-- Complete the owner walkthrough and record the answers.
+- ~~Confirm that removal of the historical `andama` account was intentional.~~
+  Confirmed intentional on 2026-11-09.
+- Record the completed owner walkthrough answers.
 - Run the upgrade conversation on the staging install, never by changing
   Onzima’s live plan.
-- Complete the 14-day observation and record the final scorecard.
+- Complete the live Day 0 smoke on `a622894` and start a fresh server log for
+  the 2026-11-06 to 2026-11-20 window; the 499-test and staging
+  Core/Pro/Core rehearsal evidence is recorded.
+- Close the 403 evidence gap for the new window (the old local server log is
+  stale).
+- Track support time so the ≤ 2 hour target can be verified.
 
 ---
 

@@ -14,6 +14,28 @@ product release shown on the sign-in screen.
   guide for a free public demo with synthetic data.
 - `ADMIN_PASSWORD` / `STAFF_PASSWORD` first-boot overrides so hosted installs
   never start with the documented development passwords.
+- Operator billing ledger: subscription activation, setup and monthly invoices,
+  manual payments with balances, a payment ledger view and invoice voiding, and
+  a 14-day renewal queue under `flask --app run revenue ...`. Invoice
+  numbering and payment checks take a SQLite writer lock, and partial unique
+  indexes block duplicate setup invoices and duplicate monthly periods.
+- Read-only Plan & Apps subscription card with plan, renewal, monthly fee,
+  balance, and an admin-only invoice ledger, backed by `/api/subscription`.
+  There are no write, payment, or self-service upgrade endpoints; the support
+  CTA is configuration-driven and stays hidden when `SUPPORT_WHATSAPP` is blank.
+- Monthly revenue report (`flask --app run revenue report --format
+  text|json|csv`) with MRR, setup and monthly invoiced amounts, collections,
+  outstanding balance, plan mix, renewals, and grandfathered/excluded rows.
+  The report opens the database read-only, records the `as_of` date, and is
+  verified byte-identical before and after a run.
+- Read-only portfolio rollup (`scripts/revenue_rollup.py`) across database paths
+  or a directory; every source is opened read-only in one snapshot and
+  hash-checked before and after the read. A mixed-currency portfolio is
+  rejected instead of summed.
+- Monthly-close and renewal-reminder checklists, plus onboarding and rollback
+  runbook updates for the billing CLI.
+- `SUPPORT_WHATSAPP` pilot destination configured; the number is supplied
+  through the environment and is never committed.
 
 ### Security
 

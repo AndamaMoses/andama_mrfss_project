@@ -1,13 +1,16 @@
 # Revenue Strategy — Onzima Dawa & Tender Copilot
 
-**Status:** v1 commercial model approved 2026-11-05; validate with the first five buyers  
+**Status:** v1 commercial model approved 2026-11-05; billing ledger and reporting built; validate with the first five buyers  
 **Date:** 2026-11-05  
 **Owner:** Andama Moses  
-**Scope:** Commercial model for the current build (packaging Phases 0–5 complete; Phase 6 pilot runs through 2026-11-09)
+**Scope:** Commercial model for the current build (packaging phases complete; revenue-ops Phases 0–5 implemented)
 
-> This document describes commercial intent. The current build does **not**
-> contain a price book, checkout, billing, or a licence server. The prices below
-> were approved for v1 on 2026-11-05 (see the
+> This document describes commercial intent. The build now contains a versioned
+> price book, an operator CLI, a subscription ledger, setup and monthly
+> invoices, manual payments, a read-only customer plan card, a read-only
+> portfolio rollup, and monthly-close and renewal checklists. It still has **no
+> checkout, gateway collection, or licence server**; those remain out of scope.
+> The prices below were approved for v1 on 2026-11-05 (see the
 > [implementation plan](revenue-strategy-implementation-plan.md) Appendix A) and
 > should still be validated with the first five buyers.
 >
@@ -57,7 +60,7 @@ Strategic principles:
 
 | Stream | What the customer buys | Billing | Status |
 |---|---|---|---|
-| **Setup & catalog ingestion** | Installation, database setup, catalog import, first-run configuration, handover | One-time | Sold manually; onboarding runbook exists |
+| **Setup & catalog ingestion** | Installation, database setup, catalog import, first-run configuration, handover | One-time | Operator CLI invoice and payment ledger; onboarding runbook exists |
 | **Core subscription** | POS, inventory, batches, expiry, purchases, customers, dashboard | Monthly | Built and gated |
 | **Pro subscription** | Core + Refill Care, Finance (credit, reconciliation, expenses, profit), staff activity | Monthly | Built and gated |
 | **Growth add-on** | Stock Alerts, SMS/WhatsApp reminders and log; requires Pro | Monthly add-on | Built and gated |
@@ -265,23 +268,36 @@ saved per tender and compliance coverage.
 
 ## 8. Activation and lifecycle in the current build
 
-The commercial lifecycle is deliberately manual:
+The commercial lifecycle is deliberately sales-assisted:
 
-1. Payment is collected outside the app.
-2. The operator runs `flask --app run plan set <bundle> --expires <date> --actor "<name>"`.
-3. The customer sees the read-only **Plan & Apps** panel and the upgrade CTA.
-4. Entitlements gate the API and the UI; removing an app revokes access without
-   deleting business data.
-5. Expiry is **soft**: `expires_at` is shown but does not block access in v1.
+1. Quote the agreed bundle with `revenue quote` and record the setup and monthly
+   fee. Setup discounts are founder-approved; monthly fees are not discounted.
+2. Record the agreement with `revenue activate`; it writes the subscription and
+   the entitlements together.
+3. Issue the setup invoice and record the manual payment. No gateway or carrier
+   charge is involved.
+4. Issue monthly invoices in advance and record manual payments against them.
+5. The customer sees the read-only **Plan & Apps** panel; admins see the
+   read-only invoice ledger and outstanding balance.
+6. Run `revenue renewals --days 14`, remind the customer, invoice the next
+   period, collect, then `revenue renew` after the commercial step is agreed.
+7. Close each month with `revenue report` plus the
+   [monthly-close checklist](monthly-close-checklist.md); aggregate installs
+   with the read-only `scripts/revenue_rollup.py`.
 
 Implications:
 
-- **Collections discipline is the control.** The build will not chase a renewal
-  or suspend a non-paying customer automatically.
+- **Collections discipline is the control.** The build will not charge a card,
+  chase a renewal, or suspend a non-paying customer automatically.
 - **The upgrade CTA needs a destination.** `SUPPORT_WHATSAPP` is blank by
-  default; when blank, the upgrade link is hidden. Set it before any sales demo.
+  default; when blank, the upgrade link is hidden. The pilot number is
+  configured through the environment (`.env` locally, the Render dashboard in
+  production) and is never committed to the repository.
 - **Onzima stays on Legacy.** The reference installation keeps every app during
-  and after the pilot. Legacy is not a price anchor for new buyers.
+  and after the pilot. Legacy is not a price anchor for new buyers, and it has no
+  required billing row.
+- **Soft expiry remains deliberate.** The report shows what is due and overdue;
+  access is still not hard-locked in v1.
 
 ---
 
@@ -292,15 +308,17 @@ Implications:
 | Bundle catalog and app registry | Built | Can sell Core, Pro, Growth, Tender |
 | Server-side entitlement gate | Built | Hiding UI is not the only control |
 | Launcher, locked tiles, upgrade modal | Built | In-product expansion prompt exists |
-| Read-only plan panel | Built | Customer can see what they own |
-| Operator CLI activation | Built | Manual fulfilment after payment |
+| Read-only plan panel | Built | Customer can see plan, renewal, fee, balance, and invoices |
+| Operator CLI activation | Built | Manual fulfilment with subscription + entitlements together |
+| Subscription ledger, invoices, manual payments | Built (operator CLI) | Setup and monthly revenue is recorded and explainable |
+| Revenue report and portfolio rollup | Built | MRR, collections, balances, plan mix, and renewals |
 | Pricing in the UI | Not built | Quotes are manual; no price list in app |
-| Checkout / billing / invoicing | Not built | Collect payment outside the platform |
+| Self-service checkout / gateway collection | Not built (out of scope) | Collect payment outside the platform |
 | Licence server / hard expiry | Not built | Renewal is commercial, not enforced |
 | Transaction commission | Not built | No take rate on customer payments |
 | Combined Pro + Tender price | Not defined | Treat as a custom quote |
 | Tender standalone brand and auth | Built | Separate go-to-market is possible |
-| `SUPPORT_WHATSAPP` configuration | Not set in pilot | Upgrade CTA may be hidden |
+| `SUPPORT_WHATSAPP` configuration | Set for the pilot (2026-11-18) | Upgrade CTA links to the support number |
 
 ---
 
@@ -368,24 +386,28 @@ only where later validation or accountant review is still required.
 | 2 | Growth add-on pricing and whether future AI features are included | Protects the add-on's value | Founder | Before the first Growth sale |
 | 3 | Combined Pro + Tender price | Avoids ad-hoc discounting | Founder | Before the first combined quote |
 | 4 | Tender Copilot standalone price and pilot terms | Separate buyer, separate willingness to pay | Founder | Before the first Tender pilot |
-| 5 | How subscription payments are collected | No billing exists in the app | Founder | Before the first invoice |
+| 5 | How subscription payments are collected | The operator CLI records manual payments; confirm channel and references | Founder | Before the first invoice |
 | 6 | Hard expiry policy | Soft expiry is a deliberate v1 choice | Founder | After the first renewal cycle |
 | 7 | Setup scope boundary | Prevents unpaid catalog and data work | Founder | Before the next onboarding |
 | 8 | Tax treatment and invoice format | Required for a clean commercial record | Founder / accountant | Before the first paid setup |
-| 9 | `SUPPORT_WHATSAPP` destination | The upgrade CTA depends on it | Operator | Before the next demo |
+| 9 | ~~`SUPPORT_WHATSAPP` destination~~ (resolved 2026-11-18) | Pilot number configured through the environment; set the same value in Render | Operator | Done |
 | 10 | Messaging and hosting pass-through costs | Gross margin is currently unmeasured | Founder | With the first five customers |
 
 ---
 
 ## 13. Roadmap
 
-### Now — through 2026-11-09
+### Now — Phase 5 rollout
 
-- Finish the Phase 6 pilot without announcing bundles or changing Onzima's plan.
-- Complete the owner walkthrough and record answers in the pilot tracker.
-- Run the upgrade demo on the staging Core install.
-- Set `SUPPORT_WHATSAPP` so the upgrade path has a destination.
-- Keep the first price card internal until the pilot closes.
+- Keep Onzima on Legacy without changing the live plan.
+- Onboard the first paying customer with the onboarding runbook: quote, activate,
+  setup invoice, payment, handover, 30-day check-in.
+- Run the [monthly close](monthly-close-checklist.md) after the first billing
+  period and the [renewal reminder](renewal-reminder-checklist.md) 14 days
+  before expiry.
+- Confirm `SUPPORT_WHATSAPP` is set in the Render dashboard; the local `.env`
+  already carries the pilot number.
+- Keep the first price card internal until the first paid customer signs.
 
 ### Next 90 days — validation
 

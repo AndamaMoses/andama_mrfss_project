@@ -2,6 +2,7 @@
    Loaded after core/ui.js and before boot.js. When /api/apps is unavailable we
    fail open: every app stays visible and boot.js falls back to loadAll(). */
 var APPS_DATA = null;
+var SUBSCRIPTION_DATA = null;
 var APP_BY_ID = {};
 var TAB_APPS = {};
 var UPGRADE_RETURN_FOCUS = null;
@@ -12,6 +13,23 @@ var BUNDLE_NAMES = {
   growth: 'Growth',
   tender: 'Tender Copilot',
   legacy: 'Legacy',
+};
+
+var PLAN_STATUS_LABELS = {
+  active: 'Active',
+  past_due: 'Past due',
+  expired: 'Expired',
+  cancelled: 'Cancelled',
+  pending: 'Pending',
+  grandfathered: 'Grandfathered',
+};
+
+var INVOICE_STATUS_LABELS = {
+  draft: 'Draft',
+  unpaid: 'Unpaid',
+  partial: 'Part paid',
+  paid: 'Paid',
+  void: 'Void',
 };
 
 var PHARMACY_APP_IDS = ['pos', 'inventory', 'patients', 'finance', 'alerts'];
@@ -119,6 +137,7 @@ function applyApps(data) {
 
   renderLauncher(APPS_DATA);
   renderPlanPanel(APPS_DATA);
+  loadSubscription();
 }
 
 function resetAppsGating() {
@@ -145,8 +164,8 @@ function renderLauncher(data) {
   }
   if ($('launcherPlanStatus')) {
     var status = plan.status || 'active';
-    $('launcherPlanStatus').textContent = status;
-    $('launcherPlanStatus').className = 'plan-status' + (status === 'active' ? '' : ' inactive');
+    $('launcherPlanStatus').textContent = planStatusLabel(status);
+    $('launcherPlanStatus').className = planStatusClass(status);
   }
 
   if (!apps.length) {
@@ -203,6 +222,62 @@ function prettyDate(isoDate) {
   });
 }
 
+function planStatusLabel(status) {
+  return PLAN_STATUS_LABELS[status] || (status ? String(status) : 'Active');
+}
+
+function planStatusClass(status) {
+  return (status === 'active' || status === 'grandfathered')
+    ? 'plan-status'
+    : 'plan-status inactive';
+}
+
+function planMoney(value, currency) {
+  var amount = Number(value || 0);
+  var text = isFinite(amount) ? amount.toLocaleString() : '0';
+  return text + ' ' + (currency || 'UGX');
+}
+
+async function loadSubscription() {
+  if (!$('planCard')) return;
+  try {
+    SUBSCRIPTION_DATA = await api('/api/subscription');
+    renderSubscription(SUBSCRIPTION_DATA);
+    if (ME && ME.role === 'admin' && typeof loadPlanInvoices === 'function') {
+      loadPlanInvoices();
+    }
+  } catch (e) {
+    console.warn('Subscription summary unavailable', e);
+  }
+}
+
+function renderSubscription(data) {
+  var plan = (data && data.plan) || {};
+  var status = plan.status || 'active';
+
+  if ($('planName') && plan.label) $('planName').textContent = plan.label;
+  if ($('planStatus')) {
+    $('planStatus').textContent = planStatusLabel(status);
+    $('planStatus').className = planStatusClass(status);
+  }
+  if ($('planStarted')) {
+    $('planStarted').textContent = plan.started_on ? prettyDate(plan.started_on) : '—';
+  }
+  if ($('planExpiry')) {
+    var renews = plan.current_period_end ? prettyDate(plan.current_period_end) : 'No expiry set';
+    if (data && data.renewal_due) renews += ' · renewal due';
+    $('planExpiry').textContent = renews;
+  }
+  if ($('planMonthly')) {
+    $('planMonthly').textContent = Number(plan.monthly_fee || 0) > 0
+      ? planMoney(plan.monthly_fee, plan.currency) + '/month'
+      : 'No monthly fee';
+  }
+  if ($('planBalance')) {
+    $('planBalance').textContent = planMoney((data && data.balance) || 0, plan.currency);
+  }
+}
+
 function renderPlanPanel(data) {
   if (!$('planCard')) return;
 
@@ -212,8 +287,8 @@ function renderPlanPanel(data) {
 
   if ($('planName')) $('planName').textContent = plan.label || 'Custom plan';
   if ($('planStatus')) {
-    $('planStatus').textContent = status;
-    $('planStatus').className = 'plan-status' + (status === 'active' ? '' : ' inactive');
+    $('planStatus').textContent = planStatusLabel(status);
+    $('planStatus').className = planStatusClass(status);
   }
   if ($('planExpiry')) {
     $('planExpiry').textContent = plan.expires_at ? prettyDate(plan.expires_at) : 'No expiry set';

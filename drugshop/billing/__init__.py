@@ -1,8 +1,9 @@
-"""Billing price book and quote engine (Phase 1).
+"""Billing price book, quote engine, and subscription ledger.
 
-Pure commercial rules only: this package does not import Flask, the database
-layer, or entitlements. Subscription records, invoices, and the read-only
-customer view arrive in later phases.
+The package exports the pure price-book API only. ``service.py`` adds the
+database-backed subscription, invoice, and payment ledger and is imported
+lazily by the operator CLI, so quote commands stay pure. The read-only customer
+view arrives in Phase 4.
 """
 from drugshop.billing.catalog import (
     ADDON_IDS,
@@ -11,6 +12,7 @@ from drugshop.billing.catalog import (
     LEGACY_ID,
     PRICE_BOOK,
     PRICE_BOOK_VERSION,
+    SETUP_DISCOUNT_CAP,
     Price,
     Quote,
     QuoteError,
@@ -26,6 +28,7 @@ __all__ = [
     "LEGACY_ID",
     "PRICE_BOOK",
     "PRICE_BOOK_VERSION",
+    "SETUP_DISCOUNT_CAP",
     "Price",
     "Quote",
     "QuoteError",

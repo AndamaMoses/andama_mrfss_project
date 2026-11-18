@@ -6,7 +6,9 @@ announce bundles, show a price sheet, or remove any feature during this period.
 
 - Pilot window: Day 0 + 14 days
 - Initial Day 0: 2026-10-21
-- Current observation: 2026-10-26 to 2026-11-09 (re-baselined after v2.5.0)
+- Current observation: 2026-11-06 to 2026-11-20 (re-baselined on `a622894`)
+- Previous observation: 2026-10-26 to 2026-11-09 (`eaeb2f8`) — superseded
+  because the live build changed on 2026-11-06
 - Owner: Charles Onzima
 - Operator: Andama
 - Release: `v2.5.0` / code commit `eaeb2f8`

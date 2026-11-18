@@ -162,7 +162,7 @@ def test_factory_accepts_config_object(tmp_path, keep_db_globals):
     assert app.config["SESSION_COOKIE_HTTPONLY"] is True
     assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
     assert Path(TestConfig.UPLOAD_DIR).is_dir()
-    assert len(list(app.url_map.iter_rules())) == 70
+    assert len(list(app.url_map.iter_rules())) == 73
 
     client = app.test_client()
     assert client.get("/api/me").status_code == 200

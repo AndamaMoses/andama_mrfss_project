@@ -1,6 +1,6 @@
 # Revenue Strategy — Phased Implementation Plan
 
-**Status:** Phase 0 approved 2026-11-05; Phase 1 not started  
+**Status:** Phase 5 approved 2026-11-18; first-customer rollout pending  
 **Date:** 2026-11-05  
 **Companion:** [`revenue-strategy.md`](revenue-strategy.md)  
 **Proposed branch:** `feature/revenue-ops`  
@@ -164,6 +164,13 @@ integrity `ok`). The pending `006_payment_reconciliation.sql` migration was
 rehearsed on a backup copy, then applied live; plan remained Legacy and all
 existing business row counts were unchanged.
 
+**Re-verification (2026-11-09):** 507 tests passed (445 Phase 0 baseline plus
+62 added since), Ruff clean, all 17 JS files parsed. `scripts/smoke.ps1` passed
+against a scratch copy of `instance/staging-core/drugshop.db` (Core plan). The
+backup SHA256 and `PRAGMA integrity_check` still match, and the live database
+remains on Legacy with `006_payment_reconciliation.sql` applied and no billing
+tables.
+
 ### Rollback
 
 None for the revenue build; docs and branch only. The independent additive
@@ -200,7 +207,8 @@ founder can use in a sales conversation in under five minutes.
 - Combined defaults to the sum of lines until a packaged discount is approved.
 - Legacy cannot be quoted.
 - Monthly fees cannot be discounted.
-- Setup discount cannot be negative or exceed the setup total.
+- Setup discount cannot be negative, exceed the setup total, or exceed the
+  approved 100,000 UGX v1 cap.
 - Unknown bundles, missing dependencies, and zero/negative amounts fail clearly.
 - Every quote returns a `price_book_version`.
 
@@ -229,24 +237,34 @@ Produce and review six quotes:
 | Pro + Tender | 900,000 | 330,000 |
 | Pro with 100,000 setup discount | 500,000 | 180,000 |
 
-Also verify that `legacy` is refused with a clear message.
+Also verify that `legacy` is refused with a clear message, and that a discount
+above the approved 100,000 UGX cap is refused.
+
+**Review evidence (2026-11-09):** all six quotes match the table. `legacy` and
+discounts above 100,000 UGX exit non-zero with clear messages. The 55 targeted
+billing tests and the 509-test full suite pass; Ruff is clean; the quote group
+runs without importing the database layer. No schema, migration, or entitlement
+files changed in Phase 1.
 
 ### Tests
 
 - Exact totals for each scenario.
 - Growth without Pro is rejected.
 - Tender standalone and combined both work.
-- Setup discount boundary and monthly-discount rejection.
+- Setup discount boundary (100,000 cap and setup subtotal) and monthly-discount
+  rejection.
 - JSON output is stable and includes line items and version.
 - CLI exits non-zero with a clear message on invalid input.
 - No database connection is required.
 
 ### Review gate
 
-- [ ] Founder agrees the six quotes.
-- [ ] The quote output is readable in a live sales call.
-- [ ] Price-book version is visible.
-- [ ] No schema or entitlement change was made.
+- [x] Founder agrees the six quotes.
+- [x] The quote output is readable in a live sales call.
+- [x] Price-book version is visible.
+- [x] No schema or entitlement change was made.
+
+**Sign-off:** Product owner, 2026-11-09.
 
 ### Rollback
 
@@ -353,11 +371,37 @@ On a staging Core install:
 
 ### Review gate
 
-- [ ] Activation is reproducible from a fresh database in under 15 minutes.
-- [ ] Entitlements and subscription agree after activation.
-- [ ] Failure path leaves an obvious, recoverable `pending` state.
-- [ ] Legacy remains untouched on the live installation.
-- [ ] Migration dry run on a copy passes with business row counts unchanged.
+- [x] Activation is reproducible from a fresh database in under 15 minutes.
+- [x] Entitlements and subscription agree after activation.
+- [x] Failure path leaves an obvious, recoverable `pending` state.
+- [x] Legacy remains untouched on the live installation.
+- [x] Migration dry run on a copy passes with business row counts unchanged.
+
+**Implementation evidence (2026-11-09):** migration 007 applies cleanly to
+fresh, legacy, and staging databases; the full suite is **556 passed** (73
+targeted billing/migration tests), Ruff is clean. On a scratch copy of
+`instance/staging-core/drugshop.db` (Core, migrations 001–002), migration 007
+was applied and Pro was activated at the price-book fees (600,000 setup /
+180,000 monthly, 2026-11-09 → 2027-11-09). `revenue show` reported `[OK]`,
+`plan show` and `GET /api/apps` both reported Pro with expiry 2027-11-09, and
+the event log recorded the actor, terms, and reason. A renewal to 2028-11-09
+and past_due → active status changes also logged and reconciled. Every command
+ran in a fresh process, proving persistence; restoring the pre-activation
+backup returned the install to Core with no subscription. A fresh database
+initialized from 001–007 activated Pro successfully. `scripts/dry_run_packaging.py`
+on a copy of the live database applied 007, preserved all 19 existing business
+table row counts, and left the source hash unchanged during the dry run. The
+live root database stayed on Legacy/migration 006 with no billing tables during
+verification. A later `python run.py` startup (2026-11-09 03:37:58) applied
+migration 007 additively: the plan remains Legacy, both billing tables are
+empty, and all business and plan rows still match the verified post-pilot
+backup (only live `login_events` audit rows differ). The zero-byte
+`instance/drugshop.db` artifact was removed, and the test fixture now passes its
+temporary database into `create_app()` so a missing instance file can never
+fall back to the live database.
+
+**Sign-off:** Approved 2026-11-12; the product owner authorized moving to
+Phase 3.
 
 ### Rollback
 
@@ -383,6 +427,8 @@ collected, and what is due next — without pretending to be an accounting syste
   - `invoice setup`
   - `invoice monthly`
   - `invoice list`
+  - `invoice show`
+  - `invoice void`
   - `payment record`
   - `renewals`
 - Tests:
@@ -399,7 +445,15 @@ collected, and what is due next — without pretending to be an accounting syste
 - Monthly invoice defaults to the agreed monthly fee for the period.
 - Partial payments are allowed; overpayment is rejected.
 - A voided invoice cannot accept new payments.
-- Invoice numbers are unique and sequential per installation.
+- Invoice numbers are `INV-YYYYMM-####`, unique and sequential per issue month.
+- At most one non-void setup invoice exists per installation; it must be voided
+  before another is issued.
+- Monthly invoice periods may not overlap a non-void monthly invoice.
+- Voiding keeps the row for audit and reports a zero balance. An invoice with
+  recorded payments cannot be voided; money already received must be handled by
+  the operator first.
+- Invoice numbering and payment balance checks run inside `BEGIN IMMEDIATE`, so
+  two operator runs cannot reuse a number or pay the same balance twice.
 - Renewal queue defaults to 14 days before `current_period_end`.
 - No gateway call is made when recording a payment.
 
@@ -410,6 +464,8 @@ flask --app run revenue invoice setup --due 2026-11-12
 flask --app run revenue invoice monthly \
   --period-start 2026-11-05 --period-end 2026-12-05 --due 2026-11-05
 flask --app run revenue invoice list
+flask --app run revenue invoice show INV-202611-0001
+flask --app run revenue invoice void INV-202611-0002 --reason "wrong period"
 flask --app run revenue payment record INV-202611-0001 \
   --amount 600000 --method bank --reference "FT-..." --received-by "Andama"
 flask --app run revenue renewals --days 14
@@ -423,6 +479,11 @@ flask --app run revenue renewals --days 14
 - Full payment moves it to `paid`.
 - Overpayment is rejected with the remaining balance.
 - A void invoice rejects payment.
+- A second setup invoice is refused until the first is voided.
+- An overlapping monthly invoice is refused; adjacent periods are accepted.
+- An invoice with recorded payments cannot be voided.
+- Concurrent payment attempts cannot overpay or duplicate a payment.
+- SQLite enforces the setup/monthly money guards with partial unique indexes.
 - Negative or zero amounts are rejected.
 - Renewal window includes dates inside the window and excludes later dates.
 - CLI output is clear and machine-readable with `--json`.
@@ -442,11 +503,56 @@ Run one complete cycle on staging:
 
 ### Review gate
 
-- [ ] One setup and one monthly invoice reconcile exactly to Phase 1 quotes.
-- [ ] Partial and full payment states are correct.
-- [ ] Renewal queue is correct around the 14-day boundary.
-- [ ] No payment gateway or carrier call was made.
-- [ ] The operator can explain the balance from the CLI alone.
+- [x] One setup and one monthly invoice reconcile exactly to Phase 1 quotes.
+- [x] Partial and full payment states are correct.
+- [x] Renewal queue is correct around the 14-day boundary.
+- [x] No payment gateway or carrier call was made.
+- [x] The operator can explain the balance from the CLI alone.
+- [x] A wrong invoice can be voided and reissued without hand-editing SQLite.
+- [x] Concurrent payment attempts cannot overpay or duplicate a payment.
+
+**Implementation evidence (2026-11-12, re-reviewed):** migration 008 applies
+cleanly to fresh, Phase 2, and legacy databases; the full suite is **602
+passed** (56 targeted billing/migration tests), Ruff is clean.
+
+The re-review hardened the money paths:
+
+- Invoice numbering and the payment balance check now run inside
+  `BEGIN IMMEDIATE`, so two operator processes cannot reuse a number or pay the
+  same balance twice. A two-thread test proves only one of two concurrent
+  600,000 UGX payments lands on a 600,000 UGX invoice.
+- `billing_invoices` carries partial unique indexes: at most one non-void setup
+  invoice per installation, and at most one non-void monthly invoice per
+  period. The service supplies friendly errors first; SQLite enforces them as
+  the backstop.
+- Monthly invoices may not overlap a non-void monthly invoice; adjacent periods
+  remain valid.
+- `invoice show` prints the payment ledger so the balance is explainable from
+  the CLI, and `invoice void` records the operator and reason while keeping the
+  row for audit. A void invoice reports a zero balance. An invoice with
+  recorded payments cannot be voided.
+- Invoice lookups accept lower-case input and `get_db()` waits briefly on a
+  writer lock instead of failing instantly when the shop app is open.
+
+Setup and monthly invoice amounts are asserted equal to the Pro quote
+(600,000 + 180,000 UGX), and a separate test proves a founder-approved setup
+discount is billed at the agreed 500,000 UGX rather than the 600,000 UGX list
+price. The manual cycle on a throwaway database created setup invoice
+`INV-202611-0001` for 600,000 UGX, recorded a 300,000 UGX partial payment
+(balance 300,000), completed it (paid, balance 0), showed the two payments from
+the CLI, created monthly invoice `INV-202611-0002` for 180,000 UGX with period
+2026-11-05..2026-12-05, voided a wrong December invoice and reissued it, returned
+the subscription in `revenue renewals --days 14 --as-of 2026-11-21`, renewed to
+2027-01-05, and confirmed invoice list, subscription, and entitlements
+reconciled. The dry run on a copy of the live database applied only
+`008_billing_invoices.sql`, preserved all 21 existing table row counts, passed
+the Core/Legacy access matrices and restore rehearsal, and left the source hash
+unchanged. At Phase 3 sign-off the live root database remained on migration 007
+with both Phase 2 billing tables empty; migration 008 applied additively on
+2026-11-18.
+
+**Sign-off:** Approved 2026-11-16; the product owner authorized moving to
+Phase 4.
 
 ### Rollback
 
@@ -534,11 +640,35 @@ Check desktop and 390px mobile widths, keyboard focus, and zero unexpected 403s.
 
 ### Review gate
 
-- [ ] Customer can see what they own and when it renews.
-- [ ] There is no edit, upgrade, or payment button that changes data.
-- [ ] Admin invoice view is read-only.
-- [ ] Upgrade CTA opens the configured support link.
-- [ ] No console errors on any plan.
+- [x] Customer can see what they own and when it renews.
+- [x] There is no edit, upgrade, or payment button that changes data.
+- [x] Admin invoice view is read-only.
+- [x] Upgrade CTA opens the configured support link.
+- [x] No console errors on any plan. (Static parse and the automated plan
+  matrix pass; the product owner accepted the gate on 2026-11-18.)
+
+**Implementation evidence (2026-11-16):** Phase 4 adds the always-on
+`billing` blueprint with `GET /api/subscription`, an admin-only invoice list,
+and an admin-only invoice detail. The full suite is **625 passed** (35 targeted
+Phase 4 tests), Ruff is clean, and `node --check` passes for `core/apps.js` and
+`manage.js`. A throwaway-database smoke run returned the Legacy grandfathered
+fallback, a Pro summary of 180,000 UGX/month with a 680,000 UGX balance, the
+two-invoice ledger, a lower-case invoice lookup, and staff summary `200` /
+invoices `403`. Anonymous calls return `401`; an unknown invoice returns `404`;
+reads fail open before the billing migration. Automated checks cover
+Core/Pro/Growth/Tender/Legacy, balance and `renewal_due`, void-zero balances,
+escaped invoice rows, and the absence of notes, row ids, setup fees,
+price-book internals, and contact details from the payloads. The Plan & Apps
+card contains no form, input, button, or write callback. At Phase 4 sign-off the
+live root database was on migration 007 with `billing_subscriptions` empty and
+`billing_invoices` absent. A normal `python run.py` startup on 2026-11-18 applied
+the additive 008 migration; `instance/drugshop.db` was not recreated.
+`SUPPORT_WHATSAPP` was blank at Phase 4 sign-off; the pilot number was supplied
+on 2026-11-18 and is configured through the environment only (`.env` locally,
+the Render dashboard in production), never committed.
+
+**Sign-off:** Approved 2026-11-18; the product owner authorized moving to
+Phase 5.
 
 ### Rollback
 
@@ -560,10 +690,13 @@ then onboard the first paying customer without disturbing Onzima.
   - MRR, setup collected, payments collected, outstanding balance;
   - plan mix;
   - renewals due;
-  - grandfathered and excluded rows.
+  - grandfathered and excluded rows;
+  - the `as_of` date used for the renewal window.
+- Reporting opens the installation database read-only, in one snapshot.
 - `scripts/revenue_rollup.py`:
   - accepts one or more database paths or a directory;
-  - opens databases read-only;
+  - opens databases read-only, in one snapshot each;
+  - rejects a portfolio that mixes currencies;
   - emits CSV/JSON;
   - never writes to a customer database;
   - tests with two synthetic databases.
@@ -600,10 +733,69 @@ then onboard the first paying customer without disturbing Onzima.
 ### Review gate
 
 - [ ] First paid customer is active, invoiced, and visible in the report.
-- [ ] Report totals reconcile to the manual calculation.
-- [ ] Onzima's live plan is unchanged unless deliberately grandfathered.
-- [ ] Onboarding and rollback runbooks match the shipped commands.
-- [ ] No regressions, no unexpected 403s, no data loss.
+- [x] Report totals reconcile to the manual calculation.
+- [x] Onzima's live plan is unchanged unless deliberately grandfathered.
+- [x] Onboarding and rollback runbooks match the shipped commands.
+- [x] No regressions, no unexpected 403s, no data loss.
+
+**Implementation evidence (2026-11-18):** Phase 5 adds
+`flask --app run revenue report --format text|json|csv` with MRR, setup and
+monthly invoiced amounts, setup and total collections, outstanding balance,
+plan mix, renewal queue, grandfathered/excluded rows, and the `as_of` date used
+for the renewal window. The report opens the installation database with
+`mode=ro`, `PRAGMA query_only`, and one read transaction, so reporting cannot
+write and cannot mix committed states. The report and the read-only
+`scripts/revenue_rollup.py` share `drugshop/billing/report.py`; the rollup opens
+every source the same way, hashes each file before and after the read, rejects a
+mixed-currency portfolio, and emits per-installation CSV or an aggregated JSON
+portfolio. The onboarding and rollback runbooks now use the billing CLI, and
+new monthly-close and renewal-reminder checklists cover the operating cadence.
+`scripts/README.md` documents the rollup.
+
+Verification: full suite **647 passed** (21 targeted Phase 5 revenue tests plus
+the live-database guard), Ruff is
+clean, and every file under `drugshop/static/js/` passes `node --check`. The
+report CLI was hash-checked on a copy of the live database: the source was
+byte-identical after the run. The manual rehearsal copied the live database
+read-only, applied only migration 008, preserved all 21 existing business table
+counts, and produced a Pro report with 180,000 UGX MRR and a 680,000 UGX balance
+after a 100,000 UGX partial payment. The plan matrix reconciled: Core
+120,000/400,000, Pro 180,000/600,000, Growth 230,000/800,000, Tender
+150,000/300,000, Legacy grandfathered at 0, and a combined Pro + Tender install
+with a 330,000 UGX agreed monthly fee. A six-installation rollup reported MRR
+1,010,000, exactly the sum of the individual reports.
+`scripts/dry_run_packaging.py` applied only `008_billing_invoices.sql`, preserved
+21 business table counts, passed the Core/Legacy access matrices and restore
+rehearsal, and left the source hash unchanged. The live root database is now on
+migration 008, applied by a normal `python run.py` startup during this review.
+The owner's 10:41 login updated `last_login_at`, and live counts remain users 2,
+products 8, batches 7, sales 12, patients 3, and tender_docs 11 with
+`PRAGMA integrity_check` returning `ok`, matching the pilot progression. It has
+six Legacy entitlement rows and zero billing subscriptions, invoices, and
+payments; no business rows were lost, and `instance/drugshop.db` was not
+recreated.
+
+Re-review note: the report is a cumulative snapshot, not a period filter. The
+monthly-close checklist now states that monthly movement is the current report
+minus the previous close. The service already refuses to void a paid or partly
+paid invoice, so collected totals cannot diverge through a voided paid invoice.
+A local-only known risk remains: CSV cells containing formula prefixes from
+operator-entered customer names could execute in a spreadsheet; treat operator
+CSV output as trusted internal data or open it with formula evaluation disabled.
+
+**Open item:** onboard the first paying customer, reconcile the first monthly
+close to the report, and record the founder review. Until then the Phase 5
+rollout gate is not fully closed.
+
+`SUPPORT_WHATSAPP` was configured on 2026-11-18. The environment value flows
+through `config.py` into `/api/subscription` and `/api/apps`, and the Plan & Apps
+card plus the upgrade modal build `https://wa.me/<number>` links from it. The
+number itself is environment-only (`.env` locally, Render dashboard in
+production); only the blank placeholder is committed.
+
+**Sign-off:** Implementation approved 2026-11-18 and committed on
+`feature/revenue-ops`. The first-customer rollout gate, first monthly close,
+and founder report review remain open.
 
 ### Rollback
 
@@ -854,6 +1046,7 @@ new billing tables to integer minor units in Phase 0 — do not mix conventions.
 ```text
 flask --app run revenue pricebook
 flask --app run revenue quote <base> [--add growth|tender] [--setup-discount N] [--json]
+  # setup discount N is capped at 100,000 UGX in v1
 flask --app run revenue show
 flask --app run revenue activate <bundle> [options]
 flask --app run revenue renew --period-end YYYY-MM-DD
@@ -861,6 +1054,8 @@ flask --app run revenue status <status> [--notes ...]
 flask --app run revenue invoice setup [--due YYYY-MM-DD]
 flask --app run revenue invoice monthly --period-start ... --period-end ... [--due ...]
 flask --app run revenue invoice list [--json]
+flask --app run revenue invoice show <invoice_no> [--json]
+flask --app run revenue invoice void <invoice_no> [--reason ...] [--json]
 flask --app run revenue payment record <invoice_no> --amount ... --method ...
 flask --app run revenue renewals [--days 14] [--json]
 flask --app run revenue report [--format json|csv]
@@ -882,12 +1077,12 @@ No write endpoints in v1. Commercial writes remain operator CLI actions.
 
 | Phase | Status | Started | Gate signed | Notes |
 |---|---|---|---|---|
-| 0 — Decisions and baseline | **Approved** | 2026-11-05 | 2026-11-05 | 445 tests passed; dry-run fix; backup verified; live 006 applied; plan unchanged; branch `feature/revenue-ops` |
-| 1 — Price book and quote engine | Not started | | | |
-| 2 — Subscription ledger and activation | Not started | | | |
-| 3 — Invoices, payments, renewals | Not started | | | |
-| 4 — Read-only subscription UI/API | Not started | | | |
-| 5 — Reporting and first paid rollout | Not started | | | |
+| 0 — Decisions and baseline | **Approved** | 2026-11-05 | 2026-11-05 | 445 tests at sign-off; re-verified 2026-11-09 (507 tests, Ruff, 17 JS, smoke); backup verified; live 006 applied; plan unchanged; branch `feature/revenue-ops` |
+| 1 — Price book and quote engine | **Approved** | 2026-11-06 | 2026-11-09 | 55 targeted / 509 full tests; cap fixed; six quotes verified; no schema or entitlement change |
+| 2 — Subscription ledger and activation | **Approved** | 2026-11-09 | 2026-11-12 | Migration 007 + service + CLI + tests; 73 targeted / 556 full tests; Ruff clean; staging activation/renewal/restore and fresh-DB activation verified; 007 dry run preserved 19 table counts; live stayed Legacy, then `run.py` applied 007 additively (billing empty). Owner authorized Phase 3 on 2026-11-12 |
+| 3 — Invoices, payments, renewals | **Approved** | 2026-11-12 | 2026-11-16 | Migration 008 + invoice/payment/renewal service and CLI + tests; 56 targeted / 602 full tests; Ruff clean; invoice amounts reconcile to the Pro quote and to a discounted agreed fee; money paths use `BEGIN IMMEDIATE`, partial unique indexes, void/reissue, and a payment ledger view; concurrency and overlap guards tested; manual cycle verified; 008 dry run preserved 21 table counts; migration 008 applied additively on 2026-11-18 with empty billing tables. Owner authorized Phase 4 on 2026-11-16 |
+| 4 — Read-only subscription UI/API | **Approved** | 2026-11-16 | 2026-11-18 | Read-only `billing` blueprint + Plan & Apps card + admin invoice ledger; 35 targeted / 625 full tests; Ruff clean; JS parses; payload filters, access matrix, Legacy grandfathered fallback, and fail-open reads verified; migration 008 applied additively on 2026-11-18 with empty billing tables; `SUPPORT_WHATSAPP` configured for the pilot on 2026-11-18. Owner authorized Phase 5 on 2026-11-18 |
+| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; live is Legacy on 008 with empty billing tables; first paid customer not yet onboarded |
 | 6 — Optional automation | Deferred | | | |
 
 ---

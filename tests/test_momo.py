@@ -487,6 +487,33 @@ def test_momo_reference_cannot_be_reused(app_under_test, admin_client):
     assert _stock(admin_client, pid) == before
 
 
+def test_momo_sale_rejects_airtel_reference(app_under_test, admin_client):
+    from drugshop.payments import ledger
+
+    _momo_config(app_under_test, False)
+    reference = "44444444-4444-4444-8444-444444444444"
+    with app_under_test.app_context():
+        ledger.create_pending(
+            reference, "airtel-key", 5000, "UGX", provider="AIRTEL"
+        )
+    pid = _stocked_product(admin_client, price=5000)
+    before = _stock(admin_client, pid)
+
+    response = admin_client.post(
+        "/api/sales",
+        json={
+            "product_id": pid,
+            "qty": 1,
+            "payment_method": "MTN_MOMO",
+            "momo_ref": reference,
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["provider"] == "AIRTEL"
+    assert _stock(admin_client, pid) == before
+
+
 def test_momo_reference_requires_momo_method(app_under_test, admin_client):
     _momo_config(app_under_test, False)
     pid = _stocked_product(admin_client)
@@ -1014,6 +1041,34 @@ def test_momo_callback_requires_secret_and_updates_existing(
     )
 
 
+def test_momo_callback_rejects_airtel_reference(app_under_test, client):
+    from drugshop.db import q_one
+    from drugshop.payments import ledger
+
+    app_under_test.config.update(MOMO_CALLBACK_SECRET="cb-secret")
+    reference = "22222222-2222-4222-8222-222222222222"
+    with app_under_test.app_context():
+        ledger.create_pending(
+            reference,
+            "callback-airtel",
+            5000,
+            "UGX",
+            phone="700000000",
+            provider="AIRTEL",
+        )
+
+    response = client.post(
+        "/api/momo/callback?token=cb-secret",
+        json={"referenceId": reference, "status": "SUCCESSFUL"},
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["provider"] == "AIRTEL"
+    assert q_one(
+        "SELECT status FROM momo_collections WHERE reference=?", (reference,)
+    )["status"] == "PENDING"
+
+
 def test_void_keeps_momo_reference_consumed(app_under_test, admin_client):
     from drugshop.db import q_one
 
@@ -1386,3 +1441,147 @@ def test_momo_service_reuses_client(app_under_test, monkeypatch):
         svc.verify_reference(reference, 5000)
 
     assert len(built) == 1
+
+
+# -- Phase 5 CLI verification ----------------------------------------------
+def test_momo_collect_cli_records_pending_before_request(
+    app_under_test, monkeypatch
+):
+    import drugshop.payments.cli as cli
+    from drugshop.db import q_one
+
+    _momo_config(app_under_test, True)
+    app_under_test.config.update(MOMO_CURRENCY="UGX")
+    seen = {}
+
+    class Fake:
+        def __init__(self, settings):
+            self.settings = settings
+
+        def request_to_pay(self, **kwargs):
+            seen.update(kwargs)
+            seen["row_at_call"] = dict(
+                q_one(
+                    "SELECT * FROM momo_collections WHERE reference=?",
+                    (kwargs["reference_id"],),
+                )
+            )
+            return {
+                "reference_id": kwargs["reference_id"],
+                "payer": {"partyId": "256772123456"},
+                "amount": "5000",
+                "currency": "UGX",
+            }
+
+    monkeypatch.setattr(cli, "MomoClient", Fake)
+    result = app_under_test.test_cli_runner().invoke(
+        args=[
+            "momo",
+            "collect",
+            "--amount",
+            "5000",
+            "--phone",
+            "0772123456",
+            "--external-id",
+            "CLI-1",
+        ]
+    )
+
+    assert result.exit_code == 0, result.output
+    reference = seen["reference_id"]
+    row = q_one("SELECT * FROM momo_collections WHERE reference=?", (reference,))
+    assert row["status"] == "PENDING"
+    assert row["provider"] == "MTN"
+    assert float(row["amount"]) == 5000
+    assert row["currency"] == "UGX"
+    assert row["external_id"] == "CLI-1"
+    assert seen["row_at_call"]["status"] == "PENDING"
+
+
+def test_momo_collect_cli_marks_definitive_failure(app_under_test, monkeypatch):
+    import drugshop.payments.cli as cli
+    from drugshop.db import q_one
+    from drugshop.payments.momo import MomoError
+
+    _momo_config(app_under_test, True)
+
+    class Fake:
+        def __init__(self, settings):
+            self.settings = settings
+
+        def request_to_pay(self, **kwargs):
+            raise MomoError("bad request", status=400)
+
+    monkeypatch.setattr(cli, "MomoClient", Fake)
+    result = app_under_test.test_cli_runner().invoke(
+        args=["momo", "collect", "--amount", "5000", "--phone", "0772123456"]
+    )
+
+    assert result.exit_code != 0
+    row = q_one("SELECT * FROM momo_collections ORDER BY rowid DESC LIMIT 1")
+    assert row["status"] == "FAILED"
+    assert "bad request" in row["last_error"]
+
+
+def test_momo_collect_cli_keeps_unknown_reference_pollable(
+    app_under_test, monkeypatch
+):
+    import drugshop.payments.cli as cli
+    from drugshop.db import q_one
+    from drugshop.payments.momo import MomoError
+
+    _momo_config(app_under_test, True)
+
+    class Fake:
+        def __init__(self, settings):
+            self.settings = settings
+
+        def request_to_pay(self, **kwargs):
+            raise MomoError("timeout", status=502)
+
+    monkeypatch.setattr(cli, "MomoClient", Fake)
+    result = app_under_test.test_cli_runner().invoke(
+        args=["momo", "collect", "--amount", "5000", "--phone", "0772123456"]
+    )
+
+    assert result.exit_code != 0
+    row = q_one("SELECT * FROM momo_collections ORDER BY rowid DESC LIMIT 1")
+    assert row["status"] == "UNKNOWN"
+    assert "timeout" in row["last_error"]
+
+
+def test_momo_request_cli_updates_ledger(app_under_test, monkeypatch):
+    import drugshop.payments.cli as cli
+    from drugshop.db import q_one
+    from drugshop.payments import ledger
+
+    _momo_config(app_under_test, True)
+    reference = "33333333-3333-4333-8333-333333333333"
+    with app_under_test.app_context():
+        ledger.create_pending(
+            reference,
+            "cli-request",
+            5000,
+            "EUR",
+            phone="256772123456",
+            provider="MTN",
+        )
+
+    class Fake:
+        def __init__(self, settings):
+            self.settings = settings
+
+        def request_status(self, ref):
+            assert ref == reference
+            return {"status": "SUCCESSFUL", "amount": "5000", "currency": "EUR"}
+
+    monkeypatch.setattr(cli, "MomoClient", Fake)
+    result = app_under_test.test_cli_runner().invoke(
+        args=["momo", "request", reference]
+    )
+
+    assert result.exit_code == 0, result.output
+    row = q_one("SELECT * FROM momo_collections WHERE reference=?", (reference,))
+    assert row["status"] == "SUCCESSFUL"
+    assert row["mtn_amount"] == 5000
+    assert row["mtn_currency"] == "EUR"

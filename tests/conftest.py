@@ -34,6 +34,87 @@ def fast_password_hashing(monkeypatch):
     monkeypatch.setattr(auth_routes, "generate_password_hash", fast_hash)
 
 
+@pytest.fixture(autouse=True)
+def block_outbound_network(monkeypatch):
+    """Make an accidental live carrier call fail instead of moving money.
+
+    The payment tests inject fake transports and blank live credentials, but a
+    future test could still construct a real client by mistake. Blocking
+    non-loopback sockets here turns that mistake into an immediate assertion
+    rather than a request to MTN or Airtel.
+    """
+    import socket
+
+    allowed = {"127.0.0.1", "::1", "localhost"}
+
+    def host_of(address):
+        if isinstance(address, tuple) and address:
+            return str(address[0])
+        return str(address)
+
+    real_connect = socket.socket.connect
+    real_connect_ex = socket.socket.connect_ex
+
+    def guarded_connect(self, address):
+        host = host_of(address)
+        if host not in allowed:
+            raise AssertionError(
+                f"test attempted an outbound network connection to {host!r}; "
+                "payment tests must use a fake transport"
+            )
+        return real_connect(self, address)
+
+    def guarded_connect_ex(self, address):
+        host = host_of(address)
+        if host not in allowed:
+            raise AssertionError(
+                f"test attempted an outbound network connection to {host!r}; "
+                "payment tests must use a fake transport"
+            )
+        return real_connect_ex(self, address)
+
+    monkeypatch.setattr(socket.socket, "connect", guarded_connect)
+    monkeypatch.setattr(socket.socket, "connect_ex", guarded_connect_ex)
+
+
+@pytest.fixture(autouse=True)
+def forbid_live_database(monkeypatch):
+    """Refuse any test path that resolves to the developer's live database.
+
+    The suite must never open, migrate, or mutate the root ``drugshop.db``.
+    ``app_under_test`` already supplies temp paths; this guard turns a future
+    regression (for example ``create_app()`` with no config) into a clear
+    failure instead of a silent live write.
+    """
+    from drugshop import db as dbm
+
+    live = (PROJECT_ROOT / "drugshop.db").resolve()
+
+    def is_live(value):
+        if not value:
+            return False
+        try:
+            return Path(value).resolve() == live
+        except OSError:
+            return False
+
+    real_get_db = dbm.get_db
+    real_init_app = dbm.init_app
+
+    def guarded_get_db():
+        if is_live(dbm.db_path()):
+            raise AssertionError("test attempted to open the live database")
+        return real_get_db()
+
+    def guarded_init_app(app):
+        if is_live(dbm._read_config(app, "DATABASE")):
+            raise AssertionError("test attempted to point at the live database")
+        return real_init_app(app)
+
+    monkeypatch.setattr(dbm, "get_db", guarded_get_db)
+    monkeypatch.setattr(dbm, "init_app", guarded_init_app)
+
+
 @pytest.fixture()
 def app_under_test(tmp_path, fast_password_hashing):
     from drugshop import create_app
@@ -48,9 +129,13 @@ def app_under_test(tmp_path, fast_password_hashing):
     class TestPaths:
         DATABASE = db_file
         UPLOAD_DIR = str(uploads)
+        SECRET_KEY = "test-secret"
+        TESTING = True
+        DEBUG = False
 
-    app = create_app()
-    dbm.init_app(TestPaths)
+    # Pass the test paths into the factory so app creation can never fall back
+    # to the developer's live database when instance/drugshop.db is absent.
+    app = create_app(TestPaths)
     dbm.init_db()
     auth_service.ensure_admin()
     apps_service.ensure_entitlements("pro")

@@ -1,14 +1,15 @@
 # Implementation Plan 2 — Packaging, Entitlements & App Launcher
 
 **Project:** andama_mrfss_project (Onzima Charles Drug Shop + Tender Copilot)
-**Date:** 2026-10-21 (initial); last updated 2026-10-26
-**Status:** Phases 0–5 complete; Phase 6 pilot in progress (re-baselined
-2026-10-26, ends 2026-11-09)
+**Date:** 2026-10-21 (initial); last updated 2026-11-09
+**Status:** Phases 0–5 complete; Phase 6 re-baselined on `a622894` (2026-11-06);
+observation runs 2026-11-06 to 2026-11-20
 **Companion document:** `archive/modularization/IMPLEMENTATION_PLAN.md` (internal modularization, complete)
 
 > [!NOTE]
-> **Status banner — current plan.** Phases 0–5 are complete and Phase 6 is in
-> progress. For the consolidated cross-workstream view, see
+> **Status banner — current plan.** Phases 0–5 are complete and Phase 6 was
+> re-baselined on `a622894`; the new observation window runs 2026-11-06 to
+> 2026-11-20. For the consolidated cross-workstream view, see
 > [`implementation-status.md`](implementation-status.md). For live pilot
 > evidence, see [`pilot-tracker.md`](pilot-tracker.md).
 
@@ -709,7 +710,7 @@ Revisit true modular runtime only when at least three of these are true:
 | 3 — Launcher, navigation, loaders | DONE | 204 tests, ruff clean, smoke 9/9; headless Chrome matrix for Legacy, Pro, Growth, Core, Tender, and Core staff | Added Apps launcher, locked tiles, upgrade modal, nav/tab gating, read-only plan card, grouped loaders, and `/api/apps` fail-open fallback. Admin Shop Settings, Backup, Team, and Shift Activity moved to Manage Data so Pro/Core retain them; Shift Activity stays finance-gated. Core hides Patients/Finance/Alerts and credit options; no console errors or expected API 403s in the browser matrix. |
 | 4 — Tender packaging | DONE | 212 tests, ruff clean, smoke 9/9, headless Chrome checks for Core and Tender | Tender now renders plan-aware: Tender-only installs get the standalone brand, shared-auth sign-in/sign-out, and no Onzima link or copy; combined installs keep the suite backlink. The launcher stops cross-selling Tender into pharmacy demos and stops showing pharmacy upsells in Tender-only plans. Added `docs/tender-standalone.md` (optional separate-domain mapping, shared cookie domain), `SESSION_COOKIE_DOMAIN`, and pharmacy-only/Tender-only/combined tests. |
 | 5 — Hardening, docs, dry run | DONE | 212 tests, ruff clean, smoke green for Core, Pro, and Tender; dry-run `PASS` for legacy and pro | Live DB is the legacy root `drugshop.db` (110,592 bytes, SHA256 `E2AEED56CF6C7ACF1D8F5C2E4838A4DACEDFF75230859638324CEB7B3A14542C`), byte-identical to the verified `instance/backups/drugshop-pre-packaging-20261021-161243.db`; backup `PRAGMA integrity_check = ok`. Added `scripts/dry_run_packaging.py` and `docs/onboarding-runbook.md` / `docs/rollback-runbook.md`; extended `scripts/smoke.ps1` with plan-aware `/api/apps`, POS/Patients, Tender redirect, and `-Username` / `SMOKE_PASSWORD`. Dry run applied `002_app_entitlements.sql`, preserved all 15 business table row counts, passed Legacy/Pro -> Core -> re-upgrade access matrix, restored the verified backup, and confirmed the live DB hash unchanged. `index.html` is 86,250 bytes / 3,061 lines; no redesign. |
-| 6 — Pilot | IN PROGRESS (re-baselined 2026-10-26; ends 2026-11-09) | 231 tests, ruff clean, node 16/16; live Legacy smoke 15/15; staging Core/Pro/Core 15/15 each on the current build; business row counts unchanged; fresh 403 log active | Re-baselined after v2.5.0 (`eaeb2f8`) changed the live build and the old log stopped at 2026-10-21 19:35. Live metrics 2026-10-26: Legacy, DB integrity ok, 91 logins, users 2, products 8, batches 7, sales 5, patients 3, tender_docs 5; 0 fresh 403s. Verified backup `drugshop-pre-restart-20261026-113319.db`, SHA256 `576235...A6A286E`. The initial 2026-10-21 to 2026-11-04 window is superseded; 2026-10-22 through 2026-10-25 are marked not captured. Owner walkthrough, upgrade demo, `andama` account confirmation, and the 14-day observation remain pending. |
+| 6 — Pilot | RE-BASELINED (`a622894`; 2026-11-06 to 2026-11-20) | 499 tests, ruff clean, 17/17 JS; staging Core/Pro/Core 15/15 each with business rows unchanged; final `eaeb2f8` metrics: 131 logins, users 2, products 8, batches 7, sales 12, patients 3, tender_docs 11; DB integrity ok; backup `drugshop-post-pilot-20261109-014340.db`, SHA256 `43375B60...520B70`, integrity ok | The live build changed to `a622894` on 2026-11-06, superseding the `eaeb2f8` window. The `andama` removal was confirmed intentional. Open: live Day 0 smoke, a fresh 403 log, owner walkthrough transcription, upgrade demo, and support-time tracking. |
 
 ---
 

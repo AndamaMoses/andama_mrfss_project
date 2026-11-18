@@ -94,37 +94,78 @@ flask --app run plan show
 `unseeded`, the boot did not create the entitlement rows; fix that before
 onboarding the customer.
 
-## 4. Activate or change the plan
+## 4. Activate, invoice, and collect
 
-The app may stay running; plan changes are read on the next request. Refresh
-the browser after a change.
+The app may stay running; commercial and access changes are read on the next
+request. Refresh the browser after a change.
+
+Use the billing CLI for a paid customer. It writes the subscription and the
+entitlements together, so the plan card and the access gate cannot silently
+disagree:
 
 ```powershell
-flask --app run plan set core   --expires 2027-10-21 --actor "Andama"
-flask --app run plan set pro    --expires 2027-10-21 --actor "Andama"
-flask --app run plan set growth --expires 2027-10-21 --actor "Andama"
-flask --app run plan set tender --expires 2027-10-21 --actor "Andama"
+# 1. Record the signed agreement.
+flask --app run revenue activate pro `
+    --customer "Example Pharmacy" `
+    --contact "+256700000000" --contact-name "Owner" `
+    --start 2026-11-18 --period-end 2027-11-18 `
+    --actor "Andama" --notes "signed Pro, 12 months"
+
+# 2. Issue the setup invoice from the agreed setup fee.
+flask --app run revenue invoice setup --due 2026-11-18 --actor "Andama"
+
+# 3. Record the payment when it lands (no gateway is called).
+flask --app run revenue payment record INV-202611-0001 `
+    --amount 600000 --method bank --reference "FT-..." `
+    --received-by "Andama"
+
+# 4. Issue the first monthly invoice in advance.
+flask --app run revenue invoice monthly `
+    --period-start 2026-11-18 --period-end 2026-12-18 `
+    --actor "Andama"
+
+# 5. Verify the agreement, access, and money.
+flask --app run revenue show
+flask --app run plan show
+flask --app run revenue report
 ```
 
-For a pharmacy that also buys Tender, set the base bundle first and add the
-add-on:
+Use `--notes` on activation so the audit trail explains the commercial
+decision. For a founder-approved setup discount, set the agreed fee and reason
+**before** creating the setup invoice; monthly fees are never discounted:
 
 ```powershell
-flask --app run plan set pro --expires 2027-10-21 --actor "Andama"
+flask --app run revenue activate pro ... `
+    --setup-fee 500000 --override-reason "founder-approved launch discount"
+```
+
+For a combined Pro + Tender installation, activate the base bundle with the
+agreed combined fee, then add the Tender app:
+
+```powershell
+flask --app run revenue activate pro ... `
+    --setup-fee 900000 --monthly-fee 330000 `
+    --override-reason "combined Pro + Tender quote"
 flask --app run plan add tender --actor "Andama"
 ```
 
-Other useful commands:
+The entitlement set for a combined install is a custom mix, so `plan show` may
+label it `Custom`. The subscription row remains the source of truth for money;
+`revenue report` and the Plan & Apps card use that row.
+
+`plan set` remains available for access-only corrections when no commercial
+record should change:
 
 ```powershell
+flask --app run plan set core --expires 2027-10-21 --actor "Andama"
 flask --app run plan add alerts --actor "Andama"
 flask --app run plan remove alerts --actor "Andama"
 flask --app run plan show
 ```
 
-Use `--notes "customer signed Pro, 12 months"` on the first activation so the
-audit trail explains the commercial decision. Onzima is the only installation
-that may use `plan set legacy`.
+Onzima is the only installation that may use `plan set legacy`. Do not create a
+commercial subscription for Onzima unless the founder deliberately exits the
+grandfathered pilot arrangement.
 
 If you operate more than one database from the same shell, set `DRUGSHOP_DB`
 to the customer's database path for **both** `python run.py` and every
@@ -137,8 +178,8 @@ Log in as the owner or admin and check:
 
 1. The Apps launcher shows only entitled apps; locked tiles show the upgrade
    path.
-2. The Plan & Apps card shows the bundle, active apps, expiry, and support
-   link.
+2. The Plan & Apps card shows the bundle, active apps, renewal date, monthly
+   fee, outstanding balance, invoice ledger (admin only), and support link.
 3. `/api/apps` returns the same plan and app flags as the launcher.
 4. A normal session does not produce unexpected 403s or 500s.
 
@@ -186,6 +227,9 @@ start on Core, not Legacy. Tender-only demos must not show pharmacy upsells.
 4. Schedule a 30-day check-in and a renewal reminder 14 days before expiry.
 5. Leave the verified backup in `instance\backups` (or the customer's own
    backup location).
+6. Run the [monthly close](monthly-close-checklist.md) at the end of each
+   month and the [renewal reminder](renewal-reminder-checklist.md) 14 days
+   before the period ends.
 
 ## 8. Troubleshooting
 

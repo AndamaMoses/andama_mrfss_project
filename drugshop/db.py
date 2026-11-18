@@ -40,6 +40,9 @@ def get_db():
     db = sqlite3.connect(_db_path)
     db.row_factory = sqlite3.Row
     db.execute("PRAGMA foreign_keys=ON")
+    # Wait for a short writer lock instead of failing immediately when the
+    # operator CLI runs while the shop app is open.
+    db.execute("PRAGMA busy_timeout=5000")
     return db
 
 

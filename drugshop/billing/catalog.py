@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 PRICE_BOOK_VERSION = "v1-2026-11-05"
 CURRENCY = "UGX"
+SETUP_DISCOUNT_CAP = 100_000
 LEGACY_ID = "legacy"
 BASE_IDS = ("core", "pro", "tender")
 ADDON_IDS = ("growth", "tender")
@@ -188,6 +189,11 @@ def _validate_setup_discount(setup_discount: int) -> None:
         raise QuoteError(f"Setup discount must be a whole number of {CURRENCY}.")
     if setup_discount < 0:
         raise QuoteError("Setup discount cannot be negative.")
+    if setup_discount > SETUP_DISCOUNT_CAP:
+        raise QuoteError(
+            f"Setup discount {setup_discount:,} exceeds the approved v1 cap of "
+            f"{SETUP_DISCOUNT_CAP:,} {CURRENCY}."
+        )
 
 
 def _validate_monthly_discount(monthly_discount: int) -> None:
@@ -216,8 +222,8 @@ def quote(
     """Build a quote for ``base`` plus optional add-ons.
 
     Growth requires Pro. Tender can stand alone or be added to Core, Pro, or
-    Growth. Setup discounts cannot be negative or exceed the setup subtotal;
-    monthly fees are never discounted.
+    Growth. Setup discounts cannot be negative, exceed the setup subtotal, or
+    exceed the approved v1 cap; monthly fees are never discounted.
     """
     validate_price_book()
     base_id = _normalize_id(base, "Base offer")

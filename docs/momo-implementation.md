@@ -19,7 +19,7 @@ The guide is delivered in phases. The status column reflects this repository.
 | 2 — Airtel Money | `airtel.py`, telco detection, provider-aware ledger, unified `/api/payments/*` endpoints, Airtel sale verification, provider-aware POS/manual entry | **Built - awaiting sign-off** |
 | 3 — Reconciliation | Payment variance ledger, stale-prompt sweep, Airtel callbacks, close-shift snapshots | **Built - awaiting sign-off** |
 | 4 — POS UI | USSD push polling and manual fallback | **Built - awaiting sign-off** |
-| 5 — Verification | Tests and runbook | Built for MTN and Airtel |
+| 5 — Verification | Tests and runbook | **Built - signed off** |
 
 Phase 0 is the foundation reviewed first. Later sections describe the target
 design and call out where the current code differs.
@@ -172,6 +172,30 @@ Phase 4 hardening (second review, money safety):
   handlers.
 - The shared `escHtml` helper now lives in `core/format.js`, where `contactCell`
   also escapes the customer name and phone it renders.
+
+**Phase 5 verification (2026-11-07):** `python -m pytest -q` → 507 passed;
+`python -m ruff check .` → clean; `node --check` → clean for every file under
+`drugshop/static/js/` (17 modules). The suite uses fake carriers only and
+never moves money. Phase 5 was signed off by the project owner on 2026-11-07.
+
+Phase 5 adds:
+
+- An autouse test guard rejects every non-loopback socket connection. A future
+  test that forgets to inject a fake transport now fails immediately instead of
+  reaching MTN or Airtel. A companion test proves the guard is active.
+- A verification test asserts the test app starts with blank MTN/Airtel
+  credentials, base URLs, callback secrets, and verification switches.
+- `momo collect` now writes the `PENDING` ledger row before calling MTN and
+  records a definitive rejection as `FAILED` or an ambiguous network/5xx
+  failure as `UNKNOWN`. `momo request` records the carrier status in the
+  ledger, so the CLI runbook path is pollable and reconcilable like the API.
+- The MTN callback now has an explicit provider-mismatch test: an Airtel-owned
+  reference returns `409` and is not updated.
+- The runbook health check notes the signed-in session requirement, the test
+  count is current, and the JavaScript check covers every frontend module.
+- Live Airtel sandbox token/collection checks remain blocked until
+  `AIRTEL_CLIENT_ID` and `AIRTEL_CLIENT_SECRET` are issued. The offline Airtel
+  client, route, callback, and sale-guard tests pass with a fake transport.
 
 ## 1. Architecture & Design Principles
 
@@ -660,10 +684,11 @@ Airtel: create an app with the Collection API enabled at
 <https://developers.airtel.africa>, then set `AIRTEL_CLIENT_ID` and
 `AIRTEL_CLIENT_SECRET` in `.env`. A safe connectivity check is the unified
 health route with `?check=1`; it forces an OAuth token exchange and does not
-create a collection:
+create a collection. The route requires a signed-in session, so sign in first
+and pass the session cookie (for example `-b cookies.txt`):
 
 ```bash
-curl "http://127.0.0.1:5000/api/payments/health?check=1"
+curl -b cookies.txt "http://127.0.0.1:5000/api/payments/health?check=1"
 ```
 
 Airtel starts on `https://openapiuat.airtel.africa`; set
@@ -672,7 +697,7 @@ Airtel starts on `https://openapiuat.airtel.africa`; set
 ### 2. Send a test collection
 
 The payment endpoints require a signed-in session. The MTN CLI uses the same
-client:
+client and durable ledger:
 
 ```bash
 python -m flask --app run momo collect \
@@ -680,16 +705,20 @@ python -m flask --app run momo collect \
 python -m flask --app run momo request <reference-id>
 ```
 
+`momo collect` writes the `PENDING` ledger row before it calls MTN, and
+`momo request` records the returned status. If the HTTP response is lost, the
+reference remains in the ledger and can be polled or reconciled.
+
 For the unified API, send the provider explicitly (or omit it to use prefix
 detection). These routes require the POS session cookie, so add
 `-b cookies.txt` after signing in:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/api/payments/collect \
+curl -b cookies.txt -X POST http://127.0.0.1:5000/api/payments/collect \
   -H "Content-Type: application/json" \
   -d '{"amount":5000,"phone":"0701234567","provider":"AIRTEL","idempotency_key":"TEST-AIRTEL-1"}'
 
-curl http://127.0.0.1:5000/api/payments/status/AIRTEL/<reference-id>
+curl -b cookies.txt http://127.0.0.1:5000/api/payments/status/AIRTEL/<reference-id>
 ```
 
 The customer must approve the prompt; a `202` response means "request
@@ -752,13 +781,13 @@ works when a callback is disabled.
 
 ```bash
 # View expected totals for a day
-curl "http://127.0.0.1:5000/api/reconciliation/calculate?date=2026-11-03"
+curl -b cookies.txt "http://127.0.0.1:5000/api/reconciliation/calculate?date=2026-11-03"
 
 # Daily summary with the live payment variance
-curl "http://127.0.0.1:5000/api/reconciliation/daily-summary?date=2026-11-03"
+curl -b cookies.txt "http://127.0.0.1:5000/api/reconciliation/daily-summary?date=2026-11-03"
 
 # Record counted cash and till balances (upserts by rec_date)
-curl -X POST http://127.0.0.1:5000/api/reconciliation \
+curl -b cookies.txt -X POST http://127.0.0.1:5000/api/reconciliation \
   -H "Content-Type: application/json" \
   -d '{
     "rec_date": "2026-11-03",
@@ -769,7 +798,7 @@ curl -X POST http://127.0.0.1:5000/api/reconciliation \
   }'
 
 # Close the shift, save counted balances, and snapshot payment variance
-curl -X POST http://127.0.0.1:5000/api/reconciliation/close-shift \
+curl -b cookies.txt -X POST http://127.0.0.1:5000/api/reconciliation/close-shift \
   -H "Content-Type: application/json" \
   -d '{
     "date": "2026-11-03",
@@ -780,7 +809,7 @@ curl -X POST http://127.0.0.1:5000/api/reconciliation/close-shift \
   }'
 
 # Inspect live + saved payment variance
-curl "http://127.0.0.1:5000/api/reconciliation/payments?date=2026-11-03"
+curl -b cookies.txt "http://127.0.0.1:5000/api/reconciliation/payments?date=2026-11-03"
 ```
 
 These endpoints require a signed-in session. Before closing, check stale
@@ -798,14 +827,16 @@ The UI exposes the same check as **Check Pending** in the reconciliation tab.
 ```bash
 python -m pytest -q
 python -m ruff check .
-node --check drugshop/static/js/momo.js
-node --check drugshop/static/js/pos.js
-node --check drugshop/static/js/finance.js
+for f in drugshop/static/js/*.js drugshop/static/js/core/*.js; do
+  node --check "$f" || exit 1
+done
 ```
 
-The current suite has 428 passing tests. Payment tests blank live credentials,
-inject a fake transport, and monkeypatch route/service clients; no test calls
-MTN or Airtel or moves money.
+The current suite has 507 passing tests. Payment tests blank live credentials,
+inject a fake transport, and monkeypatch route/service clients. An autouse
+socket guard also rejects every non-loopback connection, so a test that forgets
+to stub the carrier fails immediately; no test calls MTN or Airtel or moves
+money.
 
 For a monitored rollout where the counter is the source of truth, set
 `MOMO_VERIFY_SALES=0` and/or `AIRTEL_VERIFY_SALES=0`; leave both at `1` for

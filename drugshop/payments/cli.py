@@ -9,19 +9,23 @@ flask --app run momo reconcile --dry-run
 """
 
 import os
+import sqlite3
+import uuid
 
 import click
 from flask import current_app
 from flask.cli import with_appcontext
 
 from config import PROJECT_ROOT
-from drugshop.payments import reconciliation
+from drugshop.payments import ledger, providers, reconciliation
+from drugshop.payments.errors import PaymentError
 from drugshop.payments.momo import (
     MomoClient,
     MomoError,
     MomoSettings,
     create_api_key,
     create_api_user,
+    normalize_msisdn,
 )
 
 ENV_PATH = os.path.join(PROJECT_ROOT, ".env")
@@ -115,23 +119,83 @@ def momo_provision(callback_host, save):
 @click.option("--amount", required=True, type=float, help="Amount in shop currency.")
 @click.option("--phone", required=True, help="Customer MSISDN, e.g. 0772123456.")
 @click.option("--external-id", default="manual", show_default=True)
-@click.option("--reference-id", default=None, help="Reuse an existing reference id.")
+@click.option(
+    "--reference-id",
+    default=None,
+    help="Use a specific UUID (must not already be recorded).",
+)
+@with_appcontext
 def momo_collect(amount, phone, external_id, reference_id):
-    """Ask MTN to push a payment prompt to a customer's phone."""
+    """Ask MTN to push a payment prompt to a customer's phone.
+
+    The reference is written to the durable ledger *before* MTN is called, so
+    a lost HTTP response cannot become an untracked customer charge. Use
+    ``momo request`` to poll and record the outcome.
+    """
     settings = _settings()
     if not settings.configured:
         raise click.ClickException(
             "MoMo credentials are incomplete - run `momo provision --save`"
         )
+
+    reference = str(reference_id or uuid.uuid4())
+    try:
+        reference = ledger.canonical_reference(reference)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    if not ledger.is_uuid(reference):
+        raise click.ClickException("reference_id must be a valid UUID")
+    try:
+        phone = normalize_msisdn(phone)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    existing = ledger.get_collection(reference)
+    if existing:
+        raise click.ClickException(
+            f"reference {reference} is already recorded; "
+            f"use `momo request {reference}`"
+        )
+    try:
+        ledger.create_pending(
+            reference,
+            reference,
+            amount,
+            settings.currency,
+            phone=phone,
+            external_id=external_id,
+            actor="cli",
+            provider=providers.MTN,
+        )
+    except sqlite3.IntegrityError as exc:
+        raise click.ClickException(
+            f"reference {reference} is already recorded; "
+            f"use `momo request {reference}`"
+        ) from exc
+
     try:
         result = MomoClient(settings).request_to_pay(
             amount=amount,
             phone=phone,
             external_id=external_id,
-            reference_id=reference_id,
+            reference_id=reference,
         )
     except (MomoError, ValueError) as exc:
+        status = getattr(exc, "status", None)
+        definitive = isinstance(exc, ValueError) or (
+            isinstance(status, int) and 400 <= status < 500
+        )
+        if definitive:
+            ledger.mark_failed(
+                reference, str(exc), actor="cli", provider=providers.MTN
+            )
+        else:
+            # A network/5xx failure may still have created the prompt. Keep the
+            # row pollable instead of treating the customer as uncharged.
+            ledger.mark_unknown(
+                reference, str(exc), actor="cli", provider=providers.MTN
+            )
         raise click.ClickException(str(exc)) from exc
+
     click.echo(f"reference_id         {result['reference_id']}")
     click.echo(f"payer                {result['payer']['partyId']}")
     click.echo(f"amount               {result['amount']} {result['currency']}")
@@ -140,16 +204,37 @@ def momo_collect(amount, phone, external_id, reference_id):
 
 @momo_group.command("request")
 @click.argument("reference_id")
+@with_appcontext
 def momo_request(reference_id):
-    """Show the status of a collection request."""
+    """Show and record the status of a collection request."""
     settings = _settings()
     if not settings.configured:
         raise click.ClickException(
             "MoMo credentials are incomplete - run `momo provision --save`"
         )
     try:
-        data = MomoClient(settings).request_status(reference_id)
+        reference = ledger.canonical_reference(reference_id)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    if not ledger.is_uuid(reference):
+        raise click.ClickException(
+            "reference_id must be the UUID returned by the payment request"
+        )
+    row = ledger.get_collection(reference)
+    if row and str(row.get("provider") or providers.MTN).upper() != providers.MTN:
+        raise click.ClickException(
+            "This reference belongs to Airtel; use the unified status endpoint "
+            f"/api/payments/status/AIRTEL/{reference}"
+        )
+    try:
+        data = MomoClient(settings).request_status(reference)
     except (MomoError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    try:
+        ledger.apply_status(
+            reference, data, source="CLI", actor="cli", provider=providers.MTN
+        )
+    except PaymentError as exc:
         raise click.ClickException(str(exc)) from exc
     for key, value in (data or {}).items():
         click.echo(f"{key:<20} {value}")
