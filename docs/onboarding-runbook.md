@@ -99,6 +99,41 @@ onboarding the customer.
 The app may stay running; commercial and access changes are read on the next
 request. Refresh the browser after a change.
 
+### Identify the target installation before any commercial write
+
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+python -c "import config; print(config.DevConfig.DATABASE)"
+flask --app run plan show
+```
+
+Confirm the database path **and** the current plan before running any `revenue`
+write. Two hard rules:
+
+- **Never activate a paid bundle on the Onzima pilot database.** The pilot stays
+  `legacy` until it exits the pilot. `revenue activate` writes the subscription
+  and the entitlements together, so it revokes every app the new bundle does not
+  include; on this installation that is `tender` and `alerts`, both in active
+  use. The only supported way to change the pilot's plan is a deliberate
+  grandfathered decision recorded in the implementation plan.
+- **A paying customer is their own installation**, never a subscription row in
+  the pilot ledger. Use the flat portfolio layout so
+  `scripts/revenue_rollup.py` can read the directory:
+
+  ```
+  instance/customers/<slug>.db          # customer database
+  instance/customers/<slug>-uploads/    # that installation's uploads
+  ```
+
+  Set `DRUGSHOP_DB` and `DRUGSHOP_UPLOADS` to those paths for every command
+  against that customer. Do not nest customer databases in subdirectories; the
+  rollup scans only direct `*.db` files by design.
+
+If a write lands on the wrong database, restore the verified backup from
+section 2 before anything else and follow
+[`rollback-runbook.md`](rollback-runbook.md). Do not try to undo access by
+editing entitlement rows.
+
 Use the billing CLI for a paid customer. It writes the subscription and the
 entitlements together, so the plan card and the access gate cannot silently
 disagree:
@@ -223,11 +258,25 @@ start on Core, not Legacy. Tender-only demos must not show pharmacy upsells.
 
 1. Show the owner the read-only Plan & Apps card and the support WhatsApp link.
 2. Confirm the owner can log in and can see the apps they paid for.
-3. Record activation time, bundle, expiry, backup path, and support contact.
-4. Schedule a 30-day check-in and a renewal reminder 14 days before expiry.
-5. Leave the verified backup in `instance\backups` (or the customer's own
+3. Replace the bootstrap accounts before the customer uses the installation.
+   `ensure_admin()` seeds `admin`/`grace` with documented development passwords
+   and, on a fresh database, the pilot staff display names. Set the owner's
+   password, then remove the unused staff account and correct the header name
+   while the database still has no business data:
+
+   ```powershell
+   flask --app run reset-password admin
+   ```
+
+   Known gap: there is no CLI for the display name, so correct the bootstrap
+   `users.display_name` directly on the fresh customer install (never on a live
+   shop with real data). Do not hand over an installation that still shows a
+   bootstrap password or another pharmacy's staff name.
+4. Record activation time, bundle, expiry, backup path, and support contact.
+5. Schedule a 30-day check-in and a renewal reminder 14 days before expiry.
+6. Leave the verified backup in `instance\backups` (or the customer's own
    backup location).
-6. Run the [monthly close](monthly-close-checklist.md) at the end of each
+7. Run the [monthly close](monthly-close-checklist.md) at the end of each
    month and the [renewal reminder](renewal-reminder-checklist.md) 14 days
    before the period ends.
 

@@ -33,6 +33,16 @@ python scripts\revenue_rollup.py a.db b.db --format json --days 14
 ```
 Use this for the monthly close and the renewal queue; totals equal the sum of each installation's `flask --app run revenue report`.
 
+Portfolio layout: keep customer databases as flat files in one directory, e.g.
+`instance/customers/<slug>.db` with uploads at `instance/customers/<slug>-uploads/`.
+A directory scan reads only direct `*.db` files, so nested per-customer folders
+are invisible to the rollup. Example close:
+
+```powershell
+python scripts\revenue_rollup.py instance\customers --format csv |
+    Set-Content -Encoding utf8 instance\reports\portfolio-2026-11.csv
+```
+
 ---
 
 > [!NOTE]

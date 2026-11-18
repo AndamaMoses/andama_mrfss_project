@@ -732,7 +732,7 @@ then onboard the first paying customer without disturbing Onzima.
 
 ### Review gate
 
-- [ ] First paid customer is active, invoiced, and visible in the report.
+- [x] First paid customer is active, invoiced, and visible in the report.
 - [x] Report totals reconcile to the manual calculation.
 - [x] Onzima's live plan is unchanged unless deliberately grandfathered.
 - [x] Onboarding and rollback runbooks match the shipped commands.
@@ -811,9 +811,45 @@ changed as expected; the live database hash stayed
 portfolio rollup over the repository root reported one grandfathered Legacy
 installation, MRR 0, and no invoices, also leaving the live hash unchanged.
 
-**Open item:** onboard the first paying customer, reconcile the first monthly
-close to the report, and record the founder review. Until then the Phase 5
-rollout gate is not fully closed.
+**First paid customer (2026-11-18):** Andama Moses was activated on Pro on his
+own installation, not in the pilot ledger:
+`instance/customers/andama-moses.db` with uploads at
+`instance/customers/andama-moses-uploads/`. The installation was created fresh
+with `DRUGSHOP_BUNDLE=core`, migrated to 008, and seeded; `revenue activate pro`
+then granted `pos`, `inventory`, `patients`, and `finance`. Setup 600,000 was
+invoiced and collected by MTN MoMo with **no transaction reference**, because the
+payer could not produce one; the payment note records that rather than inventing
+an identifier that could never reconcile. The first monthly invoice for
+2026-11-18..2026-12-17 was issued at 180,000 and remains unpaid. Bootstrap
+accounts were corrected on the fresh installation (the `admin` display name set
+to the owner and the seeded `grace` row removed); the default bootstrap password
+still needs `reset-password` before handover. `ensure_admin()` seeding the pilot
+staff names into every new installation is recorded as a known gap with no CLI
+for the display name.
+
+Report: MRR 180,000, total invoiced 780,000, payments collected 600,000,
+outstanding 180,000, two invoices (one paid, one unpaid). The read-only
+portfolio rollup over `instance/customers` returned one installation, one paying,
+the same 180,000 MRR and 180,000 outstanding, and a renewal `due in 7 days` at
+as-of 2026-12-10. The pilot database hash remained
+`eb0d5e5e9f1ea04e9e1725ec733509162946eba5b49d49e05435f49d348aef28`.
+
+**Incident during onboarding:** the first attempt wrote the Pro subscription to
+the **pilot** database (`drugshop.db`), which revoked the `tender` and `alerts`
+entitlements that installation still uses. The verified pre-change backup
+(`instance/backups/drugshop-pre-onboarding-20261118-140834.db`, hash-identical to
+the live file) was restored immediately; the pilot is back on `legacy` with all
+six apps active, zero billing rows, `integrity_check` `ok`, and unchanged
+business counts (users 2, products 8, batches 7, sales 12, patients 3,
+tender_docs 11). The customer was then onboarded on a separate installation as
+above. `revenue activate` intentionally revokes entitlements the target bundle
+does not include, so it is destructive on a Legacy pilot; the onboarding runbook
+now requires checking the database path and current plan before any commercial
+write and states the flat `instance/customers/<slug>.db` portfolio layout that
+the rollup expects.
+
+**Open item:** reconcile the first monthly close to the report and record the
+founder review. Until then the Phase 5 rollout gate is not fully closed.
 
 `SUPPORT_WHATSAPP` was configured on 2026-11-18. The environment value flows
 through `config.py` into `/api/subscription` and `/api/apps`, and the Plan & Apps
@@ -1110,7 +1146,7 @@ No write endpoints in v1. Commercial writes remain operator CLI actions.
 | 2 — Subscription ledger and activation | **Approved** | 2026-11-09 | 2026-11-12 | Migration 007 + service + CLI + tests; 73 targeted / 556 full tests; Ruff clean; staging activation/renewal/restore and fresh-DB activation verified; 007 dry run preserved 19 table counts; live stayed Legacy, then `run.py` applied 007 additively (billing empty). Owner authorized Phase 3 on 2026-11-12 |
 | 3 — Invoices, payments, renewals | **Approved** | 2026-11-12 | 2026-11-16 | Migration 008 + invoice/payment/renewal service and CLI + tests; 56 targeted / 602 full tests; Ruff clean; invoice amounts reconcile to the Pro quote and to a discounted agreed fee; money paths use `BEGIN IMMEDIATE`, partial unique indexes, void/reissue, and a payment ledger view; concurrency and overlap guards tested; manual cycle verified; 008 dry run preserved 21 table counts; migration 008 applied additively on 2026-11-18 with empty billing tables. Owner authorized Phase 4 on 2026-11-16 |
 | 4 — Read-only subscription UI/API | **Approved** | 2026-11-16 | 2026-11-18 | Read-only `billing` blueprint + Plan & Apps card + admin invoice ledger; 35 targeted / 625 full tests; Ruff clean; JS parses; payload filters, access matrix, Legacy grandfathered fallback, and fail-open reads verified; migration 008 applied additively on 2026-11-18 with empty billing tables; `SUPPORT_WHATSAPP` configured for the pilot on 2026-11-18. Owner authorized Phase 5 on 2026-11-18 |
-| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; end-to-end operator rehearsal on a live-DB copy passed (quote → activate → setup invoice → bank payment → monthly invoice → MoMo payment → void/reissue → renew → report → rollup) with live hash unchanged; live is Legacy on 008 with empty billing tables; first paid customer not yet onboarded |
+| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; end-to-end operator rehearsal on a live-DB copy passed (quote → activate → setup invoice → bank payment → monthly invoice → MoMo payment → void/reissue → renew → report → rollup) with live hash unchanged; first paid customer (Andama Moses, Pro) onboarded on `instance/customers/andama-moses.db` with MRR 180,000 and 180,000 outstanding, and the portfolio rollup reports 1 paying installation; pilot restored to Legacy after an accidental activation and re-verified hash-identical; first monthly close and founder review still open |
 | 6 — Optional automation | Deferred | | | |
 
 ---
