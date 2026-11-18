@@ -256,7 +256,9 @@ start on Core, not Legacy. Tender-only demos must not show pharmacy upsells.
 
 ## 7. Handover and follow-up
 
-1. Show the owner the read-only Plan & Apps card and the support WhatsApp link.
+1. Show the owner the read-only Plan & Apps card, the admin **Revenue** tab
+   (price book, snapshot, invoices, payments, renewals), and the support
+   WhatsApp link.
 2. Confirm the owner can log in and can see the apps they paid for.
 3. Replace the bootstrap accounts before the customer uses the installation.
    `ensure_admin()` seeds `admin`/`grace` with documented development passwords

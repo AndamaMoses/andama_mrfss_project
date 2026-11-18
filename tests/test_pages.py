@@ -4,7 +4,7 @@ MODULES = (
     "core/api.js", "core/format.js", "core/ui.js",
     "dashboard.js", "momo.js", "pos.js", "stock.js", "patients.js", "finance.js",
     "credit.js", "customers.js", "team.js", "settings.js", "alerts.js",
-    "manage.js", "core/apps.js", "boot.js",
+    "manage.js", "revenue.js", "core/apps.js", "boot.js",
 )
 
 

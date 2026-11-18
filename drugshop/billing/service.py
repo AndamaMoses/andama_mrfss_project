@@ -751,6 +751,34 @@ def invoices():
     return [_invoice_payload(row) for row in rows]
 
 
+def payments():
+    """Return every recorded payment, newest first, with its invoice number.
+
+    Read-only: the ledger has no edit path, so this is exactly what the close
+    checklist reconciles against the bank and mobile-money statements.
+    """
+    rows = q_all(
+        "SELECT p.*, i.invoice_no, i.kind AS invoice_kind "
+        "FROM billing_payments p "
+        "JOIN billing_invoices i ON i.id = p.invoice_id "
+        "ORDER BY p.id DESC"
+    )
+    return [
+        {
+            "invoice_no": row["invoice_no"],
+            "invoice_kind": row["invoice_kind"],
+            "paid_on": row["paid_on"],
+            "amount": _money_value(row["amount"]),
+            "currency": row["currency"],
+            "method": row["method"],
+            "reference": row["reference"],
+            "received_by": row["received_by"],
+            "notes": row["notes"],
+        }
+        for row in rows
+    ]
+
+
 def invoice_detail(invoice_no):
     """Return one invoice with its payment ledger and remaining balance."""
     number = _invoice_number(invoice_no)

@@ -23,6 +23,12 @@ product release shown on the sign-in screen.
   balance, and an admin-only invoice ledger, backed by `/api/subscription`.
   There are no write, payment, or self-service upgrade endpoints; the support
   CTA is configuration-driven and stays hidden when `SUPPORT_WHATSAPP` is blank.
+- Admin **Revenue** tab in the app shell: price book, revenue snapshot (MRR,
+  invoiced, collected, outstanding, collections by method), invoice and payment
+  ledger, and a renewals queue with an adjustable window. It is backed by
+  read-only GET endpoints (`/api/subscription/pricebook|report|payments|renewals`);
+  the report endpoint opens the database file with `mode=ro` and still exposes
+  no write path.
 - Monthly revenue report (`flask --app run revenue report --format
   text|json|csv`) with MRR, setup and monthly invoiced amounts, collections,
   outstanding balance, plan mix, renewals, and grandfathered/excluded rows.

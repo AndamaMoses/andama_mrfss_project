@@ -308,6 +308,13 @@
           <span class="lbl">Manage Data</span>
         </button>
 
+        <button data-tab="revenue" data-admin data-title="Revenue" onclick="switchTab('revenue')">
+          <span class="ic-wrap"><svg class="ic">
+              <use href="#i-trend" />
+            </svg></span>
+          <span class="lbl">Revenue</span>
+        </button>
+
         <div class="snav-section-title" data-section-apps="tender"><span>PORTALS</span></div>
 
         <a class="tender" href="/tender" data-app="tender" data-title="Tender Copilot">
@@ -1152,6 +1159,104 @@
             </table>
           </div>
         </section>
+
+        <section id="tab-revenue" class="tab" data-admin>
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-trend" />
+              </svg>Revenue snapshot <span class="plan-status" id="revAsOf">…</span></h2>
+            <div class="plan-grid">
+              <div class="plan-item"><span>MRR</span><strong id="revMrr">—</strong></div>
+              <div class="plan-item"><span>Outstanding balance</span><strong id="revOutstanding">—</strong></div>
+              <div class="plan-item"><span>Payments collected</span><strong id="revCollected">—</strong></div>
+              <div class="plan-item"><span>Total invoiced</span><strong id="revInvoiced">—</strong></div>
+              <div class="plan-item"><span>Setup invoiced</span><strong id="revSetupInvoiced">—</strong></div>
+              <div class="plan-item"><span>Monthly invoiced</span><strong id="revMonthlyInvoiced">—</strong></div>
+              <div class="plan-item"><span>Invoices</span><strong id="revInvoiceCount">—</strong></div>
+              <div class="plan-item"><span>Renewals due</span><strong id="revRenewalCount">—</strong></div>
+            </div>
+            <span class="plan-label">Collections by method</span>
+            <div class="plan-chips" id="revMethods"></div>
+            <p class="plan-note" id="revNote">Read-only snapshot of this installation. Plan changes, invoices, and
+              payments are recorded by your operator, never from this screen.</p>
+          </div>
+
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-coins" />
+              </svg>Price book <span class="plan-status" id="revBookVersion">…</span></h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Offer</th>
+                  <th>Setup</th>
+                  <th>Monthly</th>
+                  <th>Rules</th>
+                </tr>
+              </thead>
+              <tbody id="revBookRows"></tbody>
+            </table>
+            <p class="plan-note" id="revBookRules"></p>
+          </div>
+
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-cash" />
+              </svg>Invoices &amp; payments</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Invoice</th>
+                  <th>Kind</th>
+                  <th>Issued</th>
+                  <th>Due</th>
+                  <th>Amount</th>
+                  <th>Paid</th>
+                  <th>Balance</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="revInvoiceRows"></tbody>
+            </table>
+            <span class="plan-label">Payments received</span>
+            <table>
+              <thead>
+                <tr>
+                  <th>Paid</th>
+                  <th>Invoice</th>
+                  <th>Kind</th>
+                  <th>Method</th>
+                  <th>Amount</th>
+                  <th>Reference</th>
+                  <th>Received by</th>
+                </tr>
+              </thead>
+              <tbody id="revPaymentRows"></tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h2><svg class="ic">
+                <use href="#i-calendar" />
+              </svg>Renewals <input type="number" id="revDays" min="0" max="3650" value="14" style="width:auto"
+                onchange="loadRevenueRenewals()" title="Days ahead"></h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Plan</th>
+                  <th>Period ends</th>
+                  <th>Days</th>
+                  <th>Monthly</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="revRenewalRows"></tbody>
+            </table>
+            <p class="plan-note">Renewal reminders go out 14 days before the period ends, from the operator
+              runbook — not automatically.</p>
+          </div>
+        </section>
       </main>
     </div>
   </div>
@@ -1233,6 +1338,7 @@
   <script src="/static/js/settings.js"></script>
   <script src="/static/js/alerts.js"></script>
   <script src="/static/js/manage.js"></script>
+  <script src="/static/js/revenue.js"></script>
   <script src="/static/js/core/apps.js"></script>
   <script src="/static/js/boot.js"></script>
 </body>

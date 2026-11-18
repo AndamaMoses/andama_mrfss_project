@@ -670,6 +670,23 @@ the Render dashboard in production), never committed.
 **Sign-off:** Approved 2026-11-18; the product owner authorized moving to
 Phase 5.
 
+**Addendum (2026-11-18): read-only Revenue tab.** The app shell now has an
+admin-only **Revenue** tab that surfaces Phases 1-5 in one place: the price book
+with rules and the setup-discount cap, a report snapshot (MRR, setup/monthly/total
+invoiced, collected, outstanding, invoice counts, renewals due, and collections
+by method), the invoice ledger, the payment ledger with invoice numbers, and a
+renewal queue with an editable day window. It is backed by four admin-only GET
+endpoints: `/api/subscription/pricebook`, `/api/subscription/report`,
+`/api/subscription/payments`, and `/api/subscription/renewals`. The report
+endpoint opens the database file with `mode=ro` through
+`report.connect_readonly`, limits `days` to 0-3650, returns `400` for an invalid
+`as_of`, and never returns the filesystem path. The tab is hidden for attendants
+by the existing `data-admin` rule and contains no form, button, or write
+callback. Eight tests cover login and admin gating, the price-book payload,
+report reconciliation, a byte-identical database hash across the report request,
+the payment ledger, renewal-window validation, and the absence of write
+controls.
+
 ### Rollback
 
 Remove the blueprint, template additions, and JS calls. Billing tables remain
@@ -752,8 +769,8 @@ portfolio. The onboarding and rollback runbooks now use the billing CLI, and
 new monthly-close and renewal-reminder checklists cover the operating cadence.
 `scripts/README.md` documents the rollup.
 
-Verification: full suite **647 passed** (21 targeted Phase 5 revenue tests plus
-the live-database guard), Ruff is
+Verification: full suite **655 passed** (21 targeted Phase 5 revenue tests, 8
+Revenue-tab tests, and the live-database guard), Ruff is
 clean, and every file under `drugshop/static/js/` passes `node --check`. The
 report CLI was hash-checked on a copy of the live database: the source was
 byte-identical after the run. The manual rehearsal copied the live database
@@ -1145,8 +1162,8 @@ No write endpoints in v1. Commercial writes remain operator CLI actions.
 | 1 — Price book and quote engine | **Approved** | 2026-11-06 | 2026-11-09 | 55 targeted / 509 full tests; cap fixed; six quotes verified; no schema or entitlement change |
 | 2 — Subscription ledger and activation | **Approved** | 2026-11-09 | 2026-11-12 | Migration 007 + service + CLI + tests; 73 targeted / 556 full tests; Ruff clean; staging activation/renewal/restore and fresh-DB activation verified; 007 dry run preserved 19 table counts; live stayed Legacy, then `run.py` applied 007 additively (billing empty). Owner authorized Phase 3 on 2026-11-12 |
 | 3 — Invoices, payments, renewals | **Approved** | 2026-11-12 | 2026-11-16 | Migration 008 + invoice/payment/renewal service and CLI + tests; 56 targeted / 602 full tests; Ruff clean; invoice amounts reconcile to the Pro quote and to a discounted agreed fee; money paths use `BEGIN IMMEDIATE`, partial unique indexes, void/reissue, and a payment ledger view; concurrency and overlap guards tested; manual cycle verified; 008 dry run preserved 21 table counts; migration 008 applied additively on 2026-11-18 with empty billing tables. Owner authorized Phase 4 on 2026-11-16 |
-| 4 — Read-only subscription UI/API | **Approved** | 2026-11-16 | 2026-11-18 | Read-only `billing` blueprint + Plan & Apps card + admin invoice ledger; 35 targeted / 625 full tests; Ruff clean; JS parses; payload filters, access matrix, Legacy grandfathered fallback, and fail-open reads verified; migration 008 applied additively on 2026-11-18 with empty billing tables; `SUPPORT_WHATSAPP` configured for the pilot on 2026-11-18. Owner authorized Phase 5 on 2026-11-18 |
-| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; end-to-end operator rehearsal on a live-DB copy passed (quote → activate → setup invoice → bank payment → monthly invoice → MoMo payment → void/reissue → renew → report → rollup) with live hash unchanged; first paid customer (Andama Moses, Pro) onboarded on `instance/customers/andama-moses.db` with MRR 180,000 and 180,000 outstanding, and the portfolio rollup reports 1 paying installation; pilot restored to Legacy after an accidental activation and re-verified hash-identical; first monthly close and founder review still open |
+| 4 - Read-only subscription UI/API | **Approved** | 2026-11-16 | 2026-11-18 | Read-only `billing` blueprint + Plan & Apps card + admin invoice ledger; admin **Revenue** tab added 2026-11-18 (read-only price book, report snapshot, invoices, payments, renewals; 8 tests); 35 targeted / 625 full tests at sign-off; Ruff clean; JS parses; payload filters, access matrix, Legacy grandfathered fallback, and fail-open reads verified; migration 008 applied additively on 2026-11-18 with empty billing tables; `SUPPORT_WHATSAPP` configured for the pilot on 2026-11-18. Owner authorized Phase 5 on 2026-11-18 |
+| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 655 full tests (8 for the read-only Revenue tab); Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; end-to-end operator rehearsal on a live-DB copy passed (quote → activate → setup invoice → bank payment → monthly invoice → MoMo payment → void/reissue → renew → report → rollup) with live hash unchanged; first paid customer (Andama Moses, Pro) onboarded on `instance/customers/andama-moses.db` with MRR 180,000 and 180,000 outstanding, and the portfolio rollup reports 1 paying installation; pilot restored to Legacy after an accidental activation and re-verified hash-identical; first monthly close and founder review still open |
 | 6 — Optional automation | Deferred | | | |
 
 ---

@@ -8,14 +8,22 @@ The payload deliberately excludes commercial internals — setup fees, price-boo
 version, invoice notes, payment notes, and row ids never leave the server.
 """
 import sqlite3
+from pathlib import Path
 
-from flask import Blueprint, current_app, jsonify
+from flask import Blueprint, current_app, jsonify, request
 
+from drugshop import db as dbm
 from drugshop.apps import service as apps_service
 from drugshop.apps.registry import bundle_label
 from drugshop.auth.guards import admin_required
+from drugshop.billing import report as report_service
 from drugshop.billing import service
-from drugshop.billing.catalog import CURRENCY
+from drugshop.billing.catalog import (
+    CURRENCY,
+    PRICE_BOOK,
+    PRICE_BOOK_VERSION,
+    SETUP_DISCOUNT_CAP,
+)
 
 bp = Blueprint("billing", __name__)
 
@@ -161,3 +169,117 @@ def api_subscription_invoice(invoice_no):
         _payment_payload(payment) for payment in invoice["payments"]
     ]
     return jsonify(payload)
+
+
+def _payment_row_payload(payment):
+    """Payment ledger row for the admin Revenue tab."""
+    return {
+        "invoice_no": payment["invoice_no"],
+        "invoice_kind": payment["invoice_kind"],
+        "paid_on": payment["paid_on"],
+        "amount": _money(payment["amount"]),
+        "currency": payment["currency"],
+        "method": payment["method"],
+        "reference": payment["reference"],
+        "received_by": payment["received_by"],
+    }
+
+
+def _window_args():
+    """Parse the renewal window, returning (days, as_of, error_response)."""
+    days = request.args.get("days", default=14, type=int)
+    if days is None or days < 0 or days > 3650:
+        return None, None, (jsonify({"error": "days must be 0-3650"}), 400)
+    as_of = (request.args.get("as_of") or "").strip() or None
+    return days, as_of, None
+
+
+@bp.route("/api/subscription/pricebook")
+@admin_required
+def api_subscription_pricebook():
+    """Admin-only price book: what is sold, at what setup and monthly fee."""
+    return jsonify({
+        "version": PRICE_BOOK_VERSION,
+        "currency": CURRENCY,
+        "setup_discount_cap": _money(SETUP_DISCOUNT_CAP),
+        "offers": [
+            {
+                "id": offer.id,
+                "label": offer.label,
+                "setup": _money(offer.setup),
+                "monthly": _money(offer.monthly),
+                "roles": list(offer.roles),
+                "requires": [
+                    {"id": required, "label": PRICE_BOOK[required].label}
+                    for required in offer.requires
+                ],
+                "description": offer.description,
+            }
+            for offer in PRICE_BOOK.values()
+        ],
+    })
+
+
+@bp.route("/api/subscription/report")
+@admin_required
+def api_subscription_report():
+    """Admin-only revenue report, read through a read-only connection.
+
+    Unlike the other endpoints this opens the database file directly with
+    ``mode=ro`` so the report cannot write even by accident. The filesystem
+    path is never returned to the browser.
+    """
+    days, as_of, error = _window_args()
+    if error is not None:
+        return error
+
+    try:
+        conn = report_service.connect_readonly(Path(dbm.db_path()))
+    except (sqlite3.Error, OSError) as exc:
+        current_app.logger.warning("report unavailable (%s)", exc)
+        return jsonify({"error": "report unavailable"}), 503
+
+    try:
+        payload = report_service.build_report(
+            conn, source=None, renewal_days=days, as_of=as_of
+        )
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except sqlite3.Error as exc:
+        current_app.logger.warning("report failed (%s)", exc)
+        return jsonify({"error": "report unavailable"}), 503
+    finally:
+        conn.close()
+
+    return jsonify(payload)
+
+
+@bp.route("/api/subscription/payments")
+@admin_required
+def api_subscription_payments():
+    """Admin-only payment ledger across every invoice."""
+    try:
+        rows = service.payments()
+    except sqlite3.OperationalError as exc:
+        if "no such table" not in str(exc).lower():
+            raise
+        rows = []
+    return jsonify([_payment_row_payload(row) for row in rows])
+
+
+@bp.route("/api/subscription/renewals")
+@admin_required
+def api_subscription_renewals():
+    """Admin-only renewal queue for the next DAYS days, overdue included."""
+    days, as_of, error = _window_args()
+    if error is not None:
+        return error
+    try:
+        rows = service.renewals(days=days, as_of=as_of)
+    except service.BillingError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except sqlite3.OperationalError as exc:
+        if "no such table" not in str(exc).lower():
+            raise
+        rows = []
+    return jsonify(rows)

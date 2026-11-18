@@ -45,7 +45,7 @@ async function loadAll() {
   loadDash(); loadProducts(); loadSales(); loadStock(); loadInvoices();
   calcRec(); loadRec(); loadPatients(); loadAlerts(); loadSettings();
   loadSmsLog(); loadCredit(); loadExpenses(); loadProfit(); loadTeam();
-  loadManage(); loadCustomers(); loadDrugCatalogue(); loadMomo();
+  loadManage(); loadCustomers(); loadDrugCatalogue(); loadMomo(); loadRevenue();
 }
 
 /* Load only the endpoint groups this installation is entitled to. This is
@@ -71,7 +71,7 @@ function loadEntitledData() {
   if (isAppEntitled('alerts')) loadAlerts();
 
   if (ME.role === 'admin') {
-    loadSettings(); loadTeam();
+    loadSettings(); loadTeam(); loadRevenue();
   }
 
   if (isAppEntitled('pos') || isAppEntitled('inventory') || isAppEntitled('patients')) {
