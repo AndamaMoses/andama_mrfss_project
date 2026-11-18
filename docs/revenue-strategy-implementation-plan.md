@@ -783,6 +783,34 @@ A local-only known risk remains: CSV cells containing formula prefixes from
 operator-entered customer names could execute in a spreadsheet; treat operator
 CSV output as trusted internal data or open it with formula evaluation disabled.
 
+**Rollout rehearsal (2026-11-18):** the full operator cycle was run end to end on
+a byte-for-byte copy of the live database
+(`instance/rehearsal/rehearsal-first-customer.db`), with `DRUGSHOP_DB` pointed at
+the copy for every command. Sequence: `revenue pricebook` →
+`revenue quote pro` → `revenue activate pro` (customer, contact, period
+2026-11-18..2026-12-17) → `revenue invoice setup` → `revenue payment record`
+(bank, 600,000) → `revenue invoice monthly` → `revenue payment record`
+(mtn_momo, 180,000) → `revenue invoice monthly` for the next period → deliberately
+wrong invoice voided and reissued → `revenue renew --period-end 2027-01-17` →
+`revenue renewals --days 14 --as-of 2027-01-05` → `revenue report` (text and JSON)
+→ `scripts/revenue_rollup.py`.
+
+Results: the report showed MRR 180,000 UGX, setup invoiced 600,000, monthly
+invoiced 360,000 (the voided invoice excluded), total invoiced 960,000, payments
+collected 780,000, outstanding 180,000, 4 invoices (2 paid, 1 unpaid, 1 void),
+and no renewals due at the current date. The rollup over the rehearsal directory
+matched the single-installation report line for line. Renewals listed the
+subscription as `due in 12 days` at as-of 2027-01-05, confirming the 14-day
+window and the `--as-of` override. The service refused a payment against the
+voided invoice (`invoice ... is void and cannot accept payments`) and refused an
+overpayment (`remaining balance is 180,000 UGX`), so the close checklist's manual
+failure modes are enforced by code, not convention. The source copy's hash
+changed as expected; the live database hash stayed
+`eb0d5e5e9f1ea04e9e1725ec733509162946eba5b49d49e05435f49d348aef28` with
+`integrity_check` `ok`, zero subscriptions, and zero invoices. The read-only
+portfolio rollup over the repository root reported one grandfathered Legacy
+installation, MRR 0, and no invoices, also leaving the live hash unchanged.
+
 **Open item:** onboard the first paying customer, reconcile the first monthly
 close to the report, and record the founder review. Until then the Phase 5
 rollout gate is not fully closed.
@@ -1082,7 +1110,7 @@ No write endpoints in v1. Commercial writes remain operator CLI actions.
 | 2 — Subscription ledger and activation | **Approved** | 2026-11-09 | 2026-11-12 | Migration 007 + service + CLI + tests; 73 targeted / 556 full tests; Ruff clean; staging activation/renewal/restore and fresh-DB activation verified; 007 dry run preserved 19 table counts; live stayed Legacy, then `run.py` applied 007 additively (billing empty). Owner authorized Phase 3 on 2026-11-12 |
 | 3 — Invoices, payments, renewals | **Approved** | 2026-11-12 | 2026-11-16 | Migration 008 + invoice/payment/renewal service and CLI + tests; 56 targeted / 602 full tests; Ruff clean; invoice amounts reconcile to the Pro quote and to a discounted agreed fee; money paths use `BEGIN IMMEDIATE`, partial unique indexes, void/reissue, and a payment ledger view; concurrency and overlap guards tested; manual cycle verified; 008 dry run preserved 21 table counts; migration 008 applied additively on 2026-11-18 with empty billing tables. Owner authorized Phase 4 on 2026-11-16 |
 | 4 — Read-only subscription UI/API | **Approved** | 2026-11-16 | 2026-11-18 | Read-only `billing` blueprint + Plan & Apps card + admin invoice ledger; 35 targeted / 625 full tests; Ruff clean; JS parses; payload filters, access matrix, Legacy grandfathered fallback, and fail-open reads verified; migration 008 applied additively on 2026-11-18 with empty billing tables; `SUPPORT_WHATSAPP` configured for the pilot on 2026-11-18. Owner authorized Phase 5 on 2026-11-18 |
-| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; live is Legacy on 008 with empty billing tables; first paid customer not yet onboarded |
+| 5 - Reporting and first paid rollout | **Approved (rollout pending)** | 2026-11-18 | 2026-11-18 | Revenue report + read-only rollup + runbooks/checklists + rehearsal; 21 targeted / 647 full tests; Ruff and JS clean; report CLI hash-verified non-mutating; six-plan matrix and rollup reconcile; live-copy migration preserved 21 business table counts; restore rehearsal passed; end-to-end operator rehearsal on a live-DB copy passed (quote → activate → setup invoice → bank payment → monthly invoice → MoMo payment → void/reissue → renew → report → rollup) with live hash unchanged; live is Legacy on 008 with empty billing tables; first paid customer not yet onboarded |
 | 6 — Optional automation | Deferred | | | |
 
 ---
